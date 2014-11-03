@@ -1,0 +1,99 @@
+<html>
+	<head>
+		<script>
+	/*		$(document).ready(function(){
+				var i=1;
+				$("#add_row").click(function(){
+					$('#addr'+i).html("<td>"+ (i+1) +"</td><td><input name='name"+i+"' type='text' placeholder='Name' class='form-control input-md'  /> </td><td><input  name='mail"+i+"' type='text' placeholder='Mail'  class='form-control input-md'></td><td><input  name='mobile"+i+"' type='text' placeholder='Mobile'  class='form-control input-md'></td>");
+
+					$('#tab_logic').append('<tr id="addr'+(i+1)+'"></tr>');
+					i++; 
+				});
+				$("#delete_row").click(function(){
+					if(i>1){
+						$("#addr"+(i-1)).html('');
+						i--;
+					}
+				});
+
+			});*/
+		</script>
+		<script type="text/javascript" src="jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
+		<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
+		<script type="text/javascript" src="source/bootstrap/dist/js/bootstrap.js"></script>
+		<script>
+			$(document).ready(function() {
+				    $('#example').DataTable();
+				} );
+			</script>
+	</head>
+	<body>
+		<div class="container">
+			<h1 style="font-family:Cambria">Welcome To Exceleron Library</h1>
+			<div class="dropdown">
+			<span class="glyphicon glyphicon-cog pull-right btn btn-default dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown"></span>
+			<ul class="dropdown-menu pull-right" role="menu" aria-labelledby="dropdownMenu1">
+				<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Change Password</a></li>
+				<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Log Out</a></li>
+			</ul>
+		</div>
+			<div class="row clearfix">
+				<div class="col-md-12 column">
+					<table class="table table-bordered table-hover" id="tab_logic" style="margin-top:80px">
+						<thead>
+							<tr >
+								<th class="text-center">
+									SI No.
+								</th>
+								<th class="text-center">
+									Book Name
+								</th>
+								<th class="text-center">
+									Book Type
+								</th>
+								<th class="text-center">
+									Book Author
+								</th>
+								<th class="text-center">
+									Book Status
+								</th>
+								<th class="text-center">
+									Request
+								</th>
+								<th class="text-center">
+									Comment
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr id='addr0'>
+								<td>
+									1
+								</td>
+								<td class="text-center">
+									Pavan
+								</td>
+								<td class="text-center">
+									Skanda
+								</td>
+								<td class="text-center">
+									abc
+								</td>
+								<td class="text-center">
+									Venkatesan
+								</td>
+								<td class="text-center">
+									<input type="button" name='txt_request' value="Make Request" class="form-control btn-primary"/>
+								</td>
+								<td class="text-center">
+									<input type="button" name='txt_review' value="Review" class="form-control btn-primary"/>
+								</td>
+							</tr>
+							<tr id='addr1'></tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+</html>
