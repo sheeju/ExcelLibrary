@@ -8,7 +8,7 @@ use Module::Install::Catalyst; # Complain loudly if you don't have
 
 name 'LibraryManagement';
 all_from 'lib/LibraryManagement.pm';
-
+requires 'Catalyst::View::TT' => 0;
 requires 'Catalyst::Runtime' => '5.90073';
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::Static::Simple';
