@@ -4,7 +4,7 @@ use FindBin;
 use Getopt::Std;
 use Data::Dumper;
 
-use lib "$FindBin::Bin/../lib";
+use lib "$FindBin::Bin/../lib/ExcelLibrary";
 
 use DBIx::Class::Schema::Loader 'make_schema_at';
 
