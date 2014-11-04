@@ -4,12 +4,12 @@ use strict;
 use base 'Catalyst::Model::DBIC::Schema';
 
 __PACKAGE__->config(
-    schema_class => 'ExcelLibrary::Schema::Library',
+    schema_class => 'ExcelLibrary::Schema',
     
     connect_info => {
         dsn => 'dbi:Pg:database=Library',
-        user => 'skanda',
-        password => 'skanda',
+        user => 'venkatesan',
+        password => '1774',
 		quote_field_names => "0",
 		quote_char        => "\"",
 		name_sep          => ".",
