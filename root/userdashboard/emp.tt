@@ -1,0 +1,156 @@
+<html>
+	<head>
+		<script>
+			
+			/*		$(document).ready(function(){
+				var i=1;
+				$("#add_row").click(function(){
+					$('#addr'+i).html("<td>"+ (i+1) +"</td><td><input name='name"+i+"' type='text' placeholder='Name' class='form-control input-md'  /> </td><td><input  name='mail"+i+"' type='text' placeholder='Mail'  class='form-control input-md'></td><td><input  name='mobile"+i+"' type='text' placeholder='Mobile'  class='form-control input-md'></td>");
+
+					$('#tab_logic').append('<tr id="addr'+(i+1)+'"></tr>');
+					i++; 
+				});
+				$("#delete_row").click(function(){
+					if(i>1){
+						$("#addr"+(i-1)).html('');
+						i--;
+					}
+				});
+
+			});*/
+		</script>
+		<script type="text/javascript" src="jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
+		<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
+		<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
+		<script type="text/javascript" src="source/bootstrap/dist/js/bootstrap.js"></script>
+		<script>
+			$(document).ready(function() {
+				$('#example').DataTable();
+			} );
+		</script>
+	</head>
+	<body>
+		<div class="container">
+			<h1 class="pull-left glyphicons-halflings-regular" style="font-family:Cambria">Welcome To Exceleron Library</h1>
+			<div class="dropdown">
+				<span class="glyphicon glyphicon-cog pull-right btn btn-default dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown"></span>
+				<ul class="dropdown-menu pull-right" role="menu" aria-labelledby="dropdownMenu1">
+					<li role="presentation"><a class="glyphicon glyphicon-wrench" role="menuitem" tabindex="-1" href="#">ChangePassword</a></li>
+					<li role="presentation"><a class="glyphicon glyphicon-off" role="menuitem" tabindex="-1" href="#">LogOut</a></li>
+				</ul>
+			</div>
+			<!--<div class="row clearfix">
+				<div class="col-md-12 column">
+					<table class="table table-bordered table-hover" id="tab_logic" style="margin-top:80px">
+						<thead>
+							<tr >
+								<th class="text-center">
+									SI No.
+								</th>
+								<th class="text-center">
+									Book Name
+								</th>
+								<th class="text-center">
+									Book Type
+								</th>
+								<th class="text-center">
+									Book Author
+								</th>
+								<th class="text-center">
+									Book Status
+								</th>
+								<th class="text-center">
+									Request
+								</th>
+								<th class="text-center">
+									Comment
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr id='addr0'>
+								<td>
+									1
+								</td>
+								<td class="text-center">
+									Pavan
+								</td>
+								<td class="text-center">
+									Skanda
+								</td>
+								<td class="text-center">
+									abc
+								</td>
+								<td class="text-center">
+									Venkatesan
+								</td>
+								<td class="text-center">
+									<input type="button" name='txt_request' value="Make Request" class="form-control btn-primary"/>
+								</td>
+								<td class="text-center">
+									<input type="button" name='txt_review' value="Review" class="form-control btn-primary"/>
+								</td>
+							</tr>
+							<tr id='addr1'></tr>
+						</tbody>
+					</table>
+				</div>
+			</div>-->
+			<table id="example" class="display" cellspacing="0" width="100%">
+				<thead>
+					<tr>
+						<th>SI No</th>
+						<th>Book Name</th>
+						<th>Book Type</th>
+						<th>Book Author</th>
+						<th>Book Status</th>
+						<th>Request</th>
+						<th>Comment</th>
+					</tr>
+				</thead>
+
+				<tfoot>
+					<tr>
+						<th>SI No</th>
+						<th>Book Name</th>
+						<th>Book Type</th>
+						<th>Book Author</th>
+						<th>Book Status</th>
+						<th>Request</th>
+						<th>Comment</th>
+					</tr>
+				</tfoot>
+
+				<tbody>
+					<tr>
+						<td>Jena Gaines</td>
+						<td>Office Manager</td>
+						<td>London</td>
+						<td>30</td>
+						<td>2008/12/19</td>
+						<td>
+							<input type="button" name='txt_request' value="Make Request" class="form-control btn-primary"/>
+						</td>
+						<td>
+							<input type="button" name='txt_review' value="Review" class="form-control btn-primary"/>
+						</td>
+					</tr>
+					<tr>
+						<td>Quinn Flynn</td>
+						<td>Support Lead</td>
+						<td>Edinburgh</td>
+						<td>22</td>
+						<td>2013/03/03</td>
+						<td>
+							<input type="button" name='txt_request' value="Make Request" class="form-control btn-primary"/>
+						</td>
+						<td>
+							<input type="button" name='txt_review' value="Review" class="form-control btn-primary"/>
+						</td>
+					</tr>
+				</tbody>
+				</table>
+			</div>
+		</body>
+	</html>
