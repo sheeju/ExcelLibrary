@@ -35,7 +35,7 @@
 		<br>
 		<div>
 			<ul class="nav nav-tabs nav-justified" role="tablist">
-				<li role="presentation" id="home"  class="menu" ><a href="#"><span class="glyphicon glyphicon-home"> Home</span></a></li>
+				<li role="presentation" id="request"  class="menu" ><a href="#"><span class="glyphicon glyphicon-home"> Home</span></a></li>
 				<li role="presentation" id="book" class="menu"><a href="#"><span class="glyphicon glyphicon-book"> Book</span></a></li>
 				<li role="presentation" id="user" class="menu"><a href="#"><span class="glyphicon glyphicon-user"> User</span></a></li>
 				<li role="presentation" id="history" class="menu"><a href="#"><span class="glyphicon glyphicon-list-alt"> History</span></a></li>
@@ -77,12 +77,13 @@
 		}
 		$('.menu').click(function(){
 			var id = $(this).attr('id');
+			var path = "/"+id;
 			id='#'+id;
 			$(curent).removeClass("active");
 			$(id).addClass("active");
 			curent = id;
+			loadpage(path);
+
 		});
-		
-		
 	});
 </script>

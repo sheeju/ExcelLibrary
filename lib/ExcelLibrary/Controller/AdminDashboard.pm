@@ -27,6 +27,28 @@ sub request : Path('/request')
 {
 	my($self,$c) = @_;
 }
+sub book : Path('/book')
+{
+	my($self,$c) = @_;
+	my $count=1;
+	     my @array = $c->model('Library::Book')->search({
+	             Status => 'Available',
+	         },
+	         { join => 'book_copies',
+	             '+select' => ['book_copies.Status'],
+	             '+as' => ['Status'],
+	             group_by => [qw/me.Id book_copies.Status/],
+	             order_by => [qw/me.Id/]
+	         });
+	     print Dumper \@array;
+     push( @{$c->stash->{messages}},{
+             Count => $count++,
+             Id => $_->Id,
+             Name => $_->Name,
+             Type => $_->Type,
+             Status => $_->get_column('Status'),
+         }) foreach @array;
+}
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
