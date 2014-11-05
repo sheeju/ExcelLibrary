@@ -19,7 +19,11 @@ use Catalyst::Runtime 5.80;
 use Catalyst qw/
     -Debug
     ConfigLoader
-    Static::Simple
+  Static::Simple
+	Authentication
+	Session
+	Session::Store::FastMmap
+	Session::State::Cookie
 /;
 
 extends 'Catalyst';
@@ -40,7 +44,24 @@ __PACKAGE__->config(
     # Disable deprecated behavior needed by old applications
     disable_component_resolution_regex_fallback => 1,
     enable_catalyst_header => 1, # Send X-Catalyst header
+ 
 );
+
+__PACKAGE__->config->{'Plugin::Authentication'} = {
+	default => {
+		credential => {
+			class => 'Password',
+			password_field => 'Password',
+			password_type => 'clear'
+		},
+		store => {
+			class => 'DBIx::Class',
+			user_class => 'Library::Employee'
+		}
+	}
+};
+
+
 
 # Start the application
 __PACKAGE__->setup();

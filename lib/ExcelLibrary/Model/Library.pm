@@ -4,7 +4,7 @@ use strict;
 use base 'Catalyst::Model::DBIC::Schema';
 
 __PACKAGE__->config(
-    schema_class => 'ExcelLibrary::Schema::Library',
+    schema_class => 'ExcelLibrary::Schema',
     
     connect_info => {
         dsn => 'dbi:Pg:database=Library',
@@ -13,7 +13,7 @@ __PACKAGE__->config(
 		quote_field_names => "0",
 		quote_char        => "\"",
 		name_sep          => ".",
-		array_datatypes   => "1",
+		array_datatypes   => "1"
 	}
 );
 
