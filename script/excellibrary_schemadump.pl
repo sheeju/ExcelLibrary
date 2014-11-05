@@ -19,7 +19,7 @@ make_schema_at(
 		dump_directory          => "$FindBin::Bin/../lib",
 		overwrite_modifications => 1,
 		preserve_case           => 1,
-		moniker_parts			=> [qw(name)],
+		moniker_parts		=> [qw(name)],
 		naming                  => 'preserve',
 	},
 	['dbi:Pg:dbname=Library', 'skanda', 'skanda', {'quote_char' => '"', 'quote_field_names' => '0', 'name_sep' => '.'}],
