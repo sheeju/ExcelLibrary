@@ -45,6 +45,12 @@ __PACKAGE__->config(
     disable_component_resolution_regex_fallback => 1,
     enable_catalyst_header => 1, # Send X-Catalyst header
  
+ 'View::JSON' => {
+ allow_callback => 1, # defaults to 0
+ callback_param => 'cb', # defaults to 'callback'
+ expose_stash => [ qw(foo bar) ], # defaults to everything
+ },
+
 );
 
 __PACKAGE__->config->{'Plugin::Authentication'} = {

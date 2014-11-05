@@ -1,0 +1,16 @@
+Build
+_build/
+blib/
+inc/
+*~
+MANIFEST
+MANIFEST.bak
+META.yml
+MYMETA.*
+pkg/
+root/static/assets/
+.*.swp
+.*.swo
+Makefile
+Makefile.old
+*.bak

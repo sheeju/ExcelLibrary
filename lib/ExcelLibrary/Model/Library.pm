@@ -8,8 +8,8 @@ __PACKAGE__->config(
     
     connect_info => {
         dsn => 'dbi:Pg:database=Library',
-        user => 'skanda',
-        password => 'skanda',
+        user => 'pavan',
+        password => '1234',
 		quote_field_names => "0",
 		quote_char        => "\"",
 		name_sep          => ".",
