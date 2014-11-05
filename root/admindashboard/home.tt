@@ -1,0 +1,88 @@
+<!Doctype html>
+<head>
+	<title>ExcelLibrary</title>
+</head>
+<body>
+	<div class = "container">
+		<div class ="row">
+			<div class="col-md-6">
+				<h1>Exceleron Library</h1>
+			</div>
+			<div class="col-md-6">
+				<h3 class = "text-right">Welcome user</h3>
+				<div class="dropdown">
+					<span class="glyphicon glyphicon-cog pull-right btn btn-default dropdown-toggle"  id="dropdownMenu1" data-toggle="dropdown">Settings</span>
+					<ul class="dropdown-menu pull-right" role="menu" aria-labelledby="dropdownMenu1">
+						<li role="presentation"><a class="glyphicon glyphicon-wrench" role="menuitem" tabindex="-1" href="#">Configure</a></li>
+						<li role="presentation"><a class="glyphicon glyphicon-wrench" role="menuitem" tabindex="-1" href="#">ChangePassword</a></li>
+						<li role="presentation"><a class="glyphicon glyphicon-off" role="menuitem" tabindex="-1" href="#">LogOut</a></li>
+					</ul>
+				</div>
+				<!--button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				Action <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="#">Action</a></li>
+				<li><a href="#">Another action</a></li>
+				<li><a href="#">Something else here</a></li>
+				<li class="divider"></li>
+				<li><a href="#">Separated link</a></li>
+				</ul-->
+
+
+			</div>
+		</div>
+		<br>
+		<div>
+			<ul class="nav nav-tabs nav-justified" role="tablist">
+				<li role="presentation" id="home"  class="menu" ><a href="#"><span class="glyphicon glyphicon-home"> Home</span></a></li>
+				<li role="presentation" id="book" class="menu"><a href="#"><span class="glyphicon glyphicon-book"> Book</span></a></li>
+				<li role="presentation" id="user" class="menu"><a href="#"><span class="glyphicon glyphicon-user"> User</span></a></li>
+				<li role="presentation" id="history" class="menu"><a href="#"><span class="glyphicon glyphicon-list-alt"> History</span></a></li>
+				<li role="presentation" id="return" class="menu"><a href="#"><span class="glyphicon glyphicon-import"> Return</span></a></li>
+			</ul>
+			<div id = "content">
+			</div>
+		</div>
+	</div>
+</body>
+<link href="../source/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css"/>
+<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
+<script src="../source/js/jquery.js" type="text/javascript"></script>
+<script src="../source/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"> </script>
+
+<script type="text/javascript">
+	$(document).ready(function() 
+	{
+		var curent;
+		$('#home').addClass("active");
+		curent = '#home';
+		var element = '/request';
+		loadpage(element);
+		function loadpage(element)
+		{
+			$.ajax( 
+				{ 
+					url:element, 
+					contentType:'text/html', 
+					dataType:'html' 
+				}).done(function(responseText)  
+				{ 
+					$("#content").html(responseText); 
+				}).fail(function(err)  
+				{  
+					alert("error" + err);  
+				});
+		}
+		$('.menu').click(function(){
+			var id = $(this).attr('id');
+			id='#'+id;
+			$(curent).removeClass("active");
+			$(id).addClass("active");
+			curent = id;
+		});
+		
+		
+	});
+</script>
