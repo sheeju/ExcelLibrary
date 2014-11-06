@@ -2,6 +2,8 @@ package ExcelLibrary::Controller::AdminDashboard;
 use Moose;
 use namespace::autoclean;
 use Data::Dumper;
+use JSON;
+use POSIX qw(strftime);
 BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
@@ -42,13 +44,13 @@ sub request : Path('/request')
 	foreach $r (@request)
 	{
 		my $Button;
-		if($r->UpdatedBy == '')
+		if(defined $r->UpdatedBy)
 		{
-			$Button = '<input type="button" id ="'.$r->Id.'" name="btn_accept" value="Accept" class="btn btn-primary btn-xs req_allow"/> <input type="button" id ="'.$r->Id.'" name="btn_reject" value="Deny" class="btn btn-warning btn-xs req_deny"/>'
+			$Button = '<input type="button" id="'.$r->Id.'" name="btn_issue" value="Issue" class="btn btn-primary btn_sm book_issue"data-toggle="modal" data-target="#myModal"/>'
 		}
 		else
 		{
-			$Button = '<input type="button" id="'.$r->Id.'" name="btn_issue" value="Issue" class="btn btn-primary btn_sm book_issue"data-toggle="modal" data-target="#myModal"/>'
+			$Button = '<input type="button" id ="'.$r->Id.'" name="btn_accept" value="Accept" class="btn btn-primary btn-xs req_allow"/> <input type="button" id ="'.$r->Id.'" name="btn_reject" value="Deny" class="btn btn-warning btn-xs req_deny"/>'
 		}	
 
 		push(@{$c->stash->{messages}},{
@@ -76,24 +78,51 @@ sub managerequest : Local
 	{
 		$data->update({"Status" => 'Denied', "UpdatedBy" => '1'});
 	}
+
 	$c->forward('request');
 	$c->stash->{template} = "admindashboard/request.tt";
-
 }
 sub getbookcopies : Local
 {
 	my($self,$c) = @_;
 	my $req_id = $c->req->params->{req_id};
+	my $book = $c->model('Library::BookCopy')->search({"Id" =>$req_id });
+
 	my @books = $c->model('Library::BookCopy')->search(
-		{
-			"me.Status" => 'Available',
-			"Transaction.Id" => $req_id
-		},
-		{
-			join => 'Transaction'
-		}
-	);
-	$c->log->info(Dumper @books);
+				{
+					"Status" => 'Available',
+					"BookId" => $book
+				});
+	foreach my $b (@books)
+	{
+		push(@{$c->stash->{books}},$b->Id);		
+	}
+
+	$c->forward('View::JSON');
+}
+sub issuebook : Local
+{
+	my($self,$c) = @_;
+	my $req_id = $c->req->params->{req_id};
+	my $bookcopy_id = $c->req->params->{bc_id};
+	#Transaction
+		my $trans_status = "Issued";
+		my $ExpectedReturnedDate = 3;
+		my $issueby = 1;
+		my $issuedate =strftime "%F %X",  gmtime;
+	#BookCopy
+		my $book_status = "Reading";
+	$c->log->info($req_id," ",$bookcopy_id," ",$issuedate);
+	
+	my $data = $c->model('Library::Transaction')->search({"Id" => $req_id});
+	$data->update({"Status" => 'Issued',"IssuedBy" => 1,"IssuedDate" => $issuedate, });
+
+	 $data = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
+	$data->update({"Status" => 'Reading' });
+
+	
+	$c->forward('request');
+	$c->stash->{template} = "admindashboard/request.tt";
 }
 sub book : Path('/book')
 {
