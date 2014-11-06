@@ -17,8 +17,6 @@ Catalyst JSON View.
 
 =head1 AUTHOR
 
-Pavan,,,
-
 =head1 LICENSE
 
 This library is free software, you can redistribute it and/or modify

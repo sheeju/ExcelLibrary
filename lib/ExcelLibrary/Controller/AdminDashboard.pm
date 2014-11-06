@@ -1,9 +1,7 @@
 package ExcelLibrary::Controller::AdminDashboard;
 use Moose;
-use Data::Dumper;
-use DBIx::Class;
 use namespace::autoclean;
-
+use Data::Dumper;
 BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
@@ -80,6 +78,7 @@ sub managerequest : Local
 	}
 	$c->forward('request');
 	$c->stash->{template} = "admindashboard/request.tt";
+
 }
 sub getbookcopies : Local
 {

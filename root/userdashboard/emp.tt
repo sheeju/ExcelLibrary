@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<script type="text/javascript" src="jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="../source/js/jquery.js"></script>
 		<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
 		<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
 		<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
@@ -15,7 +15,7 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1 class="pull-left glyphicons-halflings-regular" style="font-family:Cambria">Welcome To Exceleron Library</h1>
+			<h1 class="pull-left glyphicons-halflings-regular" id ="head_bar" style="font-family:Cambria">Welcome to [% head_bar %]</h1>
 			<div class="dropdown">
 				<span class="glyphicon glyphicon-cog pull-right btn btn-default dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown"></span>
 				<ul class="dropdown-menu pull-right" role="menu" aria-labelledby="dropdownMenu1">

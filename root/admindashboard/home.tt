@@ -18,6 +18,18 @@
 						<li role="presentation"><a class="glyphicon glyphicon-off" role="menuitem" tabindex="-1" href="#">LogOut</a></li>
 					</ul>
 				</div>
+				<!--button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				Action <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="#">Action</a></li>
+				<li><a href="#">Another action</a></li>
+				<li><a href="#">Something else here</a></li>
+				<li class="divider"></li>
+				<li><a href="#">Separated link</a></li>
+				</ul-->
+
+
 			</div>
 		</div>
 		<br>
@@ -35,48 +47,47 @@
 	</div>
 </body>
 <link href="../source/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
-<link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/jquery.dataTables.css"/>
+<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css"/>
+<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
 <script src="../source/js/jquery.js" type="text/javascript"></script>
-<script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js"></script>
-<script src="../source/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"> </script>
+<script src="../source/bootstrap/dist/js/bootstrap.js" type="text/javascript"> </script>
 
 <script type="text/javascript">
 	$(document).ready(function() 
 	{
 		var curent;
-
-		$('#request').addClass("active");
-		curent = '#request';
-		
+		$('#home').addClass("active");
+		curent = '#home';
 		var element = '/request';
 		loadpage(element);
-
 		function loadpage(element)
 		{
 			$.ajax( 
 				{ 
 					url:element, 
 					contentType:'text/html', 
-					dataType:'html' 
+					dataType:'html',
 				}).done(function(responseText)  
 				{ 
-					$('#content').html(responseText); 
+					$("#content").html(responseText); 
 				}).fail(function(err)  
 				{  
 					alert("error" + err);  
 				});
 		}
-
+		$('#details').click(function(){
+			var id=$('#Book_Id').val();
+			alert(id);
+	});
 		$('.menu').click(function(){
 			var id = $(this).attr('id');
-
-			var path = '/' + id;
-			id='#' + id;
+			var path = "/"+id;
+			id='#'+id;
 			$(curent).removeClass("active");
 			$(id).addClass("active");
 			curent = id;
-		
 			loadpage(path);
+
 		});
 	});
 </script>
