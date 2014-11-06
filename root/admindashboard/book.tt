@@ -1,0 +1,43 @@
+<script type="text/javascript" src="jquery-1.11.1.js"></script>
+<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
+<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
+<script type="text/javascript" src="source/bootstrap/dist/js/bootstrap.js"></script>
+<script>
+	$(document).ready(function() {
+		$('#table').DataTable({});
+	} );    
+</script>
+
+
+<table id="table" class="display" cellspacing="0" width="100%">
+	<thead>
+		<tr>
+			<th>SI No</th>
+			<th>Book Id</th>
+			<th>Book Name</th>
+			<th>Book Type</th>
+			<th>Book Status</th>
+			<th>Request</th>
+			<th>Comment</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		[% FOREACH msg IN messages %]
+		<tr>
+			<td>[% msg.Count %]</td>
+			<td>[% msg.Id %]</td>
+			<td>[% msg.Name %]</td>
+			<td>[% msg.Type %]</td>
+			<td>[% msg.Status %]</td>
+			<td>
+				<input type="button" name='txt_request' value="Make Request" class="form-control btn-primary"/>
+			</td>
+			<td>
+				<input type="button" name='txt_review' value="Review" class="form-control btn-primary"/>
+			</td>
+		</tr>
+	</tbody>
+	[% END %]
+</table>

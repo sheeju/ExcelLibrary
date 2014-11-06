@@ -1,5 +1,6 @@
 <html>
 	<head>
+		<script type="text/javascript" src="../source/js/jquery.js"></script>
 		<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
 		<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
 		<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
