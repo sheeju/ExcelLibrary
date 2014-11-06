@@ -54,9 +54,16 @@ sub request : Path('/request')
 		});
 	}
 }
-sub mangerequest : local
+sub managerequest : Local
 {
-	my($self,$c) = @_
+	my($self,$c) = @_;
+	my $req_id = $c->req->params->{id};
+	my $response = $c->req->params->{response};
+	my $data = $c->model('Library::Transaction')->search({"Id" => $req_id});
+
+	$c->log->info("`````````````````````````````````````````````````".$req_id." ".$response);
+	$c->forward('request');
+	$c->stash->{template} = "admindashboard/request.tt";
 }
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
