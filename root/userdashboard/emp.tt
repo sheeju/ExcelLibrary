@@ -1,36 +1,15 @@
 <html>
 	<head>
-		<script>
-			console.log([% messages %]);
-		</script>
 		<script type="text/javascript" src="jquery-1.11.1.js"></script>
 		<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
 		<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
 		<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
 		<script type="text/javascript" src="source/bootstrap/dist/js/bootstrap.js"></script>
 		<script>
+
 			$(document).ready(function() {
-				var counter=1;
-				var table = $('#example').DataTable({
-				ajax: "data.json",	
-				"aoData": [
-				{ "mDataProp": counter },
-				{ "mDataProp": "Name" },
-				{ "mDataProp": "Type" },
-				{ "mDataProp": "Author" },
-				{ "mDataProp": "Status" },
-				],
-			});
-				counter+=1;
-
-				/*table.row.add([{
-					"SI No":counter,
-					"Name":[% messages %].Name,
-					"Type":[% messages %].Type,
-					"Author":[% messages %].Author,
-					"Status":[% messages %].Status,
-				}]);*/
-
+				$('#table').DataTable({
+				});
 				} );	
 			</script>
 	</head>
@@ -44,64 +23,7 @@
 					<li role="presentation"><a class="glyphicon glyphicon-off" role="menuitem" tabindex="-1" href="#">LogOut</a></li>
 				</ul>
 			</div>
-			<!--<div class="row clearfix">
-				<div class="col-md-12 column">
-					<table class="table table-bordered table-hover" id="tab_logic" style="margin-top:80px">
-						<thead>
-							<tr >
-								<th class="text-center">
-									SI No.
-								</th>
-								<th class="text-center">
-									Book Name
-								</th>
-								<th class="text-center">
-									Book Type
-								</th>
-								<th class="text-center">
-									Book Author
-								</th>
-								<th class="text-center">
-									Book Status
-								</th>
-								<th class="text-center">
-									Request
-								</th>
-								<th class="text-center">
-									Comment
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr id='addr0'>
-								<td>
-									1
-								</td>
-								<td class="text-center">
-									Pavan
-								</td>
-								<td class="text-center">
-									Skanda
-								</td>
-								<td class="text-center">
-									abc
-								</td>
-								<td class="text-center">
-									Venkatesan
-								</td>
-								<td class="text-center">
-									<input type="button" name='txt_request' value="Make Request" class="form-control btn-primary"/>
-								</td>
-								<td class="text-center">
-									<input type="button" name='txt_review' value="Review" class="form-control btn-primary"/>
-								</td>
-							</tr>
-							<tr id='addr1'></tr>
-						</tbody>
-					</table>
-				</div>
-			</div>-->
-			<table id="example" class="display" cellspacing="0" width="100%">
+			<table id="table" class="display" cellspacing="0" width="100%">
 				<thead>
 					<tr>
 						<th>SI No</th>
@@ -114,26 +36,14 @@
 					</tr>
 				</thead>
 
-				<tfoot>
+				<tbody>
+					[% FOREACH msg IN messages %]
 					<tr>
-						<th>SI No</th>
-						<th>Book Name</th>
-						<th>Book Type</th>
-						<th>Book Author</th>
-						<th>Book Status</th>
-						<th>Request</th>
-						<th>Comment</th>
-					</tr>
-				</tfoot>
-
-				<!--tbody>
-					[% FOREACH messages %]
-					<tr>
-						<td>1</td>
-						<td>[%messages.Name%]</td>
-						<td>[%messages.Type%]</td>
-						<td>[%messages.Author%]</td>
-						<td>[%messages.Status%]</td>
+						<td>[% msg.Count %]</td>
+						<td>[% msg.Name %]</td>
+						<td>[% msg.Type %]</td>
+						<td>[% msg.Author %]</td>
+						<td>[% msg.Status %]</td>
 						<td>
 							<input type="button" name='txt_request' value="Make Request" class="form-control btn-primary"/>
 						</td>
@@ -141,38 +51,9 @@
 							<input type="button" name='txt_review' value="Review" class="form-control btn-primary"/>
 						</td>
 					</tr>
-					[% END %]	
-					<tr>
-						<td>Jena Gaines</td>
-						<td>Office Manager</td>
-						<td>London</td>
-						<td>30</td>
-						<td>2008/12/19</td>
-						<td>
-							<input type="button" name='txt_request' value="Make Request" class="form-control btn-primary"/>
-						</td>
-						<td>
-							<input type="button" name='txt_review' value="Review" class="form-control btn-primary"/>
-						</td>
-					</tr>
-					<tr>
-						<td>Quinn Flynn</td>
-						<td>Support Lead</td>
-						<td>Edinburgh</td>
-						<td>22</td>
-						<td>2013/03/03</td>
-						<td>
-							<input type="button" name='txt_request' value="Make Request" class="form-control btn-primary"/>
-						</td>
-						<td>
-							<input type="button" name='txt_review' value="Review" class="form-control btn-primary"/>
-						</td>
-					</tr>-->
-				</table>
-					[% FOREACH items IN messages.Name %]
-					<li>[%items%]</li>
 					[% END %]
-				</ol>
-			</div>
+				</tbody>
+			</table>
+		</div>
 		</body>
 	</html>

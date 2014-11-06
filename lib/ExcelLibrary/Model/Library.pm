@@ -13,7 +13,7 @@ __PACKAGE__->config(
 		quote_field_names => "0",
 		quote_char        => "\"",
 		name_sep          => ".",
-		array_datatypes   => "1",
+		array_datatypes   => "1"
 	}
 );
 

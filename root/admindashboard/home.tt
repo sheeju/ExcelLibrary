@@ -69,11 +69,13 @@
 
 		$('.menu').click(function(){
 			var id = $(this).attr('id');
+
 			var path = '/' + id;
 			id='#' + id;
 			$(curent).removeClass("active");
 			$(id).addClass("active");
 			curent = id;
+		
 			loadpage(path);
 		});
 	});

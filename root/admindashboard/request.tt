@@ -1,40 +1,3 @@
-<script>
-	$(document).ready(function ()
-	{
-		$('#request_tabel').DataTable({});
-		
-		$('.req_allow').click(function(){
-			var id = $(this).attr('id');
-			alert(id);
-			addresponse(id,"Allow");
-			
-		});
-		$('.req_deny').click(function(){
-			var id = $(this).attr('id');
-			addresponse(id,"Deny");
-		});
-
-		function addresponse(id,response)
-		{
-
-		$.ajax( 
-			{ 
-				url :'admindashboard/managerequest', 
-				contentType :'text/html', 
-				dataType :'html', 
-				data :{id : id, response : response}
-			}).done(function(responseText)  
-			{
-				$("#content").html(responseText); 
-			}).fail(function(err)  
-			{  
-				alert("error" + err);  
-			});
-		}
-
-
- 	});
-</script>
 <br><br>
 <table id="request_tabel" class="display" cellspacing="0" width="100%">
 	<thead>
@@ -63,3 +26,44 @@
 		[% END %]
 	</tbody>
 </table>
+<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
+<script type="text/javascript" src="jquery-1.11.1.js"></script>
+<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
+<script>
+	$(document).ready(function ()
+	{
+		$('#request_tabel').DataTable({});
+		
+		$('.req_allow').click(function(){
+			var id = $(this).attr('id');
+			alert(id);
+			addresponse(id,"Allow");
+			
+		});
+		$('.req_deny').click(function(){
+			var id = $(this).attr('id');
+			addresponse(id,"Deny");
+		});
+		function addresponse(id,response)
+		{
+
+		$.ajax( 
+			{ 
+				url :'admindashboard/managerequest', 
+				contentType :'text/html', 
+				dataType :'html', 
+				data :{id : id, response : response}
+			}).done(function(responseText)  
+			{
+				$("#content").html(responseText); 
+			}).fail(function(err)  
+			{  
+				alert("error" + err);  
+			});
+		}
+ 	});
+</script>
+
+
+
