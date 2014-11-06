@@ -1,5 +1,7 @@
 package ExcelLibrary::Controller::AdminDashboard;
 use Moose;
+use Data::Dumper;
+use DBIx::Class;
 use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
@@ -26,6 +28,42 @@ sub home : Path('/home'){
 sub request : Path('/request')
 {
 	my($self,$c) = @_;
+	my ($r,$count);
+	$count = 1;
+	my @result = $c->model('Library::Transaction')->search(
+			{
+		
+				"me.Status" => 'Requested'
+			},
+			{
+				join => ['employee','book'],
+					'+select' => ['employee.Name','book.Name'],
+					'+as' => ['Employee Name','Book Name']
+	});
+	
+	$c->log->info(Dumper \@result);	
+	foreach $r (@result)
+	{
+		push(@{$c->stash->{messages}},{
+			No => $count++,
+			reqid => $r->Id,
+			RequestedDate =>$r->RequestDate,
+			EmployeeName => $r->get_column('Employee Name'),
+			BookId => $r->BookId,
+			BookName => $r->get_column('Book Name')
+		});
+	}
+}
+sub managerequest : Local
+{
+	my($self,$c) = @_;
+	my $req_id = $c->req->params->{id};
+	my $response = $c->req->params->{response};
+	my $data = $c->model('Library::Transaction')->search({"Id" => $req_id});
+
+	$c->log->info("`````````````````````````````````````````````````".$req_id." ".$response);
+	$c->forward('request');
+	$c->stash->{template} = "admindashboard/request.tt";
 }
 sub book : Path('/book')
 {
