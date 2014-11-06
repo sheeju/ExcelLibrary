@@ -30,27 +30,37 @@ sub request : Path('/request')
 	my($self,$c) = @_;
 	my ($r,$count);
 	$count = 1;
-	my @result = $c->model('Library::Transaction')->search(
+	my @request = $c->model('Library::Transaction')->search(
 			{
 		
-				"me.Status" => 'Requested'
+				"me.Status" => 'Requested',
 			},
 			{
 				join => ['employee','book'],
 					'+select' => ['employee.Name','book.Name'],
 					'+as' => ['Employee Name','Book Name']
-	});
-	
-	$c->log->info(Dumper \@result);	
-	foreach $r (@result)
+			});
+		#$c->log->info(Dumper \@request);	
+	foreach $r (@request)
 	{
+		my $Button;
+		if($r->UpdatedBy == '')
+		{
+			$Button = '<input type="button" id ="'.$r->Id.'" name="btn_accept" value="Accept" class="btn btn-primary btn-xs req_allow"/> <input type="button" id ="'.$r->Id.'" name="btn_reject" value="Deny" class="btn btn-warning btn-xs req_deny"/>'
+		}
+		else
+		{
+			$Button = '<input type="button" id="'.$r->Id.'" name="btn_issue" value="Issue" class="btn btn-primary btn_sm book_issue"data-toggle="modal" data-target="#myModal"/>'
+		}	
+
 		push(@{$c->stash->{messages}},{
 			No => $count++,
 			reqid => $r->Id,
 			RequestedDate =>$r->RequestDate,
 			EmployeeName => $r->get_column('Employee Name'),
 			BookId => $r->BookId,
-			BookName => $r->get_column('Book Name')
+			BookName => $r->get_column('Book Name'),
+			Button => $Button
 		});
 	}
 }
@@ -60,10 +70,31 @@ sub managerequest : Local
 	my $req_id = $c->req->params->{id};
 	my $response = $c->req->params->{response};
 	my $data = $c->model('Library::Transaction')->search({"Id" => $req_id});
-
-	$c->log->info("`````````````````````````````````````````````````".$req_id." ".$response);
+	if($response eq 'Allow')
+	{
+		$data->update({"UpdatedBy" => '1' });
+	}
+	else
+	{
+		$data->update({"Status" => 'Denied', "UpdatedBy" => '1'});
+	}
 	$c->forward('request');
 	$c->stash->{template} = "admindashboard/request.tt";
+}
+sub getbookcopies : Local
+{
+	my($self,$c) = @_;
+	my $req_id = $c->req->params->{req_id};
+	my @books = $c->model('Library::BookCopy')->search(
+		{
+			"me.Status" => 'Available',
+			"Transaction.Id" => $req_id
+		},
+		{
+			join => 'Transaction'
+		}
+	);
+	$c->log->info(Dumper @books);
 }
 sub book : Path('/book')
 {
@@ -89,7 +120,6 @@ sub book : Path('/book')
 }
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
-
     $c->response->body('Matched ExcelLibrary::Controller::AdminDashboard in AdminDashboard.');
 }
 
