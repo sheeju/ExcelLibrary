@@ -1,48 +1,42 @@
-<!Doctype html>
-<head>
-	<title>Excel Library\requests</title>
-</head>
-<body>
-	<table id="example" class="display" cellspacing="0" width="100%">
-		<thead>
-			<tr>
-				<th>SI No</th>
-				<th>Book Name</th>
-				<th>Book Type</th>
-				<th>Book Author</th>
-				<th>Book Status</th>
-				<th>Request</th>
-				<th>Comment</th>
-			</tr>
-		</thead>
+<script>
+	$(document).ready(function ()
+	{
+		$('#request').DataTable({});
+		$('.req_allow').click(function(){
+			var id = $(this).attr('id');
+			alert (id);
+		});
+		$('.req_deny').click(function(){
+			var id = $(this).attr('id');
+			alert (id);
+		});
 
-		<tfoot>
+ 	});
+</script>
+<table id="request" class="display" cellspacing="0" width="100%">
+	<thead>
+		<tr>
+			<th>SI No</th>
+			<th>Requested Date</th>
+			<th>Employee Name</th>
+			<th>Book Id</th>
+			<th>Book Name</th>
+			<th>Response</th>
+		</tr>
+	</thead>
+	<tbody>
+		[% FOREACH m = messages %]
 			<tr>
-				<th>SI No</th>
-				<th>Book Name</th>
-				<th>Book Type</th>
-				<th>Book Author</th>
-				<th>Book Status</th>
-				<th>Request</th>
-				<th>Comment</th>
-			</tr>
-		</tfoot>
-
-		<tbody>
-			<tr>
-				<td>Jena Gaines</td>
-				<td>Office Manager</td>
-				<td>London</td>
-				<td>30</td>
-				<td>2008/12/19</td>
+				<td> [% m.No %]</td>
+				<td> [% m.RequestedDate %]</td>
+				<td> [% m.EmployeeName %]</td>
+				<td> [% m.BookId %]</td>
+				<td> [% m.BookName %]</td>
 				<td>
-					<input type="button" name='btn_accept' value="Accept" class="form-control btn-primary"/>
-				</td>
-				<td>
-					<input type="button" name='btn_reject' value="Reject" class="form-control btn-primary"/>
+					<input type="button" id ="[% m.reqid %]" name="btn_accept" value="Accept" class="btn btn-primary btn-xs req_allow"/>
+					<input type="button" id ="[% m.reqid %]" name="btn_reject" value="Deny" class="btn btn-warning btn-xs req_deny"/>
 				</td>
 			</tr>
-		</tbody>
-	</table>
-
-</body>
+		[% END %]
+	</tbody>
+</table>
