@@ -30,41 +30,6 @@ sub index : Path :Args(0) {
 	$c->forward('View::TT');
 }
 
-=pod
-sub validate:Local {
-	my ( $self, $c ) = @_;
-	my $dt_params = $c->req->params;
-	my $enter_password = $dt_params->{password};
-	my $enter_email = $dt_params->{email};	
-#	my $digest = md5_hex($dt_params->{password});
-#	print Dumper $digest;
-
-
-	my $userInfo = $c->model('Library::Employee')->search({"Email" =>$dt_params->{email}},{"Password" =>$enter_password});
-	my $user;	
-
-	if($user = $userInfo->next)
-	{
-		if ($user->Role eq 'Admin')
-		{
-
-			$c->log->info("admin");
-		}
-		else
-		{
-			$c->log->info("employee");
-		}
-	}
-	else
-	{
-		print Dumper "doesnot match";
-		$c->stash->{failmsg}  = "does not match user name and password";
-	}
-
-	$c->forward('View::JSON');
-
-}
-=cut
 
 sub validate :Local {
 
@@ -81,7 +46,11 @@ sub validate :Local {
 		{
 			my $userId =$c->user->Id;
 			my $userName =$c->user->Name;
-			print Dumper "Login into user Dashboard-------------------------------- $userId---------$userName" ;
+
+			$c->stash->{head_bar} = $userName;
+			$c->stash->{template} = "userdashboard/emp.tt";
+			$c->forward('View::TT');
+			$c->stash->{head_bar} = $userName;
 		}
 		else
 		{
@@ -91,9 +60,12 @@ sub validate :Local {
 		}
 	} 
 	else {
+
 		$c->stash->{failmsg}  = "does not match user name and password";
+		print "Inside Else-------------------------------------------\n";
+		$c->forward('View::JSON');
 	}
-	$c->forward('View::JSON');
+
 }
 
 
