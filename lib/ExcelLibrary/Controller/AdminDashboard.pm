@@ -41,12 +41,24 @@ sub request : Path('/request')
 					'+as' => ['Employee Name','Book Name']
 			});
 		#$c->log->info(Dumper \@request);	
+	my $bookcopy_resulset = $c->model('Library::BookCopy')->search({});
 	foreach $r (@request)
 	{
+
 		my $Button;
 		if(defined $r->UpdatedBy)
 		{
-			$Button = '<input type="button" id="'.$r->Id.'" name="btn_issue" value="Issue" class="btn btn-primary btn_sm book_issue"data-toggle="modal" data-target="#myModal"/>'
+			my $bookcopy = $bookcopy_resulset->search({"BookId" => $r->BookId,"Status" => "Available" });
+			my $book;
+		    				
+			if ($bookcopy->next)
+			{
+				$Button = '<input type="button" id="'.$r->Id.'" name="btn_issue" value="Issue" class="btn btn-primary btn-xs book_issue"data-toggle="modal" data-target="#myModal"/>'
+			}
+			else
+			{
+				$Button = '<span class="label label-info">Book Not Available For Issue</span>';
+			}
 		}
 		else
 		{
@@ -55,7 +67,6 @@ sub request : Path('/request')
 
 		push(@{$c->stash->{messages}},{
 			No => $count++,
-			reqid => $r->Id,
 			RequestedDate =>$r->RequestDate,
 			EmployeeName => $r->get_column('Employee Name'),
 			BookId => $r->BookId,
@@ -86,15 +97,21 @@ sub getbookcopies : Local
 {
 	my($self,$c) = @_;
 	my $req_id = $c->req->params->{req_id};
-	my $book = $c->model('Library::BookCopy')->search({"Id" =>$req_id });
-
+	my $trans = $c->model('Library::Transaction')->search({"Id" =>$req_id });
+	my $t;
+	if ($t = $trans->next)
+	{
+		$c->log->info( $t->BookId);
+	}
+	my $bookid = $t->BookId;	
 	my @books = $c->model('Library::BookCopy')->search(
 				{
 					"Status" => 'Available',
-					"BookId" => $book
+					"BookId" => $bookid
 				});
 	foreach my $b (@books)
 	{
+		$c->log->info($b->Id);
 		push(@{$c->stash->{books}},$b->Id);		
 	}
 
@@ -106,13 +123,9 @@ sub issuebook : Local
 	my $req_id = $c->req->params->{req_id};
 	my $bookcopy_id = $c->req->params->{bc_id};
 	#Transaction
-		my $trans_status = "Issued";
 		my $ExpectedReturnedDate = 3;
 		my $issueby = 1;
-		my $issuedate =strftime "%F %X",  gmtime;
-	#BookCopy
-		my $book_status = "Reading";
-	$c->log->info($req_id," ",$bookcopy_id," ",$issuedate);
+		my $issuedate = strftime "%F %X",  gmtime;
 	
 	my $data = $c->model('Library::Transaction')->search({"Id" => $req_id});
 	$data->update({"Status" => 'Issued',"IssuedBy" => 1,"IssuedDate" => $issuedate, });

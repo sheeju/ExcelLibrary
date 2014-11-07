@@ -85,17 +85,17 @@
 
 		$('.book_issue').click(function(){
 			req_id = $(this).attr('id');
+			alert(req_id);
 			$.ajax( 
 			{ 
 				url :'admindashboard/getbookcopies', 
 				contentType :'text/html', 
-				dataType :'html', 
+				dataType :'json', 
 				data :{req_id : req_id}
 			}).done(function(data) 
 			{
 				$('#cmb_booklist').empty();
-				var res = $.parseJSON(data);
-				$.each(res.books, function (index, value){
+				$.each(data.books, function (index, value){
 					$('#cmb_booklist').append('<option>' + value + '</option>'); 
 				});
 
@@ -121,7 +121,6 @@
 			{  
 				alert("error in getbook" + err);  
 			});
-
 
 		});
 
