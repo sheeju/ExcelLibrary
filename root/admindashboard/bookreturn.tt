@@ -1,0 +1,67 @@
+<br><br>
+<form name="bookreturn">
+<div class="row ">
+	<div class="col-lg-2 col-md-offset-4 ">
+		<label> Enter the BookCopyId</label>
+	</div>
+	<div class="col-lg-3">
+		<div class="input-group">
+			<input type="text" id="txt_copy_id" class="form-control">
+			<span class="input-group-btn">
+				<button id="check" class="btn btn-default" type="button">Check</button>
+			</span>
+		</div><!-- /input-group -->
+	</div><!-- /.col-lg-6 -->
+</div>
+<br>
+<br>
+<table id="detail" class="table table-bordered">
+	<tr class= "info">
+		<th>Employee Id</th>
+		<th>Employee Name</th>
+		<th>Book Name</th>
+		<th>Issue Date</th>
+		<th>Expected Return Date</th>
+	</tr>
+</table>
+</form>
+<script>
+	$(document).ready(function()
+	{
+		$('#detail').addClass("hidden");
+		$('#check').click(function()
+		{
+			$('#added').remove();
+			$('#detail').removeClass("hidden");
+			var copy_id = $('#txt_copy_id').val();
+			$.ajax( 
+			{ 
+				url : 'admindashboard/gettransactionbycopyid', 
+				contentType : 'text/html', 
+				dataType : 'json',
+				data : {copy_id : copy_id}
+			}).done(function(data)  
+			{
+				console.log(data);
+				if(data.flag)
+				{
+				$('#detail').append('<tr id="added"><td>' + data.id + '</td>'+
+										'<td>' + data.empname  + '</td>'+
+										'<td>' + data.bookname + '</td>'+
+										'<td>' + data.issuedate + '</td>'+
+										'<td>' + data.ereturndate + '</td>'+
+										'</tr>');
+				}
+				else
+				{
+					$('#detail').append('<tr> No book issued in this id </tr>');
+				}
+
+			}).fail(function(err)  
+			{  
+				alert("error" + err);  
+			});
+		});
+
+	});
+</script>

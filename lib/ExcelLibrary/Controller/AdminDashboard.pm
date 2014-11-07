@@ -3,6 +3,7 @@ use Moose;
 use namespace::autoclean;
 use Data::Dumper;
 use JSON;
+use DateTime;
 use POSIX qw(strftime);
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -122,17 +123,30 @@ sub issuebook : Local
 	my($self,$c) = @_;
 	my $req_id = $c->req->params->{req_id};
 	my $bookcopy_id = $c->req->params->{bc_id};
-	#Transaction
-		my $ExpectedReturnedDate = 3;
-		my $issueby = 1;
-		my $issuedate = strftime "%F %X",  gmtime;
-	
+	my $ExpectedReturnedDate = 3;
+	my $issueby = 1;
+	my $issuedate = strftime "%F %X",  gmtime;
+
+	my $maxallowday ;
+	my $config = $c->model('Library::Config')->search({});
+	$c->log-> info(Dumper $config);
+=pod
+	if(my $con = $config->next)
+	{
+		$c->log->info(Dumper $con);
+		#	my $maxallowday = $con->MaxAllowedDays;
+	}
+
+	my $cd = DateTime->new ($issuedate);
+	my $erd = $cd->add(days => $maxallowday);
+
+	#$c->log->info($cd." ".$erd);
+=cut
 	my $data = $c->model('Library::Transaction')->search({"Id" => $req_id});
-	$data->update({"Status" => 'Issued',"IssuedBy" => 1,"IssuedDate" => $issuedate, });
+	$data->update({"BookCopyId" => $bookcopy_id, "Status" => 'Issued', "IssuedBy" => 1, "IssuedDate" => $issuedate, });
 
-	 $data = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
+	$data = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
 	$data->update({"Status" => 'Reading' });
-
 	
 	$c->forward('request');
 	$c->stash->{template} = "admindashboard/request.tt";
@@ -159,6 +173,43 @@ sub book : Path('/book')
              Status => $_->get_column('Status'),
          }) foreach @array;
 }
+sub bookreturn : Path('/bookreturn')
+{
+    my ( $self, $c ) = @_;
+
+}
+sub gettransactionbycopyid : Local
+{
+	my ( $self, $c ) = @_;
+	my $copyid = $c->req->params->{copy_id};
+	$c->log->info($copyid);
+	my $trans = $c->model('Library::Transaction')->search({
+					"me.BookCopyId" => $copyid,
+					"me.Status" => 'Issued',
+					"me.ReturnedDate" => {'=', undef}
+				},	
+				{
+					join => ['employee','book'],
+					'+select' => ['employee.Name','book.Name'],
+					'+as' => ['Employee Name','Book Name']
+				});
+	$c->log->info(Dumper $trans);
+	if(my $t = $trans->next)
+	{
+		$c->stash->{flag} = 1;
+		$c->stash->{id} = $t->EmployeeId;
+		$c->stash->{empname} =  $t->get_column('Employee Name');
+		$c->stash->{bookname} = $t->get_column('Book Name');
+		$c->stash->{issuedate} = $t->IssuedDate;
+		$c->stash->{ereturndate} = '6/11/2014';
+	}
+	else
+	{
+		$c->stash->{flag} = 0;
+	}
+	$c->forward('View::JSON');
+}
+
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
     $c->response->body('Matched ExcelLibrary::Controller::AdminDashboard in AdminDashboard.');

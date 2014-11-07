@@ -85,7 +85,6 @@
 
 		$('.book_issue').click(function(){
 			req_id = $(this).attr('id');
-			alert(req_id);
 			$.ajax( 
 			{ 
 				url :'admindashboard/getbookcopies', 
@@ -106,7 +105,6 @@
 
 		});
 		$('#btn_issue').click(function(){
-			alert(req_id);
 			var bc_id = $('#cmb_booklist').val();
 			$.ajax( 
 			{ 
