@@ -13,11 +13,11 @@
 					<h3 class = "text-right">Welcome user</h3>
 				</div>
 				<div class="dropdown">
-					<span class="glyphicon glyphicon-cog pull-right btn btn-default dropdown-toggle"  id="dropdownMenu1" data-toggle="dropdown">Settings</span>
+					<span class="glyphicon glyphicon-cog pull-right btn btn-default dropdown-toggle"  id="dropdownMenu1" data-toggle="dropdown"> Options</span>
 					<ul class="dropdown-menu pull-right" role="menu" aria-labelledby="dropdownMenu1">
-						<li role="presentation"><a class="glyphicon glyphicon-wrench" role="menuitem" tabindex="-1" href="#">Configure</a></li>
-						<li role="presentation"><a class="glyphicon glyphicon-wrench" role="menuitem" tabindex="-1" href="#">ChangePassword</a></li>
-						<li role="presentation"><a class="glyphicon glyphicon-off" role="menuitem" tabindex="-1" href="#">LogOut</a></li>
+						<li role="presentation"><a class="glyphicon glyphicon-wrench" role="menuitem" tabindex="-1" href="#"> Configure</a></li>
+						<li role="presentation"><a class="glyphicon glyphicon-pencil" role="menuitem" tabindex="-1" href="#"> ChangePassword</a></li>
+						<li role="presentation"><a class="glyphicon glyphicon-off" role="menuitem" tabindex="-1" href="#"> LogOut</a></li>
 					</ul>
 				</div>
 			</div>

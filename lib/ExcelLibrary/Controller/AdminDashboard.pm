@@ -63,7 +63,8 @@ sub request : Path('/request')
 		}
 		else
 		{
-			$Button = '<input type="button" id ="'.$r->Id.'" name="btn_accept" value="Accept" class="btn btn-primary btn-xs req_allow"/> <input type="button" id ="'.$r->Id.'" name="btn_reject" value="Deny" class="btn btn-warning btn-xs req_deny"/>'
+			$Button = '<input type="button" id ="'.$r->Id.'" name="btn_accept" value="Accept" class="btn btn-primary btn-xs req_allow"/> '
+		   				+'<input type="button" id ="'.$r->Id.'" name="btn_reject" value="Deny" class="btn btn-warning btn-xs req_deny"/>'
 		}	
 
 		push(@{$c->stash->{messages}},{
@@ -88,7 +89,10 @@ sub managerequest : Local
 	}
 	else
 	{
-		$data->update({"Status" => 'Denied', "UpdatedBy" => '1'});
+		$data->update({
+						"Status" => 'Denied', 
+						"UpdatedBy" => '1'
+					});
 	}
 
 	$c->forward('request');
@@ -118,36 +122,42 @@ sub getbookcopies : Local
 
 	$c->forward('View::JSON');
 }
+
 sub issuebook : Local
 {
 	my($self,$c) = @_;
 	my $req_id = $c->req->params->{req_id};
 	my $bookcopy_id = $c->req->params->{bc_id};
-	my $ExpectedReturnedDate = 3;
-	my $issueby = 1;
-	my $issuedate = strftime "%F %X",  gmtime;
+	my $ExpectedReturnedDate;
 
+	#-------------------this should get from session------------------
+	my $issueby = 1;
+
+	my $current_date  = DateTime->now(time_zone => 'Asia/Kolkata');
+	my $issuedate = $current_date->ymd('-') . " " . $current_date->hms(':');
 	my $maxallowday ;
+
 	my $config = $c->model('Library::Config')->search({});
-	$c->log-> info(Dumper $config);
-=pod
 	if(my $con = $config->next)
 	{
-		$c->log->info(Dumper $con);
-		#	my $maxallowday = $con->MaxAllowedDays;
+		$maxallowday = $con->MaxAllowedDays;
+
 	}
+	my $expectedreturn_date = $current_date->add(days => $maxallowday);
+	$ExpectedReturnedDate = $expectedreturn_date->ymd('-') . " " . $expectedreturn_date->hms(':');
 
-	my $cd = DateTime->new ($issuedate);
-	my $erd = $cd->add(days => $maxallowday);
-
-	#$c->log->info($cd." ".$erd);
-=cut
 	my $data = $c->model('Library::Transaction')->search({"Id" => $req_id});
-	$data->update({"BookCopyId" => $bookcopy_id, "Status" => 'Issued', "IssuedBy" => 1, "IssuedDate" => $issuedate, });
+	$data->update({
+					"BookCopyId" => $bookcopy_id, 
+					"Status" => 'Issued', 
+					"IssuedBy" => 1, 
+					"IssuedDate" => $issuedate, 
+					"ExpectedReturnDate"=> $ExpectedReturnedDate 
+				});
 
 	$data = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
 	$data->update({"Status" => 'Reading' });
-	
+
 	$c->forward('request');
 	$c->stash->{template} = "admindashboard/request.tt";
 }
@@ -155,7 +165,7 @@ sub book : Path('/book')
 {
 	my($self,$c) = @_;
 	my $count=1;
-	     my @array = $c->model('Library::Book')->search({
+	  my @array = $c->model('Library::Book')->search({
 	             Status => 'Available',
 	         },
 	         { join => 'book_copies',
@@ -183,7 +193,8 @@ sub gettransactionbycopyid : Local
 	my ( $self, $c ) = @_;
 	my $copyid = $c->req->params->{copy_id};
 	$c->log->info($copyid);
-	my $trans = $c->model('Library::Transaction')->search({
+	my $trans = $c->model('Library::Transaction')->search(
+				{
 					"me.BookCopyId" => $copyid,
 					"me.Status" => 'Issued',
 					"me.ReturnedDate" => {'=', undef}
@@ -201,7 +212,7 @@ sub gettransactionbycopyid : Local
 		$c->stash->{empname} =  $t->get_column('Employee Name');
 		$c->stash->{bookname} = $t->get_column('Book Name');
 		$c->stash->{issuedate} = $t->IssuedDate;
-		$c->stash->{ereturndate} = '6/11/2014';
+		$c->stash->{ereturndate} = $t->ExpectedReturnDate;
 	}
 	else
 	{
@@ -209,13 +220,31 @@ sub gettransactionbycopyid : Local
 	}
 	$c->forward('View::JSON');
 }
-
+sub returnbook : Local
+{
+	my ( $self, $c ) = @_;
+	my $bookcopy_id = $c->req->params->{copy_id};
+	my $comment = $c->req->params->{comment};
+	my $current_date  = DateTime->now(time_zone => 'Asia/Kolkata');
+	my $ReturnedDate = $current_date->ymd('-') . " " . $current_date->hms(':');
+	$c->log->info($bookcopy_id);	
+	my $data = $c->model('Library::Transaction')->search({"BookCopyId" => $bookcopy_id});
+	$data->update({
+					"ReturnedDate" => $ReturnedDate,
+					"RecivedBy" => 1,
+					"Comment" => $comment
+				});
+	
+	$data = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
+	$data->update({"Status" => 'Available'});
+	
+	$c->stash->{result} = 1; 	
+	$c->forward('View::JSON');
+}
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
     $c->response->body('Matched ExcelLibrary::Controller::AdminDashboard in AdminDashboard.');
 }
-
-
 
 =encoding utf8
 
