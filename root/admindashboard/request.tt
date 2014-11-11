@@ -19,27 +19,48 @@
 				<td> [% m.BookId %]</td>
 				<td> [% m.BookName %]</td>
 				<td>
-					<input type="button" id ="[% m.reqid %]" name="btn_accept" value="Accept" class="btn btn-primary btn-xs req_allow"/>
-					<input type="button" id ="[% m.reqid %]" name="btn_reject" value="Deny" class="btn btn-warning btn-xs req_deny"/>
+					[% m.Button %]
+					<!--input type="button" id ="[% m.reqid %]" name="btn_accept" value="Accept" class="btn btn-primary btn-xs req_allow"/>
+					<input type="button" id ="[% m.reqid %]" name="btn_reject" value="Deny" class="btn btn-warning btn-xs req_deny"/-->
 				</td>
 			</tr>
 		[% END %]
 	</tbody>
 </table>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title" id="myModalLabel">Issue Book</h4>
+			</div>
+			<div class="modal-body">
+				<!--h4 class="modal-title" id="lbl_IssuedCopy"> Select Issued Copy</h4-->
+				Select Issued copy : <select id="cmb_booklist" class="btn btn-warnings dropdown-toggle"></select> 
+				
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+				<button type="button" id="btn_issue" class="btn btn-primary" data-dismiss="modal">Issue</button>
+			</div>
+		</div>
+	</div>
+</div>
 <link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
-<script type="text/javascript" src="jquery-1.11.1.js"></script>
-<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="../source/js/jquery.js"></script>
+<script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js"></script>
+
 <script>
 	$(document).ready(function ()
 	{
+		var req_id;
 		$('#request_tabel').DataTable({});
-		
+
 		$('.req_allow').click(function(){
+		
 			var id = $(this).attr('id');
-			alert(id);
 			addresponse(id,"Allow");
-			
+
 		});
 		$('.req_deny').click(function(){
 			var id = $(this).attr('id');
@@ -47,8 +68,7 @@
 		});
 		function addresponse(id,response)
 		{
-
-		$.ajax( 
+			$.ajax( 
 			{ 
 				url :'admindashboard/managerequest', 
 				contentType :'text/html', 
@@ -62,7 +82,47 @@
 				alert("error" + err);  
 			});
 		}
- 	});
+
+		$('.book_issue').click(function(){
+			req_id = $(this).attr('id');
+			$.ajax( 
+			{ 
+				url :'admindashboard/getbookcopies', 
+				contentType :'text/html', 
+				dataType :'json', 
+				data :{req_id : req_id}
+			}).done(function(data) 
+			{
+				$('#cmb_booklist').empty();
+				$.each(data.books, function (index, value){
+					$('#cmb_booklist').append('<option>' + value + '</option>'); 
+				});
+
+			}).fail(function(err)  
+			{  
+				alert("error in getbook" + err);  
+			});
+
+		});
+		$('#btn_issue').click(function(){
+			var bc_id = $('#cmb_booklist').val();
+			$.ajax( 
+			{ 
+				url :'admindashboard/issuebook', 
+				contentType :'text/html', 
+				dataType :'html', 
+				data :{req_id : req_id, bc_id : bc_id }
+			}).done(function(data) 
+			{
+				$("#content").html(data); 
+			}).fail(function(err)  
+			{  
+				alert("error in getbook" + err);  
+			});
+
+		});
+
+	});
 </script>
 
 
