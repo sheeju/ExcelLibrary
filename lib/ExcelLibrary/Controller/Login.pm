@@ -41,13 +41,15 @@ sub validate :Local {
 				"Email" => $c->request->params->{'email'}, 
 				"Password" => $c->request->params->{'password'} 
 			} ))
+	#	$c->session->{user} = $c->user;
+
 	{ 
 		if($c->user->Role eq 'Employee')
 		{
 			my $userId =$c->user->Id;
 			my $userName =$c->user->Name;
-
 			$c->stash->{head_bar} = $userName;
+			$c->res->redirect($c->uri_for_action('userdashboard/emp'));
 			$c->stash->{template} = "userdashboard/emp.tt";
 			$c->forward('View::TT');
 			$c->stash->{head_bar} = $userName;
