@@ -15,7 +15,7 @@
 	</div>
 	<br>
 	<br>
-	<div calss="row">
+	<div class="row">
 		<center>
 			<label id="msg" class ="label label-info"> </label>
 		</center>
