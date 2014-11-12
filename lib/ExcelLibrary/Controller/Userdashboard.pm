@@ -26,7 +26,7 @@ sub emp :Path :Args(0) {
 	my ( $self, $c ) = @_;
 	my $count=1;
 	my @array = $c->model('Library::Book')->search({
-			Status => 'Available',
+			Status => {'!=', 'Removed'},
 		},
 		{ join => 'book_copies',
 			'+select' => ['book_copies.Status'],
@@ -35,14 +35,26 @@ sub emp :Path :Args(0) {
 			order_by => [qw/me.Id/]
 		});
 	$c->stash->{user} = $c->user->Name;
-	push( @{$c->stash->{messages}},{
-			Count => $count++,
-			Id => $_->Id,
-			Name => $_->Name,
-			Type => $_->Type,
-			Author => $_->Author,
-			Status => $_->get_column('Status'),
-		}) foreach @array;
+	my %books;
+	foreach my $ar (@array)
+	{
+		if(! exists($books{$ar->Id}))
+		{	$books{$ar->Id} = {
+						Count => $count++,	
+						Id => $ar->Id,
+						Name => $ar->Name,
+						Type => $ar->Type,
+						Author => $ar->Author,
+						Status => $ar->get_column('Status')
+					}
+		}
+		elsif($books{$ar->Id}{Status} eq "Reading" and $ar->get_column('Status') eq "Available")
+		{
+			$books{$ar->Id}{Status} = "Available";
+		}
+
+	}
+	$c->stash->{messages} = \%books;
 }
 
 

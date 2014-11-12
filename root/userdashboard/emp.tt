@@ -80,6 +80,7 @@
 				<thead>
 					<tr>
 						<th>SI No</th>
+						<th>Book Id</th>
 						<th>Book Name</th>
 						<th>Book Type</th>
 						<th>Book Author</th>
@@ -88,15 +89,15 @@
 						<th>Comment</th>
 					</tr>
 				</thead>
-
 				<tbody>
-					[% FOREACH msg IN messages %]
+					[% FOREACH msg IN messages.keys %]
 					<tr>
-						<td>[% msg.Count %]</td>
-						<td>[% msg.Name %]</td>
-						<td>[% msg.Type %]</td>
-						<td>[% msg.Author %]</td>
-						<td>[% msg.Status %]</td>
+						<td>[% messages.$msg.Count %] </td>
+						<td>[% messages.$msg.Id %] </td>
+						<td>[% messages.$msg.Name %] </td>
+						<td>[% messages.$msg.Type %] </td>
+						<td>[% messages.$msg.Author %] </td>
+						<td>[% messages.$msg.Status %] </td>
 						<td>
 							<input type="button" value="Book Request" name='txt_request' id="[%msg.Id%]" class="form-control btn-primary a1"/>
 							<span id="lbl[%msg.Id%]"  class="label label-info displaymessage">Book Not Available For Issue</span>
