@@ -15,7 +15,6 @@
 		$('#addbook').click(function(){
 
 			var name = $('#bookName').val();
-
 			jQuery.validator.setDefaults({
 				debug: true,
 				success: "valid"
@@ -120,6 +119,54 @@
 	</div>
 </div>
 
+
+
+<div class="modal fade bs-example-modal-lg" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title" id="myModalLabel">Book Details</h4>
+			</div>
+			<div class="modal-body">
+				<br/>
+				<div class="form-group pull-right">
+					<label for="exampleInputPassword1">No Of Copies</label>
+					<input type="number" class="form-control" id="Count_id" placeholder="Count">
+
+				</div>
+				<table id="details_table" class="table table-hover table-bordered table-stripped table-condensed info table-responsive" cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th>SI No</th>
+							<th>Copy Id</th>
+							<th>Employee Name</th>
+							<th>Status</th>
+							<th>Issued Date</th>
+							<th>Return Date</th>
+							<th>Delete</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <table id="table" class="display" cellspacing="0" width="100%">
 	<thead>
 		<tr>
@@ -142,7 +189,7 @@
 			<td>[% msg.Type %]</td>
 			<td>[% msg.Status %]</td>
 			<td>
-				<input type="submit" id="[% msg.Id %]" name='txt_details' value="View Details" class="form-control btn-primary a1"/>
+				<input type="submit" id="[% msg.Id %]" name='txt_details' value="View Details"  data-toggle ="modal" data-target=".bs-example-modal-lg" class="form-control btn-primary a1"/>
 			</td>
 			<td>
 				<input type="button" name='txt_review' value="Review" class="form-control btn-primary"/>
@@ -155,9 +202,6 @@
 
 	$('.a1').click(function(){
 		var bookid=$(this).attr('id');
-		alert(bookid);
-
-
 	$.ajax( 
 	{ 
 		contentType:'text/html', 
@@ -171,3 +215,58 @@
 	});
 });
 </script>
+<script>
+
+	$(document).ready(function() {
+		$('.a1').click(function(){
+			var bookid=$(this).attr('id');
+			$.ajax( 
+			{
+				url:'admindashboard/copy_details',
+				contentType:'text/html', 
+				data:{
+					Id:bookid,
+				},
+			}).done(function(data)
+			{
+
+				console.log(data);
+				document.getElementById("Count_id").value=data.detail.length;
+				$('.a2').remove();
+				$.each(data.detail,function(index,value)
+				{
+					$('#details_table').append('<tr class="a2">'+
+						'<td>'+ value.Count+'</td>'+
+						'<td class="abc">'+ value.Id+'</td>'+
+						'<td>'+ value.EmpName+'</td>'+
+						'<td>'+ value.Status+'</td>'+
+						'<td>'+ value.IssuedDate+'</td>'+
+						'<td>'+ value.ReturnDate+'</td>'+
+						'<td>'+
+							'<button type="button" class="btn btn-primary btn-sm dlt">'+
+								'<span class="glyphicon glyphicon-trash"></span>'+
+								'</button>'+
+							'</td>'+
+						'</tr>');
+				});
+				$('.dlt').click(function()
+				{
+					var copyid = $(this).closest("tr").find('td.abc').text();
+					$.ajax( 
+					{
+						url:'admindashboard/delete_copy',
+						contentType:'text/html', 
+						data:{
+							CopyId:copyid,
+						},
+					});
+				});
+			}).fail(function(err) 
+			{ 
+				alert("error"+ err); 
+			});
+		});
+	});
+</script>
+
+

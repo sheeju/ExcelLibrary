@@ -4,8 +4,6 @@ use namespace::autoclean;
 use Data::Dumper;
 use JSON;
 use Digest::MD5 qw(md5_hex);
-
-
 BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
@@ -41,24 +39,26 @@ sub validate :Local {
 				"Email" => $c->request->params->{'email'}, 
 				"Password" => $c->request->params->{'password'} 
 			} ))
-	#	$c->session->{user} = $c->user;
 
 	{ 
 		if($c->user->Role eq 'Employee')
 		{
 			my $userId =$c->user->Id;
 			my $userName =$c->user->Name;
-			$c->stash->{head_bar} = $userName;
+			$c->log->info("$userName-------------------------------------------------");
+			$c->stash->{user} = $userName;
 			$c->res->redirect($c->uri_for_action('userdashboard/emp'));
 			$c->stash->{template} = "userdashboard/emp.tt";
 			$c->forward('View::TT');
-			$c->stash->{head_bar} = $userName;
 		}
 		else
 		{
 			my $adminName =$c->user->Name;
 			my $adminId =$c->user->Id;
 			print Dumper "Login into admin Dashboard-------------------------------- $adminId---------$adminName" ;
+			$c->res->redirect($c->uri_for_action('admindashboard/home'));
+			$c->stash->{template} = "admindashboard/home.tt";
+			$c->forward('View::TT');
 		}
 	} 
 	else {

@@ -1,5 +1,14 @@
+<script type="text/javascript" src="../source/js/jquery.js"></script>
+<script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
+<script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.min.js"></script>
+<link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
+<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
+<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
+<script type="text/javascript" src="source/bootstrap/dist/js/bootstrap.js"></script>
+
 <br><br>
-<form name="bookreturn">
+<form name="book_return">
 	<div class="row ">
 		<div class="col-lg-2 col-md-offset-4 ">
 			<label> Enter the BookCopyId</label>
@@ -15,7 +24,7 @@
 	</div>
 	<br>
 	<br>
-	<div calss="row">
+	<div class="row">
 		<center>
 			<label id="msg" class ="label label-info"> </label>
 		</center>
@@ -37,10 +46,10 @@
 			<button id="btn_return" class="btn btn-primary" type="button">Return</button>
 		</center>
 		<!--div class="col-md-2 col-md-offset-6">
-			<button id="check" class="btn btn-primary" type="button">Return</button>
+		<button id="check" class="btn btn-primary" type="button">Return</button>
 		</div-->
 	</div>
-	
+
 </form>
 <script>
 	$(document).ready(function()

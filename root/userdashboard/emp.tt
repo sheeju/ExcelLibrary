@@ -1,6 +1,8 @@
 <html>
 	<head>
 		<script type="text/javascript" src="../source/js/jquery.js"></script>
+		 <script type="text/javascript" src="source/bootstrap/dist/js/bootstrap.min.js"></script>
+		 <link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.min.css" />
 		<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
 		<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
 		<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
@@ -12,6 +14,7 @@
 				});
 				$('.displaymessage').hide();
 				} );	
+				$('.alert').hide();
 			</script>
 
 
@@ -27,7 +30,7 @@
 						success:function(data){
 							if(data.deniedRequest =="Each person Have maximum 2 Book Request")
 							{
-								alert("Each have maximum 2 book");
+								$(".alert").show();
 							}
 							else
 							{
@@ -43,14 +46,36 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1 class="pull-left glyphicons-halflings-regular" id ="head_bar" style="font-family:Cambria">Welcome to [% head_bar %]</h1>
-			<div class="dropdown">
-				<span class="glyphicon glyphicon-cog pull-right btn btn-default dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown"></span>
-				<ul class="dropdown-menu pull-right" role="menu" aria-labelledby="dropdownMenu1">
-					<li role="presentation"><a class="glyphicon glyphicon-wrench" role="menuitem" tabindex="-1" href="#">ChangePassword</a></li>
-					<li role="presentation"><a class="glyphicon glyphicon-off" role="menuitem" tabindex="-1" href="#">LogOut</a></li>
-				</ul>
+
+
+
+
+			<nav class="navbar navbar-inverse" role="navigation">
+			<div class="container-fluid">
+					 <a class="navbar-brand" href="#">Brand</a>
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav navbar-right">
+
+						<li  style="margin-top: 15px;">  <p style = "color:#FFF5EE">Welcome [% user  %] </p></li>
+						<li class="dropdown">
+						<a href="#" class="dropdown-toggle  glyphicon glyphicon-cog" data-toggle="dropdown"></a>
+						<ul class="dropdown-menu" role="menu">
+							<li><a class = " glyphicon glyphicon-wrench" href="#">ChangePassword</a></li>
+							<li class="divider"></li>
+							<li><a class="glyphicon glyphicon-off" href="#">Logout</a></li>
+						</ul>
+						</li>
+					</ul>
+				</div><!-- /.navbar-collapse -->
+			</div><!-- /.container-fluid -->
+			</nav>
+
+			<div class="alert alert-danger">
+				<a href="#" class="close" data-dismiss="alert">&times;</a>
+				<strong>Warning!</strong> Each have maximum 2 books Requested.
 			</div>
+
+
 			<table id="table" class="display" cellspacing="0" width="100%">
 				<thead>
 					<tr>
@@ -74,7 +99,7 @@
 						<td>[% msg.Status %]</td>
 						<td>
 							<input type="button" value="Book Request" name='txt_request' id="[%msg.Id%]" class="form-control btn-primary a1"/>
-							<label id="lbl[%msg.Id%]" class="displaymessage">Requested</label>
+							<span id="lbl[%msg.Id%]"  class="label label-info displaymessage">Book Not Available For Issue</span>
 						</td>
 						<td>
 							<input type="button" name='txt_review' value="Review" class="form-control btn-primary"/>

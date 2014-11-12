@@ -34,7 +34,7 @@ sub emp :Path :Args(0) {
 			group_by => [qw/me.Id book_copies.Status/],
 			order_by => [qw/me.Id/]
 		});
-	print Dumper \@array;
+	$c->stash->{user} = $c->user->Name;
 	push( @{$c->stash->{messages}},{
 			Count => $count++,
 			Id => $_->Id,

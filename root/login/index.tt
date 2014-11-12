@@ -43,7 +43,6 @@
 								password :password
 							},
 							success : function ( data ) {
-							console.log(data);
 								if(data.failmsg =="does not match user name and password")
 								{
 									$('#resdata').html(data.failmsg);
@@ -77,14 +76,14 @@
 							<h3 class="panel-title">Login via Email</h3>
 						</div>
 						<div class="panel-body">
-						<form accept-charset="UTF-8" role="form" id ="loginform"  method ="POST" >
+							<form accept-charset="UTF-8" role="form" id ="loginform"  method ="POST" >
 								<fieldset>
 									<div class="form-group">
 										<input class="form-control" placeholder="yourmail@example.com" id ="user_email" name="email" type="text">
 									</div>
-								<div class="form-group">
-								<input class="form-control" placeholder="Password" name="password"  id ="user_password" type="password" value="">
-								</div>
+									<div class="form-group">
+										<input class="form-control" placeholder="Password" name="password"  id ="user_password" type="password" value="">
+									</div>
 									<hr/>
 									<div class="checkbox">
 										<label>
@@ -95,7 +94,7 @@
 								</fieldset>
 							</form>
 							<hr/>
-								<label  style="color:red" id ="resdata"></label>
+							<label  style="color:red" id ="resdata"></label>
 						</div>
 					</div>
 				</div>
