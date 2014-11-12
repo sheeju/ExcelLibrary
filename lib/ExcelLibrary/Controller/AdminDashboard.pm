@@ -133,9 +133,6 @@ sub issuebook : Local
 	my $bookcopy_id = $c->req->params->{bc_id};
 	my $ExpectedReturnedDate;
 
-	#-------------------this should get from session------------------
-	my $issueby = 1;
-
 	my $loginId = $c->user->Id;
 	my $current_date  = DateTime->now(time_zone => 'Asia/Kolkata');
 	my $issuedate = $current_date->ymd('-') . " " . $current_date->hms(':');
@@ -159,33 +156,48 @@ sub issuebook : Local
 					"ExpectedReturnDate"=> $ExpectedReturnedDate 
 				});
 
-	$data = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
-	$data->update({"Status" => 'Reading' });
+			$data = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
+			$data->update({"Status" => 'Reading' });
 
-	$c->forward('request');
-	$c->stash->{template} = "admindashboard/request.tt";
-}
-sub book : Path('/book')
-{
-	my($self,$c) = @_;
-	my $count=1;
+			$c->forward('request');
+			$c->stash->{template} = "admindashboard/request.tt";
+		}
+		sub book : Path('/book')
+		{
+			my($self,$c) = @_;
+			my $count=1;
 
-	my @array = $c->model('Library::Book')->search({
-			Status => {'!=','Removed'},
-		},
-		{ join => 'book_copies',
-			'+select' => ['book_copies.Status'],
-			'+as' => ['Status'],
-			order_by => [qw/me.Id/],
-		});
+			my @array = $c->model('Library::Book')->search({
+					Status => {'!=','Removed'},
+				},
+				{ join => 'book_copies',
+					'+select' => ['book_copies.Status'],
+					'+as' => ['Status'],
+					order_by => [qw/me.Id/],
+				});
 
-	push( @{$c->stash->{messages}},{
-			Count => $count++,
-			Id => $_->Id,
-			Name => $_->Name,
-			Type => $_->Type,
-			Status => $_->get_column('Status'),
-		}) foreach @array;
+			$c->stash->{user} = $c->user->Name;
+			my %books;
+			foreach my $ar (@array)
+			{   
+				if(! exists($books{$ar->Id}))
+				{   $books{$ar->Id} = { 
+						Count => $count++,  
+						Id => $ar->Id,
+						Name => $ar->Name,
+						Type => $ar->Type,
+						Author => $ar->Author,
+						Status => $ar->get_column('Status')
+					}   
+				}   
+				elsif($books{$ar->Id}{Status} eq "Reading" and $ar->get_column('Status') eq "Available")
+				{   
+					$books{$ar->Id}{Status} = "Available";
+				}
+
+			}
+			$c->stash->{messages} = \%books;
+
 }
 
 
@@ -201,13 +213,12 @@ sub copy_details :Local
 	my $count=1;
 	my @array = $c->model('Library::Transaction')->search({
 			'me.BookId' => $bookid,
+			'book_copy.Status'=> {'!=', 'Removed'}
 		},
 		{
 			join => ['employee','book_copy'],
 			'+select' => ['employee.Name','book_copy.Status','book_copy.Id'],
 			'+as' => ['EmpName','Status','Id'],
-			columns => [qw/book_copy.Id book_copy.Status IssuedDate/],
-#			distinct => 1
 		});
 	print Dumper \@array;
 push( @{$c->stash->{detail}},{
@@ -286,14 +297,14 @@ sub Book_request : Local
 	my $numberOfRequest = $validateBook->count;
 
 
-
+	$c->log->info($bookId);	
 	if($maxbookFromConfig > $numberOfRequest)
 	{
 		my @reqbook = $c->model('Library::Transaction')->create({
-				BookId =>$bookId,
-				EmployeeId =>$loginId,
-				Status => 'Requested',
-				RequestDate =>$requestdate,
+				"BookId" =>$bookId,
+				"EmployeeId" =>$loginId,
+				"Status" => 'Requested',
+				"RequestDate" =>$requestdate,
 			});
 		$c->forward('View::JSON');
 	}
