@@ -1,4 +1,8 @@
-<script type="text/javascript" src="jquery-1.11.1.js"></script>
+
+<script type="text/javascript" src="../source/js/jquery.js"></script>
+<script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
+<script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.min.js"></script>
+<link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
 <script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
 <link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
@@ -6,11 +10,71 @@
 <script>
 	$(document).ready(function() {
 		$('#table').DataTable({});
+	});	
 
-	} );   
+		$('#addbook').click(function(){
 
+			var name = $('#bookName').val();
+
+			jQuery.validator.setDefaults({
+				debug: true,
+				success: "valid"
+			});
+
+
+			$("#book_insertion").validate({
+				rules: {
+					bookName: {
+						required:true
+					},
+					bookType: {
+						required :true
+					},
+					Author: {
+						required :true
+					},
+
+					noOfCopies : {
+						number :true
+					}
+
+							
+				},
+					
+
+				submitHandler : function(form){
+					var url = "/admindashboard/addBook";
+					var name = $('#bookName').val();
+					var author = $('#Author').val();
+					var type = $('#bookType').val();
+					var noOfCopies = $('#noOfCopies').val();
+					$.ajax({
+						type :"POST",
+						url :url,
+						data :{
+							name:name,
+							author:author,
+							type:type,
+							count:noOfCopies,
+
+						},
+						success : function ( data ) {
+
+						 $('#sucess_message').html(data.message);
+						 $('#bookName').val("");
+						 $('#Author').val("");
+						 $('#bookType').val("");
+						 $('#noOfCopies').val("");
+
+						}
+					});
+				}
+			});
+
+
+});
 </script>
-
+</head>
 <button type="button" style="margin:5px 5px" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
 	Add New Book
 </button>
@@ -24,33 +88,37 @@
 				<h4 class="modal-title" id="myModalLabel">Add Book</h4>
 			</div>
 			<div class="modal-body">
-				<form role="form">
+				<form role="form" id ="book_insertion" method ="POST">
 					<div class="form-group">
 						<label for="exampleInputEmail1">Book Name</label>
-						<input type="Name" class="form-control" id="bookName" placeholder="Name">
+						<input type="Name" class="form-control" id="bookName" name ="bookName" placeholder="Name" >
 					</div>
+					<br/>
 					<div class="form-group">
 						<label for="exampleInputEmail1">Book Type</label>
-						<input type="text" class="form-control" id="bookType" placeholder="Type">
+						<input type="text" class="form-control" id="bookType" name ="bookType" placeholder="Type" >
 					</div>
+					<br/>
 					<div class="form-group">
 						<label for="exampleInputEmail1">Author</label>
-						<input type="text" class="form-control" id="Author" placeholder="Author">
+						<input type="text" class="form-control" id="Author" name ="Author" placeholder="Author" >
 					</div>
+					<br/>
 					<div class="form-group">
 						<label for="exampleInputPassword1">No Of Copies</label>
-						<input type="number" class="form-control" id="Count" placeholder="Count">
+						<input type="number" class="form-control" id="noOfCopies" name ="noOfCopies" placeholder="Count" min =1 value=1>
 					</div>
+
+					<label id= "sucess_message" ></label>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-primary">ADD</button>
-						<button type="reset" class="btn btn-default">RESET</button>
+						<button type="submit" class="btn btn-primary" id ="addbook">ADD</button>
+						<button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
 					</div>
 				</form>
 			</div>
 		</div>
 	</div>
 </div>
-
 
 <table id="table" class="display" cellspacing="0" width="100%">
 	<thead>

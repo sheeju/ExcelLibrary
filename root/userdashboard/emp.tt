@@ -10,7 +10,35 @@
 			$(document).ready(function() {
 				$('#table').DataTable({
 				});
+				$('.displaymessage').hide();
 				} );	
+			</script>
+
+
+			<script>
+
+				$('.a1').click(function(){
+					var bookid=$(this).attr('id');
+					$.ajax({    
+						url:"/admindashboard/Book_request",
+						data :{
+							bookId :bookid,
+						},
+						success:function(data){
+							if(data.deniedRequest =="Each person Have maximum 2 Book Request")
+							{
+								alert("Each have maximum 2 book");
+							}
+							else
+							{
+								id = '#'+bookid;
+								var msg = '#lbl'+ bookid;
+								$(id).addClass('hidden');
+								$(msg).show();
+							}	
+						}
+					});
+				});
 			</script>
 	</head>
 	<body>
@@ -46,7 +74,8 @@
 						<td>[% messages.$msg.Author %] </td>
 						<td>[% messages.$msg.Status %] </td>
 						<td>
-							<input type="button" name='txt_request' value="Make Request" class="form-control btn-primary"/>
+							<input type="button" value="Book Request" name='txt_request' id="[%msg.Id%]" class="form-control btn-primary a1"/>
+							<label id="lbl[%msg.Id%]" class="displaymessage">Requested</label>
 						</td>
 						<td>
 							<input type="button" name='txt_review' value="Review" class="form-control btn-primary"/>

@@ -30,7 +30,7 @@
 							required :true,
 						}
 					},
-					submitHandler : function(form){
+					submitHandler :function(form){
 
 						var email = $('#user_email').val();
 						var password = $('#user_password').val();
@@ -43,7 +43,7 @@
 								password :password
 							},
 							success : function ( data ) {
-					
+							console.log(data);
 								if(data.failmsg =="does not match user name and password")
 								{
 									$('#resdata').html(data.failmsg);
