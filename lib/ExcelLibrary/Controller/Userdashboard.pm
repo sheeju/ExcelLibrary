@@ -31,7 +31,6 @@ sub emp :Path :Args(0) {
 		{ join => 'book_copies',
 			'+select' => ['book_copies.Status'],
 			'+as' => ['Status'],
-			group_by => [qw/me.Id book_copies.Status/],
 			order_by => [qw/me.Id/]
 		});
 	$c->stash->{user} = $c->user->Name;
@@ -55,6 +54,7 @@ sub emp :Path :Args(0) {
 
 	}
 	$c->stash->{messages} = \%books;
+	$c->log->info($c->stash->{messages});
 }
 
 
