@@ -9,7 +9,9 @@
 <script type="text/javascript" src="source/bootstrap/dist/js/bootstrap.js"></script>
 <script>
 	$(document).ready(function() {
-		$('#table').DataTable({});
+		$('#table').DataTable({
+			"columnDefs": [ { "targets": [5,6], "orderable": false } ]	
+		});
 	});	
 
 		$('#addbook').click(function(){
