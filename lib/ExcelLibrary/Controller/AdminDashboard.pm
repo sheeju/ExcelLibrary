@@ -26,23 +26,25 @@ Catalyst Controller.
 =cut
 sub home : Path('/home'){
 	my ($self,$c) = @_;
+	$c->stash->{username} = $c->user->Name;
 }
+
+
 sub request : Path('/request')
 {
 	my($self,$c) = @_;
 	my ($r,$count);
 	$count = 1;
 	my @request = $c->model('Library::Transaction')->search(
-			{
-		
-				"me.Status" => 'Requested',
-			},
-			{
-				join => ['employee','book'],
-					'+select' => ['employee.Name','book.Name'],
-					'+as' => ['Employee Name','Book Name']
-			});
-		#$c->log->info(Dumper \@request);	
+		{
+
+			"me.Status" => 'Requested',
+		},
+		{
+			join => ['employee','book'],
+			'+select' => ['employee.Name','book.Name'],
+			'+as' => ['Employee Name','Book Name']
+		});
 	my $bookcopy_resulset = $c->model('Library::BookCopy')->search({});
 	foreach $r (@request)
 	{
@@ -52,7 +54,7 @@ sub request : Path('/request')
 		{
 			my $bookcopy = $bookcopy_resulset->search({"BookId" => $r->BookId,"Status" => "Available" });
 			my $book;
-		    				
+
 			if ($bookcopy->next)
 			{
 				$Button = '<input type="button" id="'.$r->Id.'" name="btn_issue" value="Issue" class="btn btn-primary btn-xs book_issue"data-toggle="modal" data-target="#myModal"/>'
@@ -68,13 +70,13 @@ sub request : Path('/request')
 		}	
 
 		push(@{$c->stash->{messages}},{
-			No => $count++,
-			RequestedDate =>$r->RequestDate,
-			EmployeeName => $r->get_column('Employee Name'),
-			BookId => $r->BookId,
-			BookName => $r->get_column('Book Name'),
-			Button => $Button
-		});
+				No => $count++,
+				RequestedDate =>$r->RequestDate,
+				EmployeeName => $r->get_column('Employee Name'),
+				BookId => $r->BookId,
+				BookName => $r->get_column('Book Name'),
+				Button => $Button
+			});
 	}
 }
 sub managerequest : Local
@@ -82,16 +84,17 @@ sub managerequest : Local
 	my($self,$c) = @_;
 	my $req_id = $c->req->params->{id};
 	my $response = $c->req->params->{response};
+	my $loginId = $c->user->Id;
 	my $data = $c->model('Library::Transaction')->search({"Id" => $req_id});
 	if($response eq 'Allow')
 	{
-		$data->update({"UpdatedBy" => '1' });
+		$data->update({"UpdatedBy" => $loginId });
 	}
 	else
 	{
 		$data->update({
 						"Status" => 'Denied', 
-						"UpdatedBy" => '1'
+						"UpdatedBy" => $loginId
 					});
 	}
 
@@ -133,6 +136,7 @@ sub issuebook : Local
 	#-------------------this should get from session------------------
 	my $issueby = 1;
 
+	my $loginId = $c->user->Id;
 	my $current_date  = DateTime->now(time_zone => 'Asia/Kolkata');
 	my $issuedate = $current_date->ymd('-') . " " . $current_date->hms(':');
 	my $maxallowday ;
@@ -150,7 +154,7 @@ sub issuebook : Local
 	$data->update({
 					"BookCopyId" => $bookcopy_id, 
 					"Status" => 'Issued', 
-					"IssuedBy" => 1, 
+					"IssuedBy" => $loginId, 
 					"IssuedDate" => $issuedate, 
 					"ExpectedReturnDate"=> $ExpectedReturnedDate 
 				});
@@ -186,6 +190,48 @@ sub book : Path('/book')
 
 
 
+
+
+
+sub copy_details :Local
+{
+
+	my ($self,$c)=@_;
+	my $bookid=$c->req->params->{Id};
+	my $count=1;
+	my @array = $c->model('Library::Transaction')->search({
+			'me.BookId' => $bookid,
+		},
+		{
+			join => ['employee','book_copy'],
+			'+select' => ['employee.Name','book_copy.Status','book_copy.Id'],
+			'+as' => ['EmpName','Status','Id'],
+			columns => [qw/book_copy.Id book_copy.Status IssuedDate/],
+#			distinct => 1
+		});
+	print Dumper \@array;
+push( @{$c->stash->{detail}},{
+		Count => $count++,
+		Id => $_->get_column('Id'),
+		EmpName => $_->get_column('EmpName'),
+		Status => $_->get_column('Status'),
+		IssuedDate => $_->IssuedDate,
+		ReturnDate => $_->ExpectedReturnDate,
+	}) foreach @array;
+$c->forward('View::JSON');
+
+}
+
+ sub delete_copy :Local
+ {
+my  ($self,$c)=@_;
+  my $copyid = $c->req->params->{CopyId};
+  my $del_copy =$c->model('Library::BookCopy')->find({ Id => $copyid });
+  $del_copy->Status('Removed');
+	 $del_copy->update;
+  $c->forward('copy_details');
+  }
+
 sub addBook :Local
 {
 	my ($self, $c) =@_;
@@ -194,7 +240,7 @@ sub addBook :Local
 	my $author = $c->request->params->{'author'};
 	my $type = $c->request->params->{'type'};
 	my $noOfCopies = $c->request->params->{'count'};
-
+	my $loginId = $c->user->Id;
 	my $datestring =strftime " %F %X", gmtime;
 	my $adminId = $c->user->Id;
 	my @respdata = $c->model('Library::Book')->create({
@@ -204,7 +250,7 @@ sub addBook :Local
 			Author =>$author,
 			NoOfCopies =>$noOfCopies,
 			AddedOn =>$datestring,
-			#	addedBy =>$adminId, 	
+			AddedBy =>$adminId, 	
 
 		});
 	$c->stash->{message} ="Book added sucessfully";
@@ -217,32 +263,35 @@ sub Book_request : Local
 	my ($self ,$c) = @_;
 	my $maxbookFromConfig =0;
 	my $bookId = $c->request->params->{'bookId'};
-	my $userId =$c->user->Id;
+	my $loginId =$c->user->Id;
 	my $current_date = DateTime->now(time_zone => 'Asia/Kolkata');
 	my $requestdate = $current_date->ymd('-') . " " . $current_date->hms(':');
-#	 $c->forward('View::JSON');
 
 
 	my @maxAllowbookQuery = $c->model('Library::Config')->search(undef,{
 			select =>'MaxAllowedBooks',
 		});       
 
+
 	foreach my $MaxBook (@maxAllowbookQuery) 
 	{
 		$maxbookFromConfig = $MaxBook->MaxAllowedBooks;
 	}
 
+
 	my $validateBook = $c->model('Library::Transaction')->search({
 			"Status"=>'Requested',
-			"EmployeeId" => $userId,
+			"EmployeeId" => $loginId,
 		}); 
 	my $numberOfRequest = $validateBook->count;
+
+
 
 	if($maxbookFromConfig > $numberOfRequest)
 	{
 		my @reqbook = $c->model('Library::Transaction')->create({
 				BookId =>$bookId,
-				EmployeeId =>9,
+				EmployeeId =>$loginId,
 				Status => 'Requested',
 				RequestDate =>$requestdate,
 			});
@@ -262,11 +311,13 @@ sub bookreturn : Path('/bookreturn')
     my ( $self, $c ) = @_;
 
 }
+
+
+
 sub gettransactionbycopyid : Local
 {
 	my ( $self, $c ) = @_;
 	my $copyid = $c->req->params->{copy_id};
-	$c->log->info($copyid);
 	my $trans = $c->model('Library::Transaction')->search(
 				{
 					"me.BookCopyId" => $copyid,
@@ -278,7 +329,6 @@ sub gettransactionbycopyid : Local
 					'+select' => ['employee.Name','book.Name'],
 					'+as' => ['Employee Name','Book Name']
 				});
-	$c->log->info(Dumper $trans);
 	if(my $t = $trans->next)
 	{
 		$c->stash->{flag} = 1;
@@ -294,9 +344,14 @@ sub gettransactionbycopyid : Local
 	}
 	$c->forward('View::JSON');
 }
+
+
+
 sub returnbook : Local
 {
 	my ( $self, $c ) = @_;
+
+	my $loginId =$c->user->Id;
 	my $bookcopy_id = $c->req->params->{copy_id};
 	my $comment = $c->req->params->{comment};
 	my $current_date  = DateTime->now(time_zone => 'Asia/Kolkata');
@@ -305,16 +360,17 @@ sub returnbook : Local
 	my $data = $c->model('Library::Transaction')->search({"BookCopyId" => $bookcopy_id});
 	$data->update({
 					"ReturnedDate" => $ReturnedDate,
-					"RecivedBy" => 1,
+					"RecivedBy" =>$loginId ,
 					"Comment" => $comment
+					
 				});
-	
 	$data = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
 	$data->update({"Status" => 'Available'});
-	
 	$c->stash->{result} = 1; 	
 	$c->forward('View::JSON');
 }
+
+
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
     $c->response->body('Matched ExcelLibrary::Controller::AdminDashboard in AdminDashboard.');

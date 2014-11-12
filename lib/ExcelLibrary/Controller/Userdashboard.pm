@@ -34,6 +34,7 @@ sub emp :Path :Args(0) {
 			group_by => [qw/me.Id book_copies.Status/],
 			order_by => [qw/me.Id/]
 		});
+	$c->stash->{user} = $c->user->Name;
 	my %books;
 	foreach my $ar (@array)
 	{
