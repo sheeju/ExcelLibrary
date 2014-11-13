@@ -45,7 +45,6 @@ sub validate :Local {
 		{
 			my $userId =$c->user->Id;
 			my $userName =$c->user->Name;
-			$c->log->info("$userName-------------------------------------------------");
 			$c->stash->{user} = $userName;
 			$c->res->redirect($c->uri_for_action('userdashboard/emp'));
 			$c->stash->{template} = "userdashboard/emp.tt";
@@ -55,7 +54,6 @@ sub validate :Local {
 		{
 			my $adminName =$c->user->Name;
 			my $adminId =$c->user->Id;
-			print Dumper "Login into admin Dashboard-------------------------------- $adminId---------$adminName" ;
 			$c->res->redirect($c->uri_for_action('admindashboard/home'));
 			$c->stash->{template} = "admindashboard/home.tt";
 			$c->forward('View::TT');
@@ -64,7 +62,6 @@ sub validate :Local {
 	else {
 
 		$c->stash->{failmsg}  = "does not match user name and password";
-		print "Inside Else-------------------------------------------\n";
 		$c->forward('View::JSON');
 	}
 

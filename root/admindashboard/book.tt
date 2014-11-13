@@ -1,3 +1,4 @@
+<br>
 <div class="alert alert-danger">
 	<a href="#" class="close" data-dismiss="alert">&times;</a>
 	<strong>Warning!</strong> Maximum 2 books Requested.
@@ -86,7 +87,7 @@
 			<th>Book Author</th>
 			<th>Book Status</th>
 			<th>Book Request</th>
-			<th>Book Info</th>
+			<th>View Details</th>
 			<th>Comment</th>
 		</tr>
 	</thead>
@@ -101,15 +102,15 @@
 			<td>[% messages.$msg.Author %]</td>
 			<td>[% messages.$msg.Status %]</td>
 			<td>
-				<input type="button" id= "[% messages.$msg.Id %]" name='book_request' value="Book Request" class="form-control btn-primary book_req"/>
+			<input type="button" id= "[% messages.$msg.Id %]" name='book_request' value="Book Request" class="form-control btn-primary book_req"/>
 			  <span id="lbl[%messages.$msg.Id%]"  class="label label-info displaymessage">Book Requested</span>
 			</td>
 
 			<td>
-				<input type="submit" id="[% messages.$msg.Id %]" name='txt_details' value="View Details"  data-toggle ="modal" data-target=".bs-example-modal-lg" class="form-control btn-primary a1"/>
+				<button type="submit" id="[% messages.$msg.Id %]" name='txt_details' data-toggle ="modal" data-target=".bs-example-modal-lg" class="btn btn-primary btn-sm a1"><span class="glyphicon glyphicon-eye-open"></button>
 			</td>
 			<td>
-				<input type="button" name='txt_review' value="Review" class="form-control btn-primary"/>
+				<button type="button" name='txt_review' value="Review" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-comment"></button>
 			</td>
 		</tr>
 		[% END %]
@@ -131,6 +132,7 @@
 		});
 		$('.displaymessage').hide();
 	}); 
+
 	$('.alert').hide();
 	$('#addbook').click(function(){
 
@@ -245,6 +247,7 @@
 
 <script>
 	$('.book_req').click(function(){
+
 		var bookid=$(this).attr('id');
 		$.ajax({    
 			url:"/admindashboard/Book_request",
