@@ -1,3 +1,4 @@
+<br>
 <div class="alert alert-danger">
 	<a href="#" class="close" data-dismiss="alert">&times;</a>
 	<strong>Warning!</strong> Maximum 2 books Requested.
@@ -101,7 +102,7 @@
 			<td>[% messages.$msg.Author %]</td>
 			<td>[% messages.$msg.Status %]</td>
 			<td>
-				<input type="button" id= "[% messages.$msg.Id %]" name='book_request' value="Book Request" class="form-control btn-primary book_req"/>
+			<input type="button" id= "[% messages.$msg.Id %]" name='book_request' value="Book Request" class="form-control btn-primary book_req"/>
 			  <span id="lbl[%messages.$msg.Id%]"  class="label label-info displaymessage">Book Requested</span>
 			</td>
 
@@ -131,6 +132,7 @@
 		});
 		$('.displaymessage').hide();
 	}); 
+
 	$('.alert').hide();
 	$('#addbook').click(function(){
 
@@ -259,6 +261,7 @@
 
 <script>
 	$('.book_req').click(function(){
+
 		var bookid=$(this).attr('id');
 		$.ajax({    
 			url:"/admindashboard/Book_request",
