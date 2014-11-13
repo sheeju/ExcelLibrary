@@ -10,11 +10,9 @@
 <br><br>
 <form name="book_return">
 	<div class="row ">
-		<div class="col-lg-2 col-md-offset-4 ">
-			<label> Enter the BookCopyId</label>
-		</div>
-		<div class="col-lg-3">
+		<div class="col-lg-4 col-lg-offset-4">
 			<div class="input-group">
+				 <span class="input-group-addon">Book Copy ID</span>
 				<input type="text" id="txt_copy_id" class="form-control">
 				<span class="input-group-btn">
 					<button id="btn_check" class="btn btn-default" type="button">Check</button>
@@ -25,9 +23,9 @@
 	<br>
 	<br>
 	<div class="row">
-		<center>
-			<label id="msg" class ="label label-info"> </label>
-		</center>
+		<div class="col-lg-4 col-lg-offset-4">
+			<span id="msg"	class ="label label-info"> </span>
+		</div>
 	</div>
 	<br>
 	<br>
@@ -71,7 +69,6 @@
 					data : {copy_id : copy_id}
 				}).done(function(data)  
 				{
-					console.log(data);
 					if(data.flag)
 					{
 						$('#added').remove();
@@ -88,7 +85,7 @@
 					{
 						$('#detail_div').addClass("hidden");
 						$('#msg').removeClass("hidden");
-						$('#msg').text('No Book Issued In This Id');
+						$('#msg').text('No Book Issued For This ID');
 
 					}
 
@@ -127,9 +124,6 @@
 			{  
 				alert("error" + err);  
 			});
-
-
 		});
-
 	});
 </script>
