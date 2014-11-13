@@ -57,7 +57,7 @@ sub request : Path('/request')
 
 			if ($bookcopy->next)
 			{
-				$Button = '<input type="button" id="'.$r->Id.'" name="btn_issue" value="Issue" class="btn btn-primary btn-xs book_issue"data-toggle="modal" data-target="#myModal"/>'
+				$Button = '<input type="button" id="'.$r->Id.'" name="btn_issue" value="Issue" class="btn btn-primary book_issue"data-toggle="modal" data-target="#myModal"/>'
 			}
 			else
 			{
@@ -66,7 +66,11 @@ sub request : Path('/request')
 		}
 		else
 		{
-			$Button = '<input type="button" id ="'.$r->Id.'" name="btn_accept" value="Accept" class="btn btn-primary btn-xs req_allow"/> <input type="button" id ="'.$r->Id.'" name="btn_reject" value="Deny" class="btn btn-warning btn-xs req_deny"/>'
+
+				 $Button	='<button type="button" id ="'.$r->Id.'" name="btn_accept" class="btn btn-primary btn-sm req_allow">
+				 <span class="glyphicon	glyphicon-ok" aria-hidden="true"></span></button> 
+				 <button type="button" id ="'.$r->Id.'" name="btn_reject" class="btn btn-danger btn-sm req_deny">
+				 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>'
 		}	
 
 		push(@{$c->stash->{messages}},{
@@ -132,7 +136,6 @@ sub issuebook : Local
 	my $req_id = $c->req->params->{req_id};
 	my $bookcopy_id = $c->req->params->{bc_id};
 	my $ExpectedReturnedDate;
-
 	my $loginId = $c->user->Id;
 	my $current_date  = DateTime->now(time_zone => 'Asia/Kolkata');
 	my $issuedate = $current_date->ymd('-') . " " . $current_date->hms(':');
@@ -199,12 +202,6 @@ sub issuebook : Local
 			$c->stash->{messages} = \%books;
 
 }
-
-
-
-
-
-
 sub copy_details :Local
 {
 
@@ -220,8 +217,7 @@ sub copy_details :Local
 			'+select' => ['employee.Name','book_copy.Status','book_copy.Id'],
 			'+as' => ['EmpName','Status','Id'],
 		});
-	print Dumper \@array;
-push( @{$c->stash->{detail}},{
+		push( @{$c->stash->{detail}},{
 		Count => $count++,
 		Id => $_->get_column('Id'),
 		EmpName => $_->get_column('EmpName'),
@@ -229,13 +225,13 @@ push( @{$c->stash->{detail}},{
 		IssuedDate => $_->IssuedDate,
 		ReturnDate => $_->ExpectedReturnDate,
 	}) foreach @array;
-$c->forward('View::JSON');
+	$c->forward('View::JSON');
 
 }
 
  sub delete_copy :Local
  {
-my  ($self,$c)=@_;
+  my ($self,$c)=@_;
   my $copyid = $c->req->params->{CopyId};
   my $del_copy =$c->model('Library::BookCopy')->find({ Id => $copyid });
   $del_copy->Status('Removed');
@@ -246,7 +242,6 @@ my  ($self,$c)=@_;
 sub addBook :Local
 {
 	my ($self, $c) =@_;
-
 	my $name = $c->request->params->{'name'};
 	my $author = $c->request->params->{'author'};
 	my $type = $c->request->params->{'type'};
@@ -277,27 +272,20 @@ sub Book_request : Local
 	my $loginId =$c->user->Id;
 	my $current_date = DateTime->now(time_zone => 'Asia/Kolkata');
 	my $requestdate = $current_date->ymd('-') . " " . $current_date->hms(':');
-
-
 	my @maxAllowbookQuery = $c->model('Library::Config')->search(undef,{
 			select =>'MaxAllowedBooks',
 		});       
-
 
 	foreach my $MaxBook (@maxAllowbookQuery) 
 	{
 		$maxbookFromConfig = $MaxBook->MaxAllowedBooks;
 	}
 
-
 	my $validateBook = $c->model('Library::Transaction')->search({
 			"Status"=>'Requested',
 			"EmployeeId" => $loginId,
 		}); 
 	my $numberOfRequest = $validateBook->count;
-
-
-	$c->log->info($bookId);	
 	if($maxbookFromConfig > $numberOfRequest)
 	{
 		my @reqbook = $c->model('Library::Transaction')->create({
@@ -367,7 +355,6 @@ sub returnbook : Local
 	my $comment = $c->req->params->{comment};
 	my $current_date  = DateTime->now(time_zone => 'Asia/Kolkata');
 	my $ReturnedDate = $current_date->ymd('-') . " " . $current_date->hms(':');
-	$c->log->info($bookcopy_id);	
 	my $data = $c->model('Library::Transaction')->search({"BookCopyId" => $bookcopy_id});
 	$data->update({
 					"ReturnedDate" => $ReturnedDate,

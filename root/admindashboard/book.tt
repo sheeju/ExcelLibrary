@@ -1,91 +1,15 @@
-
-<script type="text/javascript" src="../source/js/jquery.js"></script>
-<script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
-<script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.min.js"></script>
-<link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
-<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
-<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
-<script type="text/javascript" src="source/bootstrap/dist/js/bootstrap.js"></script>
-<script>
-	$(document).ready(function() {
-		$('#table').DataTable({
-			"columnDefs": [ { "targets": [5,6], "orderable": false } ]	
-		});
-	});	
-
-	$('#addbook').click(function(){
-
-		var name = $('#bookName').val();
-		jQuery.validator.setDefaults({
-			debug: true,
-			success: "valid"
-		});
-
-
-		$("#book_insertion").validate({
-			rules: {
-				bookName: {
-					required:true
-				},
-				bookType: {
-					required :true
-				},
-				Author: {
-					required :true
-				},
-
-				noOfCopies : {
-					number :true
-				}
-
-
-			},
-
-
-			submitHandler : function(form){
-				var url = "/admindashboard/addBook";
-				var name = $('#bookName').val();
-				var author = $('#Author').val();
-				var type = $('#bookType').val();
-				var noOfCopies = $('#noOfCopies').val();
-				$.ajax({
-					type :"POST",
-					url :url,
-					data :{
-						name:name,
-						author:author,
-						type:type,
-						count:noOfCopies,
-
-					},
-					success : function ( data ) {
-
-						$('#sucess_message').html(data.message);
-						$('#bookName').val("");
-						$('#Author').val("");
-						$('#bookType').val("");
-						$('#noOfCopies').val("");
-
-					}
-				});
-			}
-		});
-
-
-	});
-</script>
-</head>
+<div class="alert alert-danger">
+	<a href="#" class="close" data-dismiss="alert">&times;</a>
+	<strong>Warning!</strong> Maximum 2 books Requested.
+</div>
 <button type="button" style="margin:5px 5px" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
 	Add New Book
 </button>
-
-
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
 				<h4 class="modal-title" id="myModalLabel">Add Book</h4>
 			</div>
 			<div class="modal-body">
@@ -121,13 +45,11 @@
 	</div>
 </div>
 
-
-
 <div class="modal fade bs-example-modal-lg" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
 				<h4 class="modal-title" id="myModalLabel">Book Details</h4>
 			</div>
 			<div class="modal-body">
@@ -137,11 +59,11 @@
 					<input type="number" class="form-control" id="Count_id" placeholder="Count">
 
 				</div>
-				<table id="details_table" class="table table-hover table-bordered table-stripped table-condensed info table-responsive" cellspacing="0" width="100%">
+		<table id="details_table" class="table table-hover table-bordered table-stripped table-condensed info table-responsive" cellspacing="0" width="100%">
 					<thead>
 						<tr>
-							<th>SI No</th>
-							<th>Copy Id</th>
+							<th>No</th>
+							<th>Copy ID</th>
 							<th>Status</th>
 							<th>Employee Name</th>
 							<th>Issued Date</th>
@@ -154,17 +76,17 @@
 		</div>
 	</div>
 </div>
-
 <table id="table" class="display" cellspacing="0" width="100%">
 	<thead>
 		<tr>
-			<th>SI No</th>
-			<th>Book Id</th>
+			<th>No</th>
+			<th>Book ID</th>
 			<th>Book Name</th>
 			<th>Book Type</th>
 			<th>Book Author</th>
 			<th>Book Status</th>
-			<th>Request</th>
+			<th>Book Request</th>
+			<th>Book Info</th>
 			<th>Comment</th>
 		</tr>
 	</thead>
@@ -179,6 +101,11 @@
 			<td>[% messages.$msg.Author %]</td>
 			<td>[% messages.$msg.Status %]</td>
 			<td>
+				<input type="button" id= "[% messages.$msg.Id %]" name='book_request' value="Book Request" class="form-control btn-primary book_req"/>
+			  <span id="lbl[%messages.$msg.Id%]"  class="label label-info displaymessage">Book Requested</span>
+			</td>
+
+			<td>
 				<input type="submit" id="[% messages.$msg.Id %]" name='txt_details' value="View Details"  data-toggle ="modal" data-target=".bs-example-modal-lg" class="form-control btn-primary a1"/>
 			</td>
 			<td>
@@ -188,29 +115,77 @@
 		[% END %]
 	</tbody>
 </table>
-<!--script>
 
-	$('.a1').click(function(){
-		var bookid=$(this).attr('id');
-		$.ajax( 
-		{ 
-			contentType:'text/html', 
-			dataType:'html',
-			data:{
-				Id:bookid,
+<script type="text/javascript" src="../source/js/jquery.js"></script>
+<script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
+<script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.min.js"></script>
+<link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
+<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
+<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
+<script type="text/javascript" src="source/bootstrap/dist/js/bootstrap.js"></script>
+<script>
+	$(document).ready(function() {
+		$('#table').DataTable({
+			"columnDefs": [ { "targets": [6,7,8], "orderable": false } ]	
+		});
+		$('.displaymessage').hide();
+	}); 
+	$('.alert').hide();
+	$('#addbook').click(function(){
+
+		var name = $('#bookName').val();
+		jQuery.validator.setDefaults({
+			debug: true,
+			success: "valid"
+		});
+
+
+		$("#book_insertion").validate({
+			rules: {
+				bookName: {
+					required:true
+				},
+				bookType: {
+					required :true
+				},
+				Author: {
+					required :true
+				},
+				noOfCopies : {
+					number :true
+				}
 			},
-		}).fail(function(err)  
-		{  
-			alert("error" + err);  
+			submitHandler : function(form){
+				var url = "/admindashboard/addBook";
+				var name = $('#bookName').val();
+				var author = $('#Author').val();
+				var type = $('#bookType').val();
+				var noOfCopies = $('#noOfCopies').val();
+				$.ajax({
+					type :"POST",
+					url :url,
+					data :{
+						name:name,
+						author:author,
+						type:type,
+						count:noOfCopies,
+
+					},
+					success : function ( data ) {
+
+						$('#sucess_message').html(data.message);
+						$('#book_insertion')[0].reset();
+					}
+				});
+			}
 		});
 	});
-</script-->
+</script>
 <script>
-
 	$(document).ready(function() {
 		$('.a1').click(function(){
 			var bookid=$(this).attr('id');
-			alert(bookid);
 			$.ajax( 
 			{
 				url:'admindashboard/copy_details',
@@ -281,3 +256,29 @@
 		});
 	});
 </script>
+
+<script>
+	$('.book_req').click(function(){
+		var bookid=$(this).attr('id');
+		$.ajax({    
+			url:"/admindashboard/Book_request",
+			data :{
+				bookId :bookid,
+			},
+			success:function(data){
+				if(data.deniedRequest =="Each person Have maximum 2 Book Request")
+				{
+					$(".alert").show();
+				}
+				else
+				{
+					id = '#'+bookid;
+					var msg = '#lbl'+ bookid;
+					$(id).addClass('hidden');
+					$(msg).show();
+				}   
+			}
+		});
+	});
+</script>
+
