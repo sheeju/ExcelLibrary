@@ -268,7 +268,7 @@ sub Book_request : Local
 
 	my ($self ,$c) = @_;
 	my $maxbookFromConfig =0;
-	my $bookId = $c->request->params->{'bookid'};
+	my $bookId = $c->request->params->{'bookId'};
 	my $loginId =$c->user->Id;
 	my $current_date = DateTime->now(time_zone => 'Asia/Kolkata');
 	my $requestdate = $current_date->ymd('-') . " " . $current_date->hms(':');
