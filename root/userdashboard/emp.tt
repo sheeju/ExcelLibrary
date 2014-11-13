@@ -89,7 +89,7 @@
 						<td>[% messages.$msg.Status %] </td>
 						<td>
 							<input type="button" value="Book Request" name='txt_request' id="[%messages.$msg.Id%]" class="form-control btn-primary a1"/>
-							<span id="lbl[%messages.$msg.Id%]"  class="label label-info displaymessage">Book Not Available For Issue</span>
+							<span id="lbl[%messages.$msg.Id%]"  class="label label-info displaymessage">Book Requested</span>
 						</td>
 						<td>
 							<input type="button" name='txt_review' value="Review" class="form-control btn-primary"/>
