@@ -86,7 +86,7 @@
 			<th>Book Author</th>
 			<th>Book Status</th>
 			<th>Book Request</th>
-			<th>Book Info</th>
+			<th>View Details</th>
 			<th>Comment</th>
 		</tr>
 	</thead>
@@ -106,10 +106,10 @@
 			</td>
 
 			<td>
-				<input type="submit" id="[% messages.$msg.Id %]" name='txt_details' value="View Details"  data-toggle ="modal" data-target=".bs-example-modal-lg" class="form-control btn-primary a1"/>
+				<button type="submit" id="[% messages.$msg.Id %]" name='txt_details' data-toggle ="modal" data-target=".bs-example-modal-lg" class="btn btn-primary btn-sm a1"><span class="glyphicon glyphicon-eye-open"></button>
 			</td>
 			<td>
-				<input type="button" name='txt_review' value="Review" class="form-control btn-primary"/>
+				<button type="button" name='txt_review' value="Review" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-comment"></button>
 			</td>
 		</tr>
 		[% END %]
