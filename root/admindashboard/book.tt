@@ -195,44 +195,27 @@
 				},
 			}).done(function(data)
 			{
-				document.getElementById("Count_id").value=data.detail.length;
-				$('.a2').remove();
-				$.each(data.detail,function(index,value)
-				{
-					if(value.Status == "Available")
-					{
-						$('#details_table').append('<tr class="a2 '+value.Id+'">'+
-							'<td>'+ value.Count+'</td>'+
-							'<td class="abc">'+ value.Id+'</td>'+
-							'<td>'+ value.Status+'</td>'+
-							'<td>'+ "--" +'</td>'+
-							'<td>'+ "--" +'</td>'+
-							'<td>'+ "--" +'</td>'+
-							'<td>'+
-								'<button type="button" id="'+value.Id+'" class="btn btn-primary btn-sm dlt">'+
-									'<span class="glyphicon glyphicon-trash"></span>'+
-									'</button>'+
-								'</td>'+
-							'</tr>');
-					}
-					else
-					{
-						$('#details_table').append('<tr class="a2">'+
-							'<td>'+ value.Count+'</td>'+
-							'<td class="abc">'+ value.Id+'</td>'+
-							'<td>'+ value.Status+'</td>'+
-							'<td>'+ value.EmpName+'</td>'+
-							'<td>'+ value.IssuedDate+'</td>'+
-							'<td>'+ value.ReturnDate+'</td>'+
-							'<td>'+
-								'<button type="button" class="btn btn-primary btn-sm dlt" disabled>'+
-									'<span class="glyphicon glyphicon-trash"></span>'+
-									'</button>'+
-								'</td>'+
-							'</tr>');
 
-					}
+				$('.a2').remove();
+				var count = 1;
+				$.each(data, function(index1, value1)
+				{
+					$.each(value1, function(index,value)
+					{
+						console.log(value.Id);
+						$('#details_table').append('<tr class="a2 '+ value.Id+'">'+
+							'<td>'+ count +'</td>'+
+							'<td>'+ value.Id +'</td>'+
+							'<td>'+ value.Status +'</td>'+
+							'<td>'+ value.EmpName +'</td>'+
+							'<td>'+ value.IssuedDate +'</td>'+
+							'<td>'+ value.ReturnDate +'</td>'+
+							'<td>'+ value.button +'</td></tr>');
+						count = count + 1;
+					});	
 				});
+				count = count - 1;
+				$('#Count_id').val(count);
 				$('.dlt').click(function()
 				{
 					var id = $(this).attr('id');
@@ -243,15 +226,18 @@
 						contentType:'text/html', 
 						data:{
 							CopyId:copyid,
-						},
+						}
+					}).done(function (data)
+					{
+						alert(id);
+						id= '.'+id;
+						$(id).remove();
+					}).fail(function(err) 
+					{ 
+						alert("error"+ err); 
 					});
-					alert(id);
-					id= '.'+id;
-					$(id).remove();
 				});
-			}).fail(function(err) 
-			{ 
-				alert("error"+ err); 
+
 			});
 		});
 	});
