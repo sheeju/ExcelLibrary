@@ -1,6 +1,6 @@
 <br>
-<div class="alert alert-danger">
-	<a href="#" class="close" data-dismiss="alert">&times;</a>
+<div class="alert alert-danger" >
+	<a href="#" class="close" data-dismiss="alert" >&times;</a>
 	<strong>Warning!</strong> Maximum 2 books Requested.
 </div>
 <button type="button" style="margin:5px 5px" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
@@ -103,7 +103,7 @@
 			<td>[% messages.$msg.Status %]</td>
 			<td>
 			<input type="button" id= "[% messages.$msg.Id %]" name='book_request' value="Book Request" class="form-control btn-primary book_req"/>
-			  <span id="lbl[%messages.$msg.Id%]"  class="label label-info displaymessage">Book Requested</span>
+			  <span id="lbl[%messages.$msg.Id%]"  class="label label-info displaymessage hidden">Book Requested</span>
 			</td>
 
 			<td>
@@ -130,8 +130,8 @@
 		$('#table').DataTable({
 			"columnDefs": [ { "targets": [6,7,8], "orderable": false } ]	
 		});
-		$('.displaymessage').hide();
 	}); 
+
 
 	$('.alert').hide();
 	$('#addbook').click(function(){
@@ -271,14 +271,15 @@
 			success:function(data){
 				if(data.deniedRequest =="Each person Have maximum 2 Book Request")
 				{
-					$(".alert").show();
+					$('.alert').show(); 
+			
 				}
 				else
 				{
 					id = '#'+bookid;
 					var msg = '#lbl'+ bookid;
 					$(id).addClass('hidden');
-					$(msg).show();
+					$(msg).removeClass('hidden');
 				}   
 			}
 		});
