@@ -1,6 +1,6 @@
 <br>
-<div class="alert alert-danger">
-	<a href="#" class="close" data-dismiss="alert">&times;</a>
+<div class="alert alert-danger hidden" >
+	<a href="#" class="close"  >&times;</a>
 	<strong>Warning!</strong> Maximum 2 books Requested.
 </div>
 <button type="button" style="margin:5px 5px" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
@@ -103,7 +103,7 @@
 			<td>[% messages.$msg.Status %]</td>
 			<td>
 			<input type="button" id= "[% messages.$msg.Id %]" name='book_request' value="Book Request" class="form-control btn-primary book_req"/>
-			  <span id="lbl[%messages.$msg.Id%]"  class="label label-info displaymessage">Book Requested</span>
+			  <span id="lbl[%messages.$msg.Id%]"  class="label label-info displaymessage hidden">Book Requested</span>
 			</td>
 
 			<td>
@@ -132,10 +132,69 @@
 		$('#table').DataTable({
 			"columnDefs": [ { "targets": [6,7,8], "orderable": false } ]	
 		});
-		$('.displaymessage').hide();
+
+
+			$('.a1').click(function(){
+				var bookid=$(this).attr('id');
+				$.ajax( 
+				{
+					url:'admindashboard/copy_details',
+					contentType:'text/html', 
+					data:{
+						Id:bookid,
+					},
+				}).done(function(data)
+				{
+
+					$('.a2').remove();
+					var count = 1;
+					$.each(data, function(index1, value1)
+					{
+						$.each(value1, function(index,value)
+						{
+							$('#details_table').append('<tr class="a2 '+ value.Id+'">'+
+								'<td>'+ count +'</td>'+
+								'<td>'+ value.Id +'</td>'+
+								'<td>'+ value.Status +'</td>'+
+								'<td>'+ value.EmpName +'</td>'+
+								'<td>'+ value.IssuedDate +'</td>'+
+								'<td>'+ value.ReturnDate +'</td>'+
+								'<td>'+ value.button +'</td></tr>');
+							count = count + 1;
+						}); 
+					});
+					count = count - 1;
+					$('#Count_id').val(count);
+					$('.dlt').click(function()
+					{
+						var id = $(this).attr('id');
+						var copyid = id; 
+						$.ajax( 
+						{
+							url:'admindashboard/delete_copy',
+							contentType:'text/html', 
+							data:{
+								CopyId:copyid,
+							}
+						}).done(function (data)
+						{
+							id= '.'+id;
+							$(id).remove();
+							count = count-1;
+							$('#Count_id').val(count);
+						}).fail(function(err) 
+						{ 
+							alert("error"+ err); 
+						});
+					});
+
+				});
+			});
+
 	}); 
 
-	$('.alert').hide();
+
+//	$('.alert').hide();
 	$('#addbook').click(function(){
 
 		var name = $('#bookName').val();
@@ -185,73 +244,12 @@
 			}
 		});
 	});
-</script>
-<script>
-	$(document).ready(function() {
-		$('.a1').click(function(){
-			var bookid=$(this).attr('id');
-			$.ajax( 
-			{
-				url:'admindashboard/copy_details',
-				contentType:'text/html', 
-				data:{
-					Id:bookid,
-				},
-			}).done(function(data)
-			{
 
-				$('.a2').remove();
-				var count = 1;
-				$.each(data, function(index1, value1)
-				{
-					$.each(value1, function(index,value)
-					{
-						console.log(value.Id);
-						$('#details_table').append('<tr class="a2 '+ value.Id+'">'+
-							'<td>'+ count +'</td>'+
-							'<td>'+ value.Id +'</td>'+
-							'<td>'+ value.Status +'</td>'+
-							'<td>'+ value.EmpName +'</td>'+
-							'<td>'+ value.IssuedDate +'</td>'+
-							'<td>'+ value.ReturnDate +'</td>'+
-							'<td>'+ value.button +'</td></tr>');
-						count = count + 1;
-					});	
-				});
-				count = count - 1;
-				$('#Count_id').val(count);
-				$('.dlt').click(function()
-				{
-					var id = $(this).attr('id');
-					var copyid = id; 
-					$.ajax( 
-					{
-						url:'admindashboard/delete_copy',
-						contentType:'text/html', 
-						data:{
-							CopyId:copyid,
-						}
-					}).done(function (data)
-					{
-						alert(id);
-						id= '.'+id;
-						$(id).remove();
-						count = count -1;
-						$('#Count_id').val(count);
-					}).fail(function(err) 
-					{ 
-						alert("error"+ err); 
-					});
-				});
+	$(".close").click(function(){
+		 $('.alert').addClass('hidden');
+      });
 
-			});
-		});
-	});
-</script>
-
-<script>
 	$('.book_req').click(function(){
-
 		var bookid=$(this).attr('id');
 		$.ajax({    
 			url:"/admindashboard/Book_request",
@@ -261,17 +259,19 @@
 			success:function(data){
 				if(data.deniedRequest =="Each person Have maximum 2 Book Request")
 				{
-					$(".alert").show();
+				//	$('.alert').show();
+					$('.alert').removeClass('hidden');
+
 				}
 				else
 				{
 					id = '#'+bookid;
 					var msg = '#lbl'+ bookid;
 					$(id).addClass('hidden');
-					$(msg).show();
+					$(msg).removeClass('hidden');
 				}   
 			}
 		});
-	});
+	})
 </script>
 

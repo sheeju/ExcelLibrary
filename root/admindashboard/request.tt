@@ -41,29 +41,29 @@
 			<div id="div_model_cmb" class="modal-body">
 				<!--h4 class="modal-title" id="lbl_IssuedCopy"> Select Issued Copy</h4-->
 				Select Issued copy : <select id="cmb_booklist" class="btn btn-warnings dropdown-toggle"></select> 
-				
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">close</button>
-				<button type="button" id="btn_issue" class="btn btn-primary" data-dismiss="modal">Issue</button>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+					<button type="button" id="btn_issue" class="btn btn-primary" data-dismiss="modal">Issue</button>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
-<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/dataTables.bootstrap.css" />
-<script type="text/javascript" src="../source/js/jquery.js"></script>
-<script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js"></script>
-<script type="text/javascript" src="source/DataTable/media/js/dataTables.bootstrap.js"></script>
+	<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
+	<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/dataTables.bootstrap.css" />
+	<script type="text/javascript" src="../source/js/jquery.js"></script>
+	<script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js"></script>
+	<script type="text/javascript" src="source/DataTable/media/js/dataTables.bootstrap.js"></script>
 
-<script>
-	$(document).ready(function ()
-	{
+	<script>
+		$(document).ready(function ()
+		{
 		var req_id;
 		$('#request_tabel').DataTable({});
 
 		$('.req_allow').click(function(){
-		
+
 			var id = $(this).attr('id');
 			addresponse(id,"Allow");
 
@@ -140,6 +140,3 @@
 
 	});
 </script>
-
-
-
