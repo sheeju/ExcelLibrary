@@ -1,6 +1,6 @@
 <br>
-<div class="alert alert-danger" >
-	<a href="#" class="close" data-dismiss="alert" >&times;</a>
+<div class="alert alert-danger hidden" >
+	<a href="#" class="close"  >&times;</a>
 	<strong>Warning!</strong> Maximum 2 books Requested.
 </div>
 <button type="button" style="margin:5px 5px" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
@@ -178,9 +178,10 @@
 							}
 						}).done(function (data)
 						{
-							alert(id);
 							id= '.'+id;
 							$(id).remove();
+							count = count-1;
+							$('#Count_id').val(count);
 						}).fail(function(err) 
 						{ 
 							alert("error"+ err); 
@@ -193,7 +194,7 @@
 	}); 
 
 
-	$('.alert').hide();
+//	$('.alert').hide();
 	$('#addbook').click(function(){
 
 		var name = $('#bookName').val();
@@ -243,6 +244,11 @@
 			}
 		});
 	});
+
+	$(".close").click(function(){
+		 $('.alert').addClass('hidden');
+				       });
+
 	$('.book_req').click(function(){
 		var bookid=$(this).attr('id');
 		$.ajax({    
@@ -253,7 +259,8 @@
 			success:function(data){
 				if(data.deniedRequest =="Each person Have maximum 2 Book Request")
 				{
-					$('.alert').show(); 
+				//	$('.alert').show();
+					$('.alert').removeClass('hidden');
 
 				}
 				else
