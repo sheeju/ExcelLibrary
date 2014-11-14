@@ -29,7 +29,7 @@ $.extend( true, DataTable.defaults, {
 /* Default class modification */
 $.extend( DataTable.ext.classes, {
 	sWrapper:      "dataTables_wrapper form-inline dt-bootstrap",
-	sFilterInput:  "form-control input-sm",
+	sFilterInput:  "input-sm",
 	sLengthSelect: "form-control input-sm"
 } );
 
@@ -99,7 +99,7 @@ DataTable.ext.renderer.pageButton.bootstrap = function ( settings, host, idx, bu
 
 				if ( btnDisplay ) {
 					node = $('<li>', {
-							'class': classes.sPageButton+' '+btnClass,
+							'class': classes.btnClass,
 							'aria-controls': settings.sTableId,
 							'tabindex': settings.iTabIndex,
 							'id': idx === 0 && typeof button === 'string' ?
