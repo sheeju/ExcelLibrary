@@ -132,6 +132,64 @@
 		$('#table').DataTable({
 			"columnDefs": [ { "targets": [6,7,8], "orderable": false } ]	
 		});
+
+
+			$('.a1').click(function(){
+				var bookid=$(this).attr('id');
+				$.ajax( 
+				{
+					url:'admindashboard/copy_details',
+					contentType:'text/html', 
+					data:{
+						Id:bookid,
+					},
+				}).done(function(data)
+				{
+
+					$('.a2').remove();
+					var count = 1;
+					$.each(data, function(index1, value1)
+					{
+						$.each(value1, function(index,value)
+						{
+							$('#details_table').append('<tr class="a2 '+ value.Id+'">'+
+								'<td>'+ count +'</td>'+
+								'<td>'+ value.Id +'</td>'+
+								'<td>'+ value.Status +'</td>'+
+								'<td>'+ value.EmpName +'</td>'+
+								'<td>'+ value.IssuedDate +'</td>'+
+								'<td>'+ value.ReturnDate +'</td>'+
+								'<td>'+ value.button +'</td></tr>');
+							count = count + 1;
+						}); 
+					});
+					count = count - 1;
+					$('#Count_id').val(count);
+					$('.dlt').click(function()
+					{
+						var id = $(this).attr('id');
+						var copyid = id; 
+						$.ajax( 
+						{
+							url:'admindashboard/delete_copy',
+							contentType:'text/html', 
+							data:{
+								CopyId:copyid,
+							}
+						}).done(function (data)
+						{
+							alert(id);
+							id= '.'+id;
+							$(id).remove();
+						}).fail(function(err) 
+						{ 
+							alert("error"+ err); 
+						});
+					});
+
+				});
+			});
+
 	}); 
 
 
@@ -185,71 +243,7 @@
 			}
 		});
 	});
-</script>
-<script>
-	$(document).ready(function() {
-		$('.a1').click(function(){
-			var bookid=$(this).attr('id');
-			$.ajax( 
-			{
-				url:'admindashboard/copy_details',
-				contentType:'text/html', 
-				data:{
-					Id:bookid,
-				},
-			}).done(function(data)
-			{
-
-				$('.a2').remove();
-				var count = 1;
-				$.each(data, function(index1, value1)
-				{
-					$.each(value1, function(index,value)
-					{
-						console.log(value.Id);
-						$('#details_table').append('<tr class="a2 '+ value.Id+'">'+
-							'<td>'+ count +'</td>'+
-							'<td>'+ value.Id +'</td>'+
-							'<td>'+ value.Status +'</td>'+
-							'<td>'+ value.EmpName +'</td>'+
-							'<td>'+ value.IssuedDate +'</td>'+
-							'<td>'+ value.ReturnDate +'</td>'+
-							'<td>'+ value.button +'</td></tr>');
-						count = count + 1;
-					});	
-				});
-				count = count - 1;
-				$('#Count_id').val(count);
-				$('.dlt').click(function()
-				{
-					var id = $(this).attr('id');
-					var copyid = id; 
-					$.ajax( 
-					{
-						url:'admindashboard/delete_copy',
-						contentType:'text/html', 
-						data:{
-							CopyId:copyid,
-						}
-					}).done(function (data)
-					{
-						alert(id);
-						id= '.'+id;
-						$(id).remove();
-					}).fail(function(err) 
-					{ 
-						alert("error"+ err); 
-					});
-				});
-
-			});
-		});
-	});
-</script>
-
-<script>
 	$('.book_req').click(function(){
-
 		var bookid=$(this).attr('id');
 		$.ajax({    
 			url:"/admindashboard/Book_request",
@@ -260,7 +254,7 @@
 				if(data.deniedRequest =="Each person Have maximum 2 Book Request")
 				{
 					$('.alert').show(); 
-			
+
 				}
 				else
 				{
@@ -271,6 +265,6 @@
 				}   
 			}
 		});
-	});
+	})
 </script>
 
