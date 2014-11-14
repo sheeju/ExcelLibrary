@@ -90,16 +90,20 @@ sub managerequest : Local
 	my $response = $c->req->params->{response};
 	my $loginId = $c->user->Id;
 	my $data = $c->model('Library::Transaction')->search({"Id" => $req_id});
-	if($response eq 'Allow')
-	{
-		$data->update({"UpdatedBy" => $loginId });
-	}
-	else
-	{
-		$data->update({
+	my $d = $data->next;
+	if($d->UpdatedBy ne undef)
+	{	
+		if($response eq 'Allow')
+		{
+			$data->update({"UpdatedBy" => $loginId });
+		}
+		else
+		{
+			$data->update({
 						"Status" => 'Denied', 
 						"UpdatedBy" => $loginId
 					});
+		}
 	}
 
 	$c->forward('request');
@@ -151,6 +155,7 @@ sub issuebook : Local
 	$ExpectedReturnedDate = $expectedreturn_date->ymd('-') . " " . $expectedreturn_date->hms(':');
 
 	my $data = $c->model('Library::Transaction')->search({"Id" => $req_id});
+	my $d = $data 
 	$data->update({
 					"BookCopyId" => $bookcopy_id, 
 					"Status" => 'Issued', 
@@ -159,47 +164,47 @@ sub issuebook : Local
 					"ExpectedReturnDate"=> $ExpectedReturnedDate 
 				});
 
-			$data = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
-			$data->update({"Status" => 'Reading' });
+	$data = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
+	$data->update({"Status" => 'Reading' });
+	
+	$c->forward('request');
+	$c->stash->{template} = "admindashboard/request.tt";
+}
+sub book : Path('/book')
+{
+	my($self,$c) = @_;
+	my $count=1;
 
-			$c->forward('request');
-			$c->stash->{template} = "admindashboard/request.tt";
+	my @array = $c->model('Library::Book')->search({
+			Status => {'!=','Removed'},
+		},
+		{ join => 'book_copies',
+			'+select' => ['book_copies.Status'],
+			'+as' => ['Status'],
+			order_by => [qw/me.Id/],
+		});
+
+	$c->stash->{user} = $c->user->Name;
+	my %books;
+	foreach my $ar (@array)
+	{   
+		if(! exists($books{$ar->Id}))
+		{   $books{$ar->Id} = { 
+				Count => $count++,  
+				Id => $ar->Id,
+				Name => $ar->Name,
+				Type => $ar->Type,
+				Author => $ar->Author,
+				Status => $ar->get_column('Status')
+			}   
+		}   
+		elsif($books{$ar->Id}{Status} eq "Reading" and $ar->get_column('Status') eq "Available")
+		{   
+			$books{$ar->Id}{Status} = "Available";
 		}
-		sub book : Path('/book')
-		{
-			my($self,$c) = @_;
-			my $count=1;
 
-			my @array = $c->model('Library::Book')->search({
-					Status => {'!=','Removed'},
-				},
-				{ join => 'book_copies',
-					'+select' => ['book_copies.Status'],
-					'+as' => ['Status'],
-					order_by => [qw/me.Id/],
-				});
-
-			$c->stash->{user} = $c->user->Name;
-			my %books;
-			foreach my $ar (@array)
-			{   
-				if(! exists($books{$ar->Id}))
-				{   $books{$ar->Id} = { 
-						Count => $count++,  
-						Id => $ar->Id,
-						Name => $ar->Name,
-						Type => $ar->Type,
-						Author => $ar->Author,
-						Status => $ar->get_column('Status')
-					}   
-				}   
-				elsif($books{$ar->Id}{Status} eq "Reading" and $ar->get_column('Status') eq "Available")
-				{   
-					$books{$ar->Id}{Status} = "Available";
-				}
-
-			}
-			$c->stash->{messages} = \%books;
+	}
+	$c->stash->{messages} = \%books;
 
 }
 sub copy_details :Local
