@@ -57,7 +57,7 @@ sub request : Path('/request')
 
 			if ($bookcopy->next)
 			{
-				$Button = '<input type="button" id="'.$r->Id.'" name="btn_issue" value="Issue" class="btn btn-primary book_issue"data-toggle="modal" data-target="#myModal"/>'
+				$Button = '<input type="button" id="'.$r->Id.'" name="btn_issue" value="Issue" class="btn btn-primary book_issue" data-toggle="modal" data-target="#myModal"/>'
 			}
 			else
 			{
@@ -67,9 +67,9 @@ sub request : Path('/request')
 		else
 		{
 
-				 $Button	='<button type="button" id ="'.$r->Id.'" name="btn_accept" class="btn btn-primary btn-sm req_allow">
+				 $Button = '<button id ="'.$r->Id.'" name="btn_accept" class="btn btn-primary btn-sm req_allow">
 				 <span class="glyphicon	glyphicon-ok" aria-hidden="true"></span></button> 
-				 <button type="button" id ="'.$r->Id.'" name="btn_reject" class="btn btn-danger btn-sm req_deny">
+				 <button  id ="'.$r->Id.'" name="btn_reject" class="btn btn-danger btn-sm req_deny">
 				 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>'
 		}	
 
@@ -91,7 +91,7 @@ sub managerequest : Local
 	my $loginId = $c->user->Id;
 	my $data = $c->model('Library::Transaction')->search({"Id" => $req_id});
 	my $d = $data->next;
-	if($d->UpdatedBy ne undef)
+	if($d->UpdatedBy eq undef)
 	{	
 		if($response eq 'Allow')
 		{
@@ -155,8 +155,10 @@ sub issuebook : Local
 	$ExpectedReturnedDate = $expectedreturn_date->ymd('-') . " " . $expectedreturn_date->hms(':');
 
 	my $data = $c->model('Library::Transaction')->search({"Id" => $req_id});
-	my $d = $data 
-	$data->update({
+	my $d = $data->next; 
+	if($d->IssuedDate eq undef)
+	{
+		$data->update({
 					"BookCopyId" => $bookcopy_id, 
 					"Status" => 'Issued', 
 					"IssuedBy" => $loginId, 
@@ -164,9 +166,9 @@ sub issuebook : Local
 					"ExpectedReturnDate"=> $ExpectedReturnedDate 
 				});
 
-	$data = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
-	$data->update({"Status" => 'Reading' });
-	
+		$data = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
+		$data->update({"Status" => 'Reading' });
+	}
 	$c->forward('request');
 	$c->stash->{template} = "admindashboard/request.tt";
 }

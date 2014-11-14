@@ -20,8 +20,6 @@
 				<td> [% m.BookName %]</td>
 				<td>
 					[% m.Button %]
-					<!--input type="button" id ="[% m.reqid %]" name="btn_accept" value="Accept" class="btn btn-primary btn-xs req_allow"/>
-					<input type="button" id ="[% m.reqid %]" name="btn_reject" value="Deny" class="btn btn-warning btn-xs req_deny"/-->
 				</td>
 			</tr>
 		[% END %]
@@ -34,7 +32,13 @@
 				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
 				<h4 class="modal-title" id="myModalLabel">Issue Book</h4>
 			</div>
-			<div class="modal-body">
+			<div id="div_model_msg" class="model-body">
+				<center> <span class="label label-info">Book Not Available For Issue</span></center>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+				</div>
+			</div>
+			<div id="div_model_cmb" class="modal-body">
 				<!--h4 class="modal-title" id="lbl_IssuedCopy"> Select Issued Copy</h4-->
 				Select Issued copy : <select id="cmb_booklist" class="btn btn-warnings dropdown-toggle"></select> 
 				
@@ -87,6 +91,9 @@
 
 		$('.book_issue').click(function(){
 			req_id = $(this).attr('id');
+			$('#cmb_booklist').empty();
+			$('#div_model_msg').addClass('hidden');
+			$('#div_model_cmb').removeClass('hidden');
 			$.ajax( 
 			{ 
 				url :'admindashboard/getbookcopies', 
@@ -95,11 +102,18 @@
 				data :{req_id : req_id}
 			}).done(function(data) 
 			{
-				$('#cmb_booklist').empty();
-				$.each(data.books, function (index, value){
-					$('#cmb_booklist').append('<option>' + value + '</option>'); 
-				});
+				if(typeof data.books != 'undefined')
+				{
 
+					$.each(data.books, function (index, value){
+						$('#cmb_booklist').append('<option>' + value + '</option>'); 
+					});
+				}
+				else
+				{
+					$('#div_model_msg').removeClass('hidden');
+					$('#div_model_cmb').addClass('hidden');
+				}
 			}).fail(function(err)  
 			{  
 				alert("error in getbook" + err);  
