@@ -236,6 +236,8 @@
 						alert(id);
 						id= '.'+id;
 						$(id).remove();
+						count = count -1;
+						$('#Count_id').val(count);
 					}).fail(function(err) 
 					{ 
 						alert("error"+ err); 
