@@ -68,10 +68,10 @@
 						<form accept-charset="UTF-8" role="form" id ="loginform"  method ="POST">
 								<fieldset>
 									<div class="form-group">
-										<input class="form-control" placeholder="yourmail@example.com" id ="user_email" name="email" type="text">
+										<input class="form-control" placeholder="yourmail@example.com" id ="user_email" default = "skanda@gmail.com" name="email" type="text">
 									</div>
 								<div class="form-group">
-								<input class="form-control" placeholder="Password" name="password"  id ="user_password" type="password" value="">
+								<input class="form-control" placeholder="Password" name="password"  id ="user_password" text ="skanda"  type="password" value="">
 								</div>
 									<hr/>
 									<div class="checkbox">

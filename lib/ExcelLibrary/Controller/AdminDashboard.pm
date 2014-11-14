@@ -208,23 +208,49 @@ sub copy_details :Local
 	my ($self,$c)=@_;
 	my $bookid=$c->req->params->{Id};
 	my $count=1;
-	my @array = $c->model('Library::Transaction')->search({
-			'me.BookId' => $bookid,
-			'book_copy.Status'=> {'!=', 'Removed'}
+	my $rs;
+	my %bookcopy;
+
+	my @bcrs =  $c->model('Library::BookCopy')->search({
+			BookId => $bookid,
+			Status => {'!=', 'Removed'}
+		});
+
+	foreach $rs (@bcrs)
+	{
+
+		$bookcopy{$rs->Id} = {
+			Id => $rs->Id,
+			Status => $rs->Status, 	
+			EmpName => "-",
+			IssuedDate => "-",
+			ReturnDate => "-",
+			button => '<button type="button" id="'.$rs->Id.'" class="btn btn-primary btn-sm dlt">'.
+			'<span class="glyphicon glyphicon-trash"></span></button>'
+		}
+	}	
+
+	@bcrs =  $c->model('Library::Transaction')->search({
+			BookId => $bookid,
+			'me.Status' => 'Issued',
+			ReturnedDate =>  undef
 		},
 		{
-			join => ['employee','book_copy'],
-			'+select' => ['employee.Name','book_copy.Status','book_copy.Id'],
-			'+as' => ['EmpName','Status','Id'],
+			join => 'employee',
+			'+select' => 'employee.Name',
+			'+as'	=> 'EmpName'
 		});
-		push( @{$c->stash->{detail}},{
-		Count => $count++,
-		Id => $_->get_column('Id'),
-		EmpName => $_->get_column('EmpName'),
-		Status => $_->get_column('Status'),
-		IssuedDate => $_->IssuedDate,
-		ReturnDate => $_->ExpectedReturnDate,
-	}) foreach @array;
+
+
+	foreach $rs (@bcrs)
+	{
+		$bookcopy{$rs->BookCopyId}{EmpName} = $rs->get_column('EmpName');
+		$bookcopy{$rs->BookCopyId}{IssuedDate} = $rs->IssuedDate;
+		$bookcopy{$rs->BookCopyId}{ReturnDate} = $rs->ExpectedReturnDate;
+		$bookcopy{$rs->BookCopyId}{button} = '<button type="button" id="'.$rs->BookCopyId.'" class="btn btn-primary btn-sm dlt disabled">'.
+		'<span class="glyphicon glyphicon-lock "></span></button>';
+	}	
+	$c->stash->{detail} = \%bookcopy;
 	$c->forward('View::JSON');
 
 }
