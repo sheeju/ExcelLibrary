@@ -402,6 +402,19 @@ sub returnbook : Local
 	$c->stash->{result} = 1; 	
 	$c->forward('View::JSON');
 }
+sub history: Path('/history') 
+{ 
+	my ($self,$c)=@_; 
+	$c->forward('View::TT');
+	my $selection=$c->req->params->{selection};
+	my @alldata = $c -> model('Library::Transaction')->search({},
+		{
+			join => ['employee','book'],
+			'+select' => ['employee.Name','book.Name'],
+			'+as' => ['EmployeeName','BookName']
+		}); 
+
+}
 =encoding utf8
 
 =head1 AUTHOR
