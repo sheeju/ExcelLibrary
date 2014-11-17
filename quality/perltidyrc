@@ -1,0 +1,8 @@
+-l=120      # 120 characters per line
+-sbl        # opening sub brace to be on a new line
+-pt=2       # High parenthesis tightness
+-sbt=2      # High square bracket tightness
+-bt=2       # High brace tightness
+-nsfs       # No spaces for Semicolon in for loop
+-ole=unix   # output line ending
+-b          # Create bak file

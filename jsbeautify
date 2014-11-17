@@ -1,0 +1,80 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use FindBin;
+
+
+my $jsbeautifyrc = "$FindBin::Bin/quality/jsbeautifyrc";
+my $root         = $ARGV[0] || '../lib/';
+my $type 		 = $ARGV[1] || 'js';
+$type = "html" if($type eq "tt");
+my $delim        = "/";
+
+@ARGV = ();
+
+my @files;
+
+print "\nThis will create a copy of file(s) with 'bak' extension.
+		Continue? [YyNn]: ";
+
+my $in = <STDIN>; chomp $in;
+exit if $in !~ /y/i;
+
+
+if(-f $root) {
+	if($type eq 'js' && $root =~  m/.(js|json)$/) {
+		tidy_file($root);
+	} elsif($type eq 'css' && $root =~ m/.(css)$/) {
+		tidy_file($root);
+	} elsif($type eq 'html' && $root =~ m/.(html|tt|tt2)$/) {
+		tidy_file($root);
+	}
+} elsif (-d $root) {
+	my @dirs = ($root);
+	for my $path (@dirs) {
+		opendir( DIR, $path ) or next;    # skip dirs we can't read
+		while ( my $file = readdir DIR ) {
+			next if $file eq '.' or $file eq '..';  # skip the dot files
+			next if -l $path . $file;               # skip symbolic links
+			if ( -d $path . $file ) {
+				push @dirs, $path . $file . $delim; # add the dir to dir list
+			}
+			else {
+				if($type eq 'js') {
+					push @files, $path . $file if $file =~ m/.(js)$/;
+				} elsif($type eq 'css') {
+					push @files, $path . $file if $file =~ m/.(css)$/;
+				} elsif($type eq 'html') {
+					push @files, $path . $file if $file =~ m/.(html|tt|tt2)$/;
+				}
+			}
+		}
+		closedir DIR;
+	}
+}
+
+for my $file (@files) {
+    tidy_file($file);
+}
+
+
+sub tidy_file {
+	my ($file) = @_;
+	#js-beautify --config quality/jstidyrc --html -f templates/en-us/history/history.tt -o templates/en-us/history/history.tt
+
+	my @bak_cmd = ("cp", "-f", $file, "$file.bak");
+	my @beautify_cmd = ("js-beautify", "--config", $jsbeautifyrc, "--$type", "-f", $file, "-o", $file);
+
+	#print join(" ", @bak_cmd)."\n";
+	#print join(" ", @beautify_cmd)."\n";
+	print "$file is alligned\n";
+
+	system(@bak_cmd) == 0
+		 or die "system @bak_cmd failed: $?";
+		
+	system(@beautify_cmd) == 0
+		 or die "system @beautify_cmd failed: $?";
+}
+

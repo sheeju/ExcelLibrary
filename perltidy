@@ -1,0 +1,60 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Data::Dumper;
+use Perl::Tidy;
+use FindBin;
+
+
+my $tidyrc       = "$FindBin::Bin/quality/perltidyrc";
+my $root         = $ARGV[0] || '../lib/';
+my $delim        = "/";
+
+@ARGV = ();
+
+my @files;
+
+print "\nThis will create a copy of file(s) with 'bak' extension.
+		Continue? [YyNn]: ";
+
+my $in = <STDIN>; chomp $in;
+exit if $in !~ /y/i;
+
+
+if(-f $root) {
+	tidy_file($root);
+} elsif (-d $root) {
+	my @dirs = ($root);
+	for my $path (@dirs) {
+		opendir( DIR, $path ) or next;    # skip dirs we can't read
+		while ( my $file = readdir DIR ) {
+			next if $file eq '.' or $file eq '..';  # skip the dot files
+			next if -l $path . $file;               # skip symbolic links
+			if ( -d $path . $file ) {
+				push @dirs, $path . $file . $delim; # add the dir to dir list
+			}
+			else {
+				push @files, $path . $file if $file =~ m/.(pm|pl|PL|t)$/;
+			}
+		}
+		closedir DIR;
+	}
+}
+print Dumper \@files;
+for my $file (@files) {
+    tidy_file($file);
+}
+
+
+sub tidy_file {
+	my ($file) = @_;
+	Perl::Tidy::perltidy(
+		source => $file,    
+		perltidyrc  => $tidyrc,
+		logfile => '/tmp/tidylog',
+	    errorfile   => "/tmp/tidyerrorlog",
+	);
+	print "$file is alligned\n";
+}
+
