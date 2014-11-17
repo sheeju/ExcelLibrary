@@ -1,0 +1,38 @@
+<script type="text/javascript" src="../source/js/jquery.js"></script>
+<script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
+<link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
+<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="source/DataTable/media/js/dataTables.bootstrap.js"></script>
+<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/dataTables.bootstrap.css" />
+<script type="text/javascript" src="source/bootstrap/dist/js/bootstrap.js"></script>
+
+
+<div class="dropdown">
+	<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+		Filter By
+		<span class="caret"></span>
+	</button>
+	<ul class="dropdown-menu">
+		<li role="presentation" class="selection" id="all"><a role="menuitem" tabindex="-1" href="#">All</a></li>
+		<li role="presentation" class="selection" id="issued"><a role="menuitem" tabindex="-1" href="#">Issued</a></li>
+		<li role="presentation" class="selection" id="denied"><a role="menuitem" tabindex="-1" href="#">Denied</a></li>
+		<li role="presentation" class="divider"></li>
+		<li role="presentation" class="selection" id="book"><a role="menuitem" tabindex="-1" href="#">Book</a></li>
+	</ul>
+</div>
+
+<script>
+	$('.selection').click(function(){
+		var item=$(this).attr('id');
+	$.ajax( 
+	{
+		url:'admindashboard/copy_details',
+		contentType:'text/html', 
+		data:{
+			Selection:item,
+		},
+	});
+});
+	</script>
