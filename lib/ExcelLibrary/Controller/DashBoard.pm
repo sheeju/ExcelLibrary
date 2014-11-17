@@ -1,16 +1,12 @@
-package ExcelLibrary::Controller::AdminDashboard;
+package ExcelLibrary::Controller::DashBoard;
 use Moose;
 use namespace::autoclean;
-use Data::Dumper;
-use JSON;
-use DateTime;
-use POSIX qw(strftime);
+
 BEGIN { extends 'Catalyst::Controller'; }
-use POSIX qw(strftime);
-use DateTime;
+
 =head1 NAME
 
-ExcelLibrary::Controller::AdminDashboard - Catalyst Controller
+ExcelLibrary::Controller::DashBoard - Catalyst Controller
 
 =head1 DESCRIPTION
 
@@ -20,15 +16,16 @@ Catalyst Controller.
 
 =cut
 
-
 =head2 index
 
 =cut
-sub home : Path('/home'){
-	my ($self,$c) = @_;
-	$c->stash->{username} = $c->user->Name;
-}
 
+sub dashboard :Path :Args(0) {
+    my ( $self, $c ) = @_;
+	$c->stash->{username} = $c->user->Name;
+	$c->stash->{role} = $c->user->Role;
+	
+}
 
 sub request : Path('/request')
 {
@@ -109,6 +106,7 @@ sub managerequest : Local
 	$c->forward('request');
 	$c->stash->{template} = "admindashboard/request.tt";
 }
+
 sub getbookcopies : Local
 {
 	my($self,$c) = @_;
@@ -133,7 +131,6 @@ sub getbookcopies : Local
 
 	$c->forward('View::JSON');
 }
-
 sub issuebook : Local
 {
 	my($self,$c) = @_;
@@ -172,6 +169,7 @@ sub issuebook : Local
 	$c->forward('request');
 	$c->stash->{template} = "admindashboard/request.tt";
 }
+
 sub book : Path('/book')
 {
 	my($self,$c) = @_;
@@ -209,6 +207,8 @@ sub book : Path('/book')
 	$c->stash->{messages} = \%books;
 
 }
+
+
 sub copy_details :Local
 {
 
@@ -262,15 +262,16 @@ sub copy_details :Local
 
 }
 
- sub delete_copy :Local
- {
+
+sub delete_copy :Local
+{
   my ($self,$c)=@_;
   my $copyid = $c->req->params->{CopyId};
   my $del_copy =$c->model('Library::BookCopy')->find({ Id => $copyid });
   $del_copy->Status('Removed');
 	 $del_copy->update;
   $c->forward('copy_details');
-  }
+}
 
 sub addBook :Local
 {
@@ -280,7 +281,8 @@ sub addBook :Local
 	my $type = $c->request->params->{'type'};
 	my $noOfCopies = $c->request->params->{'count'};
 	my $loginId = $c->user->Id;
-	my $datestring =strftime " %F %X", gmtime;
+	my $current_date  = DateTime->now(time_zone => 'Asia/Kolkata');
+	my $datestring = $current_date->ymd('-') . " " . $current_date->hms(':');
 	my $adminId = $c->user->Id;
 	my @respdata = $c->model('Library::Book')->create({
 
@@ -400,13 +402,6 @@ sub returnbook : Local
 	$c->stash->{result} = 1; 	
 	$c->forward('View::JSON');
 }
-
-
-sub index :Path :Args(0) {
-    my ( $self, $c ) = @_;
-    $c->response->body('Matched ExcelLibrary::Controller::AdminDashboard in AdminDashboard.');
-}
-
 =encoding utf8
 
 =head1 AUTHOR

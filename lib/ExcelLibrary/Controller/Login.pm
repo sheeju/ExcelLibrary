@@ -18,16 +18,15 @@ Catalyst Controller.
 
 =cut
 
-
 =head2 index
 
 =cut
 
-sub index : Path :Args(0) {
-	my ($self ,$c ) =@_;
-	$c->forward('View::TT');
+sub index : Path : Args(0)
+{
+    my ($self, $c) = @_;
+    $c->forward('View::TT');
 }
-
 
 sub validate :Local {
 
@@ -41,25 +40,12 @@ sub validate :Local {
 			} ))
 
 	{ 
-		if($c->user->Role eq 'Employee')
-		{
-			my $userId =$c->user->Id;
-			my $userName =$c->user->Name;
-			$c->stash->{user} = $userName;
-			$c->res->redirect($c->uri_for_action('userdashboard/emp'));
-			$c->stash->{template} = "userdashboard/emp.tt";
-			$c->forward('View::TT');
-		}
-		else
-		{
-			my $adminName =$c->user->Name;
-			my $adminId =$c->user->Id;
-			$c->res->redirect($c->uri_for_action('admindashboard/home'));
-			$c->stash->{template} = "admindashboard/home.tt";
-			$c->forward('View::TT');
-		}
+		$c->res->redirect($c->uri_for_action('dashboard/dashboard'));
+		$c->stash->{template} = "dashboard/dashboard.tt";
+        $c->forward('View::TT');
 	} 
-	else {
+	else 
+	{
 
 		$c->stash->{failmsg}  = "does not match user name and password";
 		$c->forward('View::JSON');
@@ -68,9 +54,10 @@ sub validate :Local {
 }
 
 
-sub logout : Local {
-	my ( $self, $c ) = @_;
-	$c->logout();
+sub logout : Local
+{
+    my ($self, $c) = @_;
+    $c->logout();
 }
 
 =encoding utf8
