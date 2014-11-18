@@ -103,19 +103,19 @@
         [% FOREACH msg IN messages.keys %]
         <tr>
             <td>
-                [% messages.$msg.Count %]
+                [% messages.$msg.count %]
             </td>
             <td>
-                [% messages.$msg.Name %]
+                [% messages.$msg.name %]
             </td>
             <td>
-                [% messages.$msg.Type %]
+                [% messages.$msg.type %]
             </td>
             <td>
-                [% messages.$msg.Author %]
+                [% messages.$msg.author %]
             </td>
             <td>
-                [% messages.$msg.Status %]
+                [% messages.$msg.status %]
             </td>
             [% IF role == 'Employee' %]
             <td>
@@ -125,7 +125,7 @@
             [% END %]
             [% IF role == 'Admin' %]
             <td>
-                <button type="submit" id="[% messages.$msg.Id %]" name='txt_details' data-toggle="modal" data-target=".bs-example-modal-lg" class="btn btn-primary btn-sm a1"><span class="glyphicon glyphicon-eye-open"></button>
+                <button type="submit" id="[% messages.$msg.Id %]" name='txt_details' data-toggle="modal" data-target=".bs-example-modal-lg" class="btn btn-primary btn-sm viewdetails"><span class="glyphicon glyphicon-eye-open"></button>
 				</td>
 				[% END %]
 			<td>
@@ -153,7 +153,7 @@
 		});
 
 
-			$('.a1').click(function(){
+			$('.viewdetails').click(function(){
 				var bookid=$(this).attr('id');
 				$.ajax( 
 				{
@@ -165,19 +165,19 @@
 				}).done(function(data)
 				{
 
-					$('.a2').remove();
+					$('.bookcopy').remove();
 					var count = 1;
 					$.each(data, function(index1, value1)
 					{
 						$.each(value1, function(index,value)
 						{
-							$('#details_table').append('<tr class="a2 '+ value.Id+'">'+
+							$('#details_table').append('<tr class="bookcopy'+ value.Id+'">'+
 								'<td>'+ count +'</td>'+
-								'<td>'+ value.Id +'</td>'+
-								'<td>'+ value.Status +'</td>'+
-								'<td>'+ value.EmpName +'</td>'+
-								'<td>'+ value.IssuedDate +'</td>'+
-								'<td>'+ value.ReturnDate +'</td>'+
+								'<td>'+ value.id +'</td>'+
+								'<td>'+ value.status +'</td>'+
+								'<td>'+ value.empname +'</td>'+
+								'<td>'+ value.issueddate +'</td>'+
+								'<td>'+ value.returndate +'</td>'+
 								'<td>'+ value.button +'</td></tr>');
 							count = count + 1;
 						}); 
