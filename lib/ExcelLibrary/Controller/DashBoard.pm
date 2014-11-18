@@ -205,11 +205,12 @@ sub book : Path('/book')
 
     }
     $c->stash->{messages} = \%books;
+    $c->stash->{role}     = $c->user->Role;
 
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan 18/11/2014~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-sub copy_details : Local
+sub copydetails : Local
 {
 
     my ($self, $c) = @_;
@@ -268,7 +269,7 @@ sub copy_details : Local
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-sub delete_copy : Local
+sub deletecopy : Local
 {
     my ($self, $c) = @_;
     my $copyid = $c->req->params->{CopyId};
@@ -278,7 +279,7 @@ sub delete_copy : Local
     $c->forward('copy_details');
 }
 
-sub addBook : Local
+sub addbook : Local
 {
     my ($self, $c) = @_;
     my $name         = $c->request->params->{'name'};
@@ -305,7 +306,7 @@ sub addBook : Local
     $c->forward('View::JSON');
 }
 
-sub Book_request : Local
+sub bookrequest : Local
 {
 
     my ($self, $c) = @_;
