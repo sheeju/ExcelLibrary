@@ -131,8 +131,8 @@ sub getbookcopies : Local
 sub issuebook : Local
 {
     my ($self, $c) = @_;
-    my $req_id      = $c->req->params->{req_id};
-    my $bookcopy_id = $c->req->params->{bc_id};
+    my $req_id       = $c->req->params->{req_id};
+    my $bookcopy_id  = $c->req->params->{bc_id};
     my $loginid      = $c->user->Id;
     my $current_date = DateTime->now(time_zone => 'Asia/Kolkata');
     my $issuedate    = $current_date->ymd('-') . " " . $current_date->hms(':');
@@ -260,7 +260,9 @@ sub copydetails : Local
         $bookcopy{$transaction->BookCopyId}{IssuedDate} = $transaction->IssuedDate;
         $bookcopy{$transaction->BookCopyId}{ReturnDate} = $transaction->ExpectedReturnDate;
         $bookcopy{$transaction->BookCopyId}{button} =
-            '<button type="button" id="'. $transaction->BookCopyId. '" class="btn btn-primary btn-sm dlt disabled">'
+            '<button type="button" id="'
+          . $transaction->BookCopyId
+          . '" class="btn btn-primary btn-sm dlt disabled">'
           . '<span class="glyphicon glyphicon-lock "></span></button>';
     }
     $c->stash->{detail} = \%bookcopy;
