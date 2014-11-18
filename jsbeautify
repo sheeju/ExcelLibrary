@@ -69,7 +69,6 @@ sub tidy_file {
 
 	#print join(" ", @bak_cmd)."\n";
 	#print join(" ", @beautify_cmd)."\n";
-	print "$file is alligned\n";
 
 	system(@bak_cmd) == 0
 		 or die "system @bak_cmd failed: $?";
