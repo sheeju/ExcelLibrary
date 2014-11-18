@@ -1,12 +1,3 @@
-<script type="text/javascript" src="../source/js/jquery.js"></script>
-<script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
-<script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.min.js"></script>
-<link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
-<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
-<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
-<script type="text/javascript" src="source/bootstrap/dist/js/bootstrap.js"></script>
-
 <br><br>
 <form name="book_return">
 	<div class="row ">
@@ -49,6 +40,15 @@
 	</div>
 
 </form>
+<script type="text/javascript" src="../source/js/jquery.js"></script>
+<script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
+<script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.min.js"></script>
+<link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
+<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
+<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
+<script type="text/javascript" src="source/bootstrap/dist/js/bootstrap.js"></script>
+
 <script>
 	$(document).ready(function()
 	{
@@ -63,7 +63,7 @@
 			{
 				$.ajax( 
 				{ 
-					url : 'admindashboard/gettransactionbycopyid', 
+					url : 'dashboard/gettransactionbycopyid', 
 					contentType : 'text/html', 
 					dataType : 'json',
 					data : {copy_id : copy_id}
@@ -108,7 +108,7 @@
 			var comment = $('#comment').val();
 			$.ajax( 
 			{ 
-				url : 'admindashboard/returnbook', 
+				url : 'dashboard/returnbook', 
 				contentType : 'text/html', 
 				dataType : 'json',
 				data : {copy_id : copy_id,comment : comment }
