@@ -26,7 +26,7 @@ sub dashboard : Path : Args(0)
     my ($self, $c) = @_;
     $c->stash->{username} = $c->user->Name;
     $c->stash->{role}     = $c->user->Role;
-
+	$c->forward('View::TT')
 }
 
 sub request : Path('/request')
@@ -77,6 +77,7 @@ sub request : Path('/request')
             }
         );
     }
+	$c->forward('View::TT')
 }
 
 sub managerequest : Local
@@ -357,7 +358,7 @@ sub bookrequest : Local
 sub bookreturn : Path('/bookreturn')
 {
     my ($self, $c) = @_;
-
+	$c->forward('View::TT')
 }
 
 sub gettransactionbycopyid : Local
@@ -390,6 +391,28 @@ sub gettransactionbycopyid : Local
     $c->forward('View::JSON');
 }
 
+sub gettransactionbyemployeeid : Local
+{
+	my ($self, $c) = @_;
+    my $copyid         = $c->req->params->{copy_id};
+    my @transaction_rs = $c->model('Library::Transaction')->search(
+        {
+            "me.BookCopyId"   => $copyid,
+            "me.Status"       => 'Issued',
+            "me.ReturnedDate" => {'=', undef}
+        },
+        {
+            join      => ['employee',      'book'],
+            '+select' => ['employee.Name', 'book.Name'],
+            '+as'     => ['Employee Name', 'Book Name']
+        }
+    );
+	foreach my $transaction (@transaction_rs)
+	{
+
+	}
+
+}
 sub returnbook : Local
 {
     my ($self, $c) = @_;
