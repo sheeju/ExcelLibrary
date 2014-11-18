@@ -19,22 +19,22 @@
             <div class="modal-body">
                 <form role="form" id="book_insertion" method="POST">
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Book Name</label>
+                        <label >Book Name</label>
                         <input type="Name" class="form-control" id="bookName" name="bookName" placeholder="Name">
                     </div>
                     <br/>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Book Type</label>
+                        <label>Book Type</label>
                         <input type="text" class="form-control" id="bookType" name="bookType" placeholder="Type">
                     </div>
                     <br/>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Author</label>
-                        <input type="text" class="form-control" id="Author" name="Author" placeholder="Author">
+                        <label>Author</label>
+                        <input type="text" class="form-control" id="author" name="author" placeholder="Author">
                     </div>
                     <br/>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">No Of Copies</label>
+                        <label>No Of Copies</label>
                         <input type="number" class="form-control" id="noOfCopies" name="noOfCopies" placeholder="Count" min=1 value=1>
                     </div>
 
@@ -213,10 +213,8 @@
 	}); 
 
 
-//	$('.alert').hide();
 	$('#addbook').click(function(){
 
-		var name = $('#bookName').val();
 		jQuery.validator.setDefaults({
 			debug: true,
 			success: "valid"
@@ -226,22 +224,28 @@
 		$("#book_insertion").validate({
 			rules: {
 				bookName: {
-					required:true
+					required:true,
+					alphanumeric:true
 				},
 				bookType: {
-					required :true
+					required :true,
+					  alphanumeric:true
+
 				},
-				Author: {
-					required :true
+				author: {
+					required :true,
+					lettersonly:true
+
 				},
 				noOfCopies : {
-					number :true
+					number :true,
+					digits: true
 				}
 			},
 			submitHandler : function(form){
 				var url = "/dashboard/addbook";
 				var name = $('#bookName').val();
-				var author = $('#Author').val();
+				var author = $('#author').val();
 				var type = $('#bookType').val();
 				var noOfCopies = $('#noOfCopies').val();
 				$.ajax({
