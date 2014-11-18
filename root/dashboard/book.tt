@@ -1,114 +1,133 @@
 <br>
-<div class="alert alert-danger hidden" >
-	<a href="#" class="close"  >&times;</a>
-	<strong>Warning!</strong> Maximum 2 books Requested.
+<div class="alert alert-danger hidden">
+    <a href="#" class="close">&times;</a>
+    <strong>Warning!</strong> Maximum 2 books Requested.
 </div>
+[% IF role == 'Admin' %]
 <button type="button" style="margin:5px 5px" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
-	Add New Book
+    Add New Book
 </button>
+[% END %]
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				<h4 class="modal-title" id="myModalLabel">Add Book</h4>
-			</div>
-			<div class="modal-body">
-				<form role="form" id ="book_insertion" method ="POST">
-					<div class="form-group">
-						<label for="exampleInputEmail1">Book Name</label>
-						<input type="Name" class="form-control" id="bookName" name ="bookName" placeholder="Name" >
-					</div>
-					<br/>
-					<div class="form-group">
-						<label for="exampleInputEmail1">Book Type</label>
-						<input type="text" class="form-control" id="bookType" name ="bookType" placeholder="Type" >
-					</div>
-					<br/>
-					<div class="form-group">
-						<label for="exampleInputEmail1">Author</label>
-						<input type="text" class="form-control" id="Author" name ="Author" placeholder="Author" >
-					</div>
-					<br/>
-					<div class="form-group">
-						<label for="exampleInputPassword1">No Of Copies</label>
-						<input type="number" class="form-control" id="noOfCopies" name ="noOfCopies" placeholder="Count" min =1 value=1>
-					</div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Add Book</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" id="book_insertion" method="POST">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Book Name</label>
+                        <input type="Name" class="form-control" id="bookName" name="bookName" placeholder="Name">
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Book Type</label>
+                        <input type="text" class="form-control" id="bookType" name="bookType" placeholder="Type">
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Author</label>
+                        <input type="text" class="form-control" id="Author" name="Author" placeholder="Author">
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">No Of Copies</label>
+                        <input type="number" class="form-control" id="noOfCopies" name="noOfCopies" placeholder="Count" min=1 value=1>
+                    </div>
 
-					<label id= "sucess_message" ></label>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-primary" id ="addbook">ADD</button>
-						<button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
+                    <label id="sucess_message"></label>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="addbook">ADD</button>
+                        <button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="modal fade bs-example-modal-lg" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				<h4 class="modal-title" id="myModalLabel">Book Details</h4>
-			</div>
-			<div class="modal-body">
-				<br/>
-				<div class="form-group pull-right">
-					<label for="exampleInputPassword1">No Of Copies</label>
-					<input type="number" class="form-control" id="Count_id" placeholder="Count">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Book Details</h4>
+            </div>
+            <div class="modal-body">
+                <br/>
+                <div class="form-group pull-right">
+                    <label for="exampleInputPassword1">No Of Copies</label>
+                    <input type="number" class="form-control" id="Count_id" placeholder="Count">
 
-				</div>
-		<table id="details_table" class="table table-hover table-bordered table-stripped table-condensed info table-responsive" cellspacing="0" width="100%">
-					<thead>
-						<tr>
-							<th>No</th>
-							<th>Copy ID</th>
-							<th>Status</th>
-							<th>Employee Name</th>
-							<th>Issued Date</th>
-							<th>Return Date</th>
-							<th>Delete</th>
-						</tr>
-					</thead>
-				</table>
-			</div>
-		</div>
-	</div>
+                </div>
+                <table id="details_table" class="table table-hover table-bordered table-stripped table-condensed info table-responsive" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Copy ID</th>
+                            <th>Status</th>
+                            <th>Employee Name</th>
+                            <th>Issued Date</th>
+                            <th>Return Date</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 <table id="table" class="display" cellspacing="0" width="100%">
-	<thead>
-		<tr>
-			<th>No</th>
-			<th>Book ID</th>
-			<th>Book Name</th>
-			<th>Book Type</th>
-			<th>Book Author</th>
-			<th>Book Status</th>
-			<th>Book Request</th>
-			<th>View Details</th>
-			<th>Comment</th>
-		</tr>
-	</thead>
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Book Name</th>
+            <th>Book Type</th>
+            <th>Book Author</th>
+            <th>Book Status</th>
+            [% IF role == 'Employee' %]
+            <th>Book Request</th>
+            [% END %]
+            [% IF role == 'Admin' %]
+            <th>View Details</th>
+            [% END %]
+            <th>Comment</th>
+        </tr>
+    </thead>
 
-	<tbody class="details">
-		[% FOREACH msg IN messages.keys %]
-		<tr>
-			<td>[% messages.$msg.Count %]</td>
-			<td>[% messages.$msg.Id %]</td>
-			<td>[% messages.$msg.Name %]</td>
-			<td>[% messages.$msg.Type %]</td>
-			<td>[% messages.$msg.Author %]</td>
-			<td>[% messages.$msg.Status %]</td>
-			<td>
-			<input type="button" id= "[% messages.$msg.Id %]" name='book_request' value="Book Request" class="form-control btn-primary book_req"/>
+    <tbody class="details">
+        [% FOREACH msg IN messages.keys %]
+        <tr>
+            <td>
+                [% messages.$msg.Count %]
+            </td>
+            <td>
+                [% messages.$msg.Name %]
+            </td>
+            <td>
+                [% messages.$msg.Type %]
+            </td>
+            <td>
+                [% messages.$msg.Author %]
+            </td>
+            <td>
+                [% messages.$msg.Status %]
+            </td>
+            [% IF role == 'Employee' %]
+            <td>
+                <button type="button" id="[% messages.$msg.Id %]" name='book_request' class="btn btn-sm btn-primary book_req"><span class="glyphicon glyphicon-send"></button>
 			  <span id="lbl[%messages.$msg.Id%]"  class="label label-info displaymessage hidden">Book Requested</span>
-			</td>
-
-			<td>
-				<button type="submit" id="[% messages.$msg.Id %]" name='txt_details' data-toggle ="modal" data-target=".bs-example-modal-lg" class="btn btn-primary btn-sm a1"><span class="glyphicon glyphicon-eye-open"></button>
-			</td>
+            </td>
+            [% END %]
+            [% IF role == 'Admin' %]
+            <td>
+                <button type="submit" id="[% messages.$msg.Id %]" name='txt_details' data-toggle="modal" data-target=".bs-example-modal-lg" class="btn btn-primary btn-sm a1"><span class="glyphicon glyphicon-eye-open"></button>
+				</td>
+				[% END %]
 			<td>
 				<button type="button" name='txt_review' value="Review" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-comment"></button>
 			</td>
@@ -130,7 +149,7 @@
 <script>
 	$(document).ready(function() {
 		$('#table').DataTable({
-			"columnDefs": [ { "targets": [6,7,8], "orderable": false } ]	
+			"columnDefs": [ { "targets": [5,6], "orderable": false } ]	
 		});
 
 
@@ -138,7 +157,7 @@
 				var bookid=$(this).attr('id');
 				$.ajax( 
 				{
-					url:'admindashboard/copy_details',
+					url:'dashboard/copydetails',
 					contentType:'text/html', 
 					data:{
 						Id:bookid,
@@ -171,7 +190,7 @@
 						var copyid = id; 
 						$.ajax( 
 						{
-							url:'admindashboard/delete_copy',
+							url:'dashboard/deletecopy',
 							contentType:'text/html', 
 							data:{
 								CopyId:copyid,
@@ -220,7 +239,7 @@
 				}
 			},
 			submitHandler : function(form){
-				var url = "/admindashboard/addBook";
+				var url = "/dashboard/addbook";
 				var name = $('#bookName').val();
 				var author = $('#Author').val();
 				var type = $('#bookType').val();
@@ -252,7 +271,7 @@
 	$('.book_req').click(function(){
 		var bookid=$(this).attr('id');
 		$.ajax({    
-			url:"/admindashboard/Book_request",
+			url:"/dashboard/bookrequest",
 			data :{
 				bookId :bookid,
 			},
@@ -274,4 +293,3 @@
 		});
 	})
 </script>
-
