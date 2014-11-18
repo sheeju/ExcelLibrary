@@ -1,104 +1,79 @@
 <!DOCTYPE html>
 <html>
-	<head>
 
-		<script type="text/javascript" src="../source/js/jquery.js"></script>
-		<script type="text/javascript" src="../source/bootstrap/dist/js/bootstrap.js"></script>
-		<link rel="stylesheet" type="text/css" href="../source/bootstrap/dist/css/bootstrap.css">
-		<link rel="stylesheet" type="text/css" href="../source/css/login.css">
-		<script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
-		<script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.min.js"></script>
-		<link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
-		<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
-		<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
+<head>
 
+    <script type="text/javascript" src="../source/js/jquery.js"></script>
+    <script type="text/javascript" src="../source/bootstrap/dist/js/bootstrap.js"></script>
+    <link rel="stylesheet" type="text/css" href="../source/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../source/css/login.css">
+    <script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
+    <script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.min.js"></script>
+    <link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
+    <script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
+    <link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/jquery.dataTables.css" />
+    <script type="text/javascript" src="../source/js/jquery.validate.min.js"></script>
 
-		<script>
-			$(document).ready(function()
-			{
-				jQuery.validator.setDefaults({
-					debug: true,
-					success: "valid"
-				});
-				$( "#loginform" ).validate({
-					rules: {
-						email: {
-							required: true,
-							email: true
-						},
-						password : {
-							required :true,
-						}
-					},
-					submitHandler :function(form){
+    <script>
+        $(document).ready(function() {
+            jQuery.validator.setDefaults({
+                debug: true,
+                success: "valid"
+            });
 
-						var email = $('#user_email').val();
-						var password = $('#user_password').val();
-						var	url = '/login/validate';
-						$.ajax({
-							type :"POST",
-							url :url,
-							data :{
-								email :email,
-								password :password
-							},
-							success : function ( data ) {
-								if(data.failmsg =="does not match user name and password")
-								{
-									$('#resdata').html(data.failmsg);
-									$('#user_email').val("");
-									$('#user_password').val("");
-									$('#resdata').val("");
+            $("#loginform").validate({
+                rules: {
+                    email: {
+                        required: true,
+                        email: true
+                    },
+                    password: {
+                        required: true,
+                    }
+                },
+                submitHandler: function(form) {
+                    form.submit();
 
-								}	
-								else
-								{
-									$("body").html(data);
-								}	
-							}
-						});
-					}
-				});
-			});
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-4" style="margin-top: 100px;">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Login via Email</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form accept-charset="UTF-8" role="form" id="loginform" action="/login" method="POST">
+                            <fieldset>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="yourmail@example.com" id="user_email" name="email" type="email">
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Password" name="password" id="user_password" type="password" value="">
+                                </div>
+                                <hr/>
+                                <div class="checkbox">
+                                    <label>
+                                        <input name="remember" type="checkbox" value="Remember Me">Remember Me
+                                    </label>
+                                </div>
+                                <input class="btn btn-lg btn-primary btn-block" type="submit" id="btn_login" name="btn_submit" value="Login">
+                            </fieldset>
+                        </form>
+                        <hr/>
+                        [% IF failmessage %]
+                        <label style="color:red" id="resdata">Invalid Username and Password</label>
+                        [% END %]
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
 
-		</script>
-
-
-
-
-	</head>
-	<body>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-4 col-md-offset-4" style="margin-top: 100px;">
-					<div class="panel panel-default">
-						<div class="panel-heading">
-							<h3 class="panel-title">Login via Email</h3>
-						</div>
-						<div class="panel-body">
-							<form accept-charset="UTF-8" role="form" id ="loginform"  method ="POST" >
-								<fieldset>
-									<div class="form-group">
-										<input class="form-control" placeholder="yourmail@example.com" id ="user_email" name="email" type="text">
-									</div>
-									<div class="form-group">
-										<input class="form-control" placeholder="Password" name="password"  id ="user_password" type="password" value="">
-									</div>
-									<hr/>
-									<div class="checkbox">
-										<label>
-											<input name="remember" type="checkbox" value="Remember Me"> Remember Me
-										</label>
-									</div>
-									<input class="btn btn-lg btn-primary btn-block" type="submit" id ="btn_login" name="btn_submit"  value="Login">
-								</fieldset>
-							</form>
-							<hr/>
-							<label  style="color:red" id ="resdata"></label>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</body>
 </html>

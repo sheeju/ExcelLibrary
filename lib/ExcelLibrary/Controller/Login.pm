@@ -22,37 +22,35 @@ Catalyst Controller.
 
 =cut
 
-sub index : Path : Args(0)
+sub index : Path('/login') : Args(0)
 {
     my ($self, $c) = @_;
+    if ($c->req->method eq 'POST') {
+
+        if (
+            $c->authenticate(
+                {
+                    "Email"    => $c->request->params->{'email'},
+                    "Password" => $c->request->params->{'password'}
+                }
+            )
+          )
+
+        {
+            $c->res->redirect($c->uri_for_action('dashboard/dashboard'));
+            $c->stash->{template} = "dashboard/dashboard.tt";
+            $c->forward('View::TT');
+        }
+        else {
+
+            $c->stash->{failmessage} = 1;
+
+            #  $c->forward('View::JSON');
+        }
+
+    }
     $c->forward('View::TT');
 }
-
-sub validate :Local {
-
-	my ($self, $c )  =@_;
-#	my $digest = md5_hex($c->request->params->{password});
-#	print Dumper $digest;
-
-	if ($c->authenticate( { 
-				"Email" => $c->request->params->{'email'}, 
-				"Password" => $c->request->params->{'password'} 
-			} ))
-
-	{ 
-		$c->res->redirect($c->uri_for_action('dashboard/dashboard'));
-		$c->stash->{template} = "dashboard/dashboard.tt";
-        $c->forward('View::TT');
-	} 
-	else 
-	{
-
-		$c->stash->{failmsg}  = "does not match user name and password";
-		$c->forward('View::JSON');
-	}
-
-}
-
 
 sub logout : Local
 {
