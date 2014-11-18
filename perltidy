@@ -41,7 +41,6 @@ if(-f $root) {
 		closedir DIR;
 	}
 }
-print Dumper \@files;
 for my $file (@files) {
     tidy_file($file);
 }

@@ -25,7 +25,6 @@ Catalyst Controller.
 sub index : Path('/login') : Args(0)
 {
     my ($self, $c) = @_;
-    if ($c->req->method eq 'POST') {
 
         if (
             $c->authenticate(
@@ -38,18 +37,22 @@ sub index : Path('/login') : Args(0)
 
         {
             $c->res->redirect($c->uri_for_action('dashboard/dashboard'));
-            $c->stash->{template} = "dashboard/dashboard.tt";
-            $c->forward('View::TT');
         }
         else {
+		if(defined $c->req->params->{email})
+		{
 
-            $c->stash->{failmessage} = 1;
+			$c->stash->{failmessage} = 1;
+		}
+		else
+		{
 
-            #  $c->forward('View::JSON');
-        }
+			$c->stash->{failmessage} = 0;
 
-    }
-    $c->forward('View::TT');
+		}
+
+		$c->forward('View::TT');
+	}
 }
 
 sub logout : Local

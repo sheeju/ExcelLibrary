@@ -48,7 +48,7 @@
                         <h3 class="panel-title">Login via Email</h3>
                     </div>
                     <div class="panel-body">
-                        <form accept-charset="UTF-8" role="form" id="loginform" action="/login" method="POST">
+                        <form accept-charset="UTF-8" role="form" id="loginform" action="/login" method="GET">
                             <fieldset>
                                 <div class="form-group">
                                     <input class="form-control" placeholder="yourmail@example.com" id="user_email" name="email" type="email">
