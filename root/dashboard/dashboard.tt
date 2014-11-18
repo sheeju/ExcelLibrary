@@ -86,9 +86,6 @@
 				alert("error" + err);  
 			});
 		}
-		$('#details').click(function(){
-			var id=$('#Book_Id').val();
-		});
 		$('.menu').click(function(){
 			var id = $(this).attr('id');
 			var path = "/"+id;

@@ -13,13 +13,24 @@
 	<tbody>
 		[% FOREACH m = messages %]
 			<tr>
-				<td> [% m.No %]</td>
-				<td> [% m.RequestedDate %]</td>
-				<td> [% m.EmployeeName %]</td>
-				<td> [% m.BookId %]</td>
-				<td> [% m.BookName %]</td>
+				<td> [% m.no %]</td>
+				<td> [% m.requesteddate %]</td>
+				<td> [% m.employeename %]</td>
+				<td> [% m.bookid %]</td>
+				<td> [% m.bookname %]</td>
 				<td>
-					[% m.Button %]
+					[% IF m.status == 'accept' %]
+						<input type="button" id="[% m.id %]" name="btn_issue" value="Issue" class="btn btn-primary book_issue" data-toggle="modal" data-target="#myModal"/>  
+					[% ELSIF m.status == 'na' %]
+						<span class="label label-info">Book Not Available For Issue</span>
+					[% ELSE %]
+						<button id ="[% m.id %]" name="btn_accept" class="btn btn-primary btn-sm req_allow">
+							<span class="glyphicon    glyphicon-ok" aria-hidden="true"></span>
+						</button> 
+				        <button  id ="[% m.id %]" name="btn_reject" class="btn btn-danger btn-sm req_deny">
+					     	<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+						</button>
+					[% END %]
 				</td>
 			</tr>
 		[% END %]
@@ -76,7 +87,7 @@
 		{
 			$.ajax( 
 			{ 
-				url :'admindashboard/managerequest', 
+				url :'dashboard/managerequest', 
 				contentType :'text/html', 
 				dataType :'html', 
 				data :{id : id, response : response}
@@ -96,7 +107,7 @@
 			$('#div_model_cmb').removeClass('hidden');
 			$.ajax( 
 			{ 
-				url :'admindashboard/getbookcopies', 
+				url :'dashboard/getbookcopies', 
 				contentType :'text/html', 
 				dataType :'json', 
 				data :{req_id : req_id}
@@ -124,7 +135,7 @@
 			var bc_id = $('#cmb_booklist').val();
 			$.ajax( 
 			{ 
-				url :'admindashboard/issuebook', 
+				url :'dashboard/issuebook', 
 				contentType :'text/html', 
 				dataType :'html', 
 				data :{req_id : req_id, bc_id : bc_id }

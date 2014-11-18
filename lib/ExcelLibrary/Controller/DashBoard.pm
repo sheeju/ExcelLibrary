@@ -1,7 +1,7 @@
 package ExcelLibrary::Controller::DashBoard;
 use Moose;
 use namespace::autoclean;
-
+use DateTime;
 BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
@@ -20,6 +20,7 @@ Catalyst Controller.
 
 =cut
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan 18/11/2014~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub dashboard : Path : Args(0)
 {
     my ($self, $c) = @_;
@@ -31,9 +32,11 @@ sub dashboard : Path : Args(0)
 sub request : Path('/request')
 {
     my ($self, $c) = @_;
-    my ($r, $count);
+    my $count;
+    my $transaction;
+    my $status;
     $count = 1;
-    my @request = $c->model('Library::Transaction')->search(
+    my @transaction_rs = $c->model('Library::Transaction')->search(
         {
 
             "me.Status" => 'Requested',
@@ -44,41 +47,33 @@ sub request : Path('/request')
             '+as'     => ['Employee Name', 'Book Name']
         }
     );
-    my $bookcopy_resulset = $c->model('Library::BookCopy')->search({});
-    foreach $r (@request) {
+    my $bookcopy_rs = $c->model('Library::BookCopy')->search({});
+    foreach $transaction (@transaction_rs) {
 
-        my $Button;
-        if (defined $r->UpdatedBy) {
-            my $bookcopy = $bookcopy_resulset->search({"BookId" => $r->BookId, "Status" => "Available"});
-            my $book;
+        if (defined $transaction->UpdatedBy) {
+            my $book = $bookcopy_rs->search({"BookId" => $transaction->BookId, "Status" => "Available"});
 
-            if ($bookcopy->next) {
-                $Button =
-                    '<input type="button" id="'
-                  . $r->Id
-                  . '" name="btn_issue" value="Issue" class="btn btn-primary book_issue" data-toggle="modal" data-target="#myModal"/>';
+            if ($book->next) {
+                $status = "accept";
             }
             else {
-                $Button = '<span class="label label-info">Book Not Available For Issue</span>';
+
+                $status = "na";
             }
         }
         else {
-
-            $Button = '<button id ="' . $r->Id . '" name="btn_accept" class="btn btn-primary btn-sm req_allow">
-				 <span class="glyphicon	glyphicon-ok" aria-hidden="true"></span></button> 
-				 <button  id ="' . $r->Id . '" name="btn_reject" class="btn btn-danger btn-sm req_deny">
-				 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>'
+            $status = "req";
         }
-
         push(
             @{$c->stash->{messages}},
             {
-                No            => $count++,
-                RequestedDate => $r->RequestDate,
-                EmployeeName  => $r->get_column('Employee Name'),
-                BookId        => $r->BookId,
-                BookName      => $r->get_column('Book Name'),
-                Button        => $Button
+                no            => $count++,
+                id            => $transaction->Id,
+                requesteddate => $transaction->RequestDate,
+                employeename  => $transaction->get_column('Employee Name'),
+                bookid        => $transaction->BookId,
+                bookname      => $transaction->get_column('Book Name'),
+                status        => $status
             }
         );
     }
@@ -87,17 +82,18 @@ sub request : Path('/request')
 sub managerequest : Local
 {
     my ($self, $c) = @_;
-    my $req_id   = $c->req->params->{id};
-    my $response = $c->req->params->{response};
-    my $loginId  = $c->user->Id;
-    my $data     = $c->model('Library::Transaction')->search({"Id" => $req_id});
-    my $d        = $data->next;
-    if ($d->UpdatedBy eq undef) {
+    my $req_id         = $c->req->params->{id};
+    my $response       = $c->req->params->{response};
+    my $loginId        = $c->user->Id;
+    my $transaction_rs = $c->model('Library::Transaction')->search({"Id" => $req_id});
+    my $t              = $transaction_rs->next;
+
+    if ($t->UpdatedBy eq undef) {
         if ($response eq 'Allow') {
-            $data->update({"UpdatedBy" => $loginId});
+            $transaction_rs->update({"UpdatedBy" => $loginId});
         }
         else {
-            $data->update(
+            $transaction_rs->update(
                 {
                     "Status"    => 'Denied',
                     "UpdatedBy" => $loginId
@@ -113,20 +109,18 @@ sub managerequest : Local
 sub getbookcopies : Local
 {
     my ($self, $c) = @_;
-    my $req_id = $c->req->params->{req_id};
-    my $trans = $c->model('Library::Transaction')->search({"Id" => $req_id});
-    my $t;
-    if ($t = $trans->next) {
-        $c->log->info($t->BookId);
-    }
-    my $bookid = $t->BookId;
-    my @books  = $c->model('Library::BookCopy')->search(
+    my $req_id         = $c->req->params->{req_id};
+    my $transaction_rs = $c->model('Library::Transaction')->search({"Id" => $req_id});
+    my $t              = $transaction_rs->next;
+
+    my $bookid   = $t->BookId;
+    my @books_rs = $c->model('Library::BookCopy')->search(
         {
             "Status" => 'Available',
             "BookId" => $bookid
         }
     );
-    foreach my $b (@books) {
+    foreach my $b (@books_rs) {
         $c->log->info($b->Id);
         push(@{$c->stash->{books}}, $b->Id);
     }
@@ -139,40 +133,42 @@ sub issuebook : Local
     my ($self, $c) = @_;
     my $req_id      = $c->req->params->{req_id};
     my $bookcopy_id = $c->req->params->{bc_id};
-    my $ExpectedReturnedDate;
-    my $loginId      = $c->user->Id;
+    my $loginid      = $c->user->Id;
     my $current_date = DateTime->now(time_zone => 'Asia/Kolkata');
     my $issuedate    = $current_date->ymd('-') . " " . $current_date->hms(':');
     my $maxallowday;
+    my $expectedreturneddate;
 
-    my $config = $c->model('Library::Config')->search({});
-    if (my $con = $config->next) {
+    my $config_rs = $c->model('Library::Config')->search({});
+    if (my $con = $config_rs->next) {
         $maxallowday = $con->MaxAllowedDays;
 
     }
-    my $expectedreturn_date = $current_date->add(days => $maxallowday);
-    $ExpectedReturnedDate = $expectedreturn_date->ymd('-') . " " . $expectedreturn_date->hms(':');
 
-    my $data = $c->model('Library::Transaction')->search({"Id" => $req_id});
-    my $d = $data->next;
-    if ($d->IssuedDate eq undef) {
-        $data->update(
+    my $expectedreturn_date = $current_date->add(days => $maxallowday);
+    $expectedreturneddate = $expectedreturn_date->ymd('-') . " " . $expectedreturn_date->hms(':');
+
+    my $transaction_rs = $c->model('Library::Transaction')->search({"Id" => $req_id});
+    my $transaction = $transaction_rs->next;
+    if ($transaction->IssuedDate eq undef) {
+        $transaction_rs->update(
             {
                 "BookCopyId"         => $bookcopy_id,
                 "Status"             => 'Issued',
-                "IssuedBy"           => $loginId,
+                "IssuedBy"           => $loginid,
                 "IssuedDate"         => $issuedate,
-                "ExpectedReturnDate" => $ExpectedReturnedDate
+                "ExpectedReturnDate" => $expectedreturneddate
             }
         );
 
-        $data = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
-        $data->update({"Status" => 'Reading'});
+        my $bookcopy_rs = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
+        $bookcopy_rs->update({"Status" => 'Reading'});
     }
     $c->forward('request');
-    $c->stash->{template} = "admindashboard/request.tt";
+    $c->stash->{template} = "dashboard/request.tt";
 }
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub book : Path('/book')
 {
     my ($self, $c) = @_;
@@ -212,38 +208,40 @@ sub book : Path('/book')
 
 }
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan 18/11/2014~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub copy_details : Local
 {
 
     my ($self, $c) = @_;
     my $bookid = $c->req->params->{Id};
     my $count  = 1;
-    my $rs;
+    my $book;
+    my $transaction;
     my %bookcopy;
 
-    my @bcrs = $c->model('Library::BookCopy')->search(
+    my @bookcopy_rs = $c->model('Library::BookCopy')->search(
         {
             BookId => $bookid,
             Status => {'!=', 'Removed'}
         }
     );
 
-    foreach $rs (@bcrs) {
+    foreach $book (@bookcopy_rs) {
 
-        $bookcopy{$rs->Id} = {
-            Id         => $rs->Id,
-            Status     => $rs->Status,
+        $bookcopy{$book->Id} = {
+            Id         => $book->Id,
+            Status     => $book->Status,
             EmpName    => "-",
             IssuedDate => "-",
             ReturnDate => "-",
             button     => '<button type="button" id="'
-              . $rs->Id
+              . $book->Id
               . '" class="btn btn-primary btn-sm dlt">'
               . '<span class="glyphicon glyphicon-trash"></span></button>'
         };
     }
 
-    @bcrs = $c->model('Library::Transaction')->search(
+    my @transaction_rs = $c->model('Library::Transaction')->search(
         {
             BookId       => $bookid,
             'me.Status'  => 'Issued',
@@ -256,14 +254,12 @@ sub copy_details : Local
         }
     );
 
-    foreach $rs (@bcrs) {
-        $bookcopy{$rs->BookCopyId}{EmpName}    = $rs->get_column('EmpName');
-        $bookcopy{$rs->BookCopyId}{IssuedDate} = $rs->IssuedDate;
-        $bookcopy{$rs->BookCopyId}{ReturnDate} = $rs->ExpectedReturnDate;
-        $bookcopy{$rs->BookCopyId}{button} =
-            '<button type="button" id="'
-          . $rs->BookCopyId
-          . '" class="btn btn-primary btn-sm dlt disabled">'
+    foreach $transaction (@transaction_rs) {
+        $bookcopy{$transaction->BookCopyId}{EmpName}    = $transaction->get_column('EmpName');
+        $bookcopy{$transaction->BookCopyId}{IssuedDate} = $transaction->IssuedDate;
+        $bookcopy{$transaction->BookCopyId}{ReturnDate} = $transaction->ExpectedReturnDate;
+        $bookcopy{$transaction->BookCopyId}{button} =
+            '<button type="button" id="'. $transaction->BookCopyId. '" class="btn btn-primary btn-sm dlt disabled">'
           . '<span class="glyphicon glyphicon-lock "></span></button>';
     }
     $c->stash->{detail} = \%bookcopy;
@@ -271,6 +267,7 @@ sub copy_details : Local
 
 }
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub delete_copy : Local
 {
     my ($self, $c) = @_;
@@ -353,6 +350,7 @@ sub Book_request : Local
     }
 }
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan 18/11/2014~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub bookreturn : Path('/bookreturn')
 {
     my ($self, $c) = @_;
@@ -362,8 +360,8 @@ sub bookreturn : Path('/bookreturn')
 sub gettransactionbycopyid : Local
 {
     my ($self, $c) = @_;
-    my $copyid = $c->req->params->{copy_id};
-    my $trans  = $c->model('Library::Transaction')->search(
+    my $copyid         = $c->req->params->{copy_id};
+    my $transaction_rs = $c->model('Library::Transaction')->search(
         {
             "me.BookCopyId"   => $copyid,
             "me.Status"       => 'Issued',
@@ -375,13 +373,13 @@ sub gettransactionbycopyid : Local
             '+as'     => ['Employee Name', 'Book Name']
         }
     );
-    if (my $t = $trans->next) {
+    if (my $transaction = $transaction_rs->next) {
         $c->stash->{flag}        = 1;
-        $c->stash->{id}          = $t->EmployeeId;
-        $c->stash->{empname}     = $t->get_column('Employee Name');
-        $c->stash->{bookname}    = $t->get_column('Book Name');
-        $c->stash->{issuedate}   = $t->IssuedDate;
-        $c->stash->{ereturndate} = $t->ExpectedReturnDate;
+        $c->stash->{id}          = $transaction->EmployeeId;
+        $c->stash->{empname}     = $transaction->get_column('Employee Name');
+        $c->stash->{bookname}    = $transaction->get_column('Book Name');
+        $c->stash->{issuedate}   = $transaction->IssuedDate;
+        $c->stash->{ereturndate} = $transaction->ExpectedReturnDate;
     }
     else {
         $c->stash->{flag} = 0;
@@ -393,26 +391,27 @@ sub returnbook : Local
 {
     my ($self, $c) = @_;
 
-    my $loginId      = $c->user->Id;
-    my $bookcopy_id  = $c->req->params->{copy_id};
-    my $comment      = $c->req->params->{comment};
-    my $current_date = DateTime->now(time_zone => 'Asia/Kolkata');
-    my $ReturnedDate = $current_date->ymd('-') . " " . $current_date->hms(':');
-    my $data         = $c->model('Library::Transaction')->search({"BookCopyId" => $bookcopy_id});
-    $data->update(
+    my $loginId        = $c->user->Id;
+    my $bookcopy_id    = $c->req->params->{copy_id};
+    my $comment        = $c->req->params->{comment};
+    my $current_date   = DateTime->now(time_zone => 'Asia/Kolkata');
+    my $returneddate   = $current_date->ymd('-') . " " . $current_date->hms(':');
+    my $transaction_rs = $c->model('Library::Transaction')->search({"BookCopyId" => $bookcopy_id});
+    $transaction_rs->update(
         {
-            "ReturnedDate" => $ReturnedDate,
+            "ReturnedDate" => $returneddate,
             "RecivedBy"    => $loginId,
             "Comment"      => $comment
 
         }
     );
-    $data = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
-    $data->update({"Status" => 'Available'});
+    my $bookcopy_rs = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
+    $bookcopy_rs->update({"Status" => 'Available'});
     $c->stash->{result} = 1;
     $c->forward('View::JSON');
 }
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub history : Path('/history')
 {
     my ($self, $c) = @_;
