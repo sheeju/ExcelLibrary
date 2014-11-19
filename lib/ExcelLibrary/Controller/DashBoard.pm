@@ -2,6 +2,7 @@ package ExcelLibrary::Controller::DashBoard;
 use Moose;
 use namespace::autoclean;
 use DateTime;
+use Data::Dumper;
 BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
@@ -187,6 +188,7 @@ sub book : Path('/book')
     );
 
     $c->stash->{user} = $c->user->Name;
+      my $userid = $c->user->Id;
     my %books;
     foreach my $ar (@array) {
         if (!exists($books{$ar->Id})) {
@@ -204,6 +206,34 @@ sub book : Path('/book')
         }
 
     }
+
+
+ my @transaction_rs = $c->model('Library::Transaction')->search(
+        {
+            "EmployeeId" => $userid,
+            "Status" => {'!=', 'Denied'},
+	   "ReturnedDate" => {'=',undef}		
+
+        });
+
+	foreach my $transaction (@transaction_rs)
+	{
+		if($transaction->Status eq 'Requested')
+		{
+			$books{$transaction->BookId}{element} = 'requested';
+		}
+		elsif($transaction->Status eq 'Issued')
+		{
+			$books {$transaction->BookId}{element} = 'issued';
+		}
+		else
+		{
+			$books{$transaction->BookId}{element} = 'default';
+		}
+
+	}
+
+
     $c->stash->{messages} = \%books;
     $c->stash->{role}     = $c->user->Role;
 
@@ -270,7 +300,7 @@ sub copydetails : Local
 
 }
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~copy edited by skanda 19-11-2014~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub deletecopy : Local
 {
     my ($self, $c) = @_;
@@ -288,10 +318,9 @@ sub addbook : Local
     my $author       = $c->request->params->{'author'};
     my $type         = $c->request->params->{'type'};
     my $noOfCopies   = $c->request->params->{'count'};
-    my $loginId      = $c->user->Id;
-    my $current_date = DateTime->now(time_zone => 'Asia/Kolkata');
-    my $datestring   = $current_date->ymd('-') . " " . $current_date->hms(':');
-    my $adminId      = $c->user->Id;
+    my $currentdate = DateTime->now(time_zone => 'Asia/Kolkata');
+    my $datestring   = $currentdate->ymd('-') . " " . $currentdate->hms(':');
+    my $adminid      = $c->user->Id;
     my @respdata     = $c->model('Library::Book')->create(
         {
 
@@ -300,7 +329,7 @@ sub addbook : Local
             Author     => $author,
             NoOfCopies => $noOfCopies,
             AddedOn    => $datestring,
-            AddedBy    => $adminId,
+            AddedBy    => $adminid,
 
         }
     );
@@ -312,11 +341,11 @@ sub bookrequest : Local
 {
 
     my ($self, $c) = @_;
-    my $maxbookFromConfig = 0;
-    my $bookId            = $c->request->params->{'bookId'};
-    my $loginId           = $c->user->Id;
-    my $current_date      = DateTime->now(time_zone => 'Asia/Kolkata');
-    my $requestdate       = $current_date->ymd('-') . " " . $current_date->hms(':');
+    my $maxbookfromconfig = 0;
+    my $bookid            = $c->request->params->{'bookId'};
+    my $loginid           = $c->user->Id;
+    my $currentdate      = DateTime->now(time_zone => 'Asia/Kolkata');
+    my $requestdate       = $currentdate->ymd('-') . " " . $currentdate->hms(':');
     my @maxAllowbookQuery = $c->model('Library::Config')->search(
         undef,
         {
@@ -324,22 +353,22 @@ sub bookrequest : Local
         }
     );
 
-    foreach my $MaxBook (@maxAllowbookQuery) {
-        $maxbookFromConfig = $MaxBook->MaxAllowedBooks;
+    foreach my $Maxbook (@maxAllowbookQuery) {
+        $maxbookfromconfig = $Maxbook->MaxAllowedBooks;
     }
 
-    my $validateBook = $c->model('Library::Transaction')->search(
+    my $validatebook = $c->model('Library::Transaction')->search(
         {
             "Status"     => 'Requested',
-            "EmployeeId" => $loginId,
+            "EmployeeId" => $loginid,
         }
     );
-    my $numberOfRequest = $validateBook->count;
-    if ($maxbookFromConfig > $numberOfRequest) {
+    my $numberofrequest = $validatebook->count;
+    if ($maxbookfromconfig > $numberofrequest) {
         my @reqbook = $c->model('Library::Transaction')->create(
             {
-                "BookId"      => $bookId,
-                "EmployeeId"  => $loginId,
+                "BookId"      => $bookid,
+                "EmployeeId"  => $loginid,
                 "Status"      => 'Requested',
                 "RequestDate" => $requestdate,
             }
@@ -347,7 +376,7 @@ sub bookrequest : Local
         $c->forward('View::JSON');
     }
     else {
-
+	$c->stash->{deniedflag} =1;
         $c->stash->{deniedRequest} = "Each person Have maximum 2 Book Request";
         $c->forward('View::JSON');
     }
