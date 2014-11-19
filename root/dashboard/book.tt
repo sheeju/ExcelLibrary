@@ -1,7 +1,7 @@
 <br>
 <div class="alert alert-danger hidden">
     <a href="#" class="close">&times;</a>
-    <strong>Warning!</strong> Maximum 2 books Requested.
+    <strong>Warning!</strong> Maximum 2 books can Requested.
 </div>
 [% IF role == 'Admin' %]
 <button type="button" style="margin:5px 5px" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
@@ -97,42 +97,53 @@
             [% END %]
             <th>Comment</th>
         </tr>
-    </thead>
+	</thead>
 
-    <tbody class="details">
-        [% FOREACH msg IN messages.keys %]
-        <tr>
-            <td>
-                [% messages.$msg.Count %]
-            </td>
-            <td>
-                [% messages.$msg.Name %]
-            </td>
-            <td>
-                [% messages.$msg.Type %]
-            </td>
-            <td>
-                [% messages.$msg.Author %]
-            </td>
-            <td>
-                [% messages.$msg.Status %]
-            </td>
-            [% IF role == 'Employee' %]
-            <td>
-                <button type="button" id="[% messages.$msg.Id %]" name='book_request' class="btn btn-sm btn-primary book_req"><span class="glyphicon glyphicon-send"></button>
-			  <span id="lbl[%messages.$msg.Id%]"  class="label label-info displaymessage hidden">Book Requested</span>
-            </td>
-            [% END %]
-            [% IF role == 'Admin' %]
-            <td>
-                <button type="submit" id="[% messages.$msg.Id %]" name='txt_details' data-toggle="modal" data-target=".bs-example-modal-lg" class="btn btn-primary btn-sm a1"><span class="glyphicon glyphicon-eye-open"></button>
-				</td>
-				[% END %]
-			<td>
-				<button type="button" name='txt_review' value="Review" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-comment"></button>
-			</td>
-		</tr>
-		[% END %]
+	<tbody class="details">
+	[% FOREACH msg IN messages.keys %]
+	<tr>
+	<td>
+	[% messages.$msg.Count %]
+	</td>
+	<td>
+	[% messages.$msg.Name %]
+	</td>
+	<td>
+	[% messages.$msg.Type %]
+	</td>
+	<td>
+	[% messages.$msg.Author %]
+	</td>
+	<td>
+	[% messages.$msg.Status %]
+	</td>
+	[% IF role == 'Employee' %]
+
+	[% IF messages.$msg.element == 'requested' %]
+	<td>
+	<span id="lbl[%messages.$msg.Id%]"  class="label label-info">Book Requested</span>
+	</td>
+	[% ELSIF messages.$msg.element == 'issued'%]
+	<td>
+	<span id="lbl[%messages.$msg.Id%]"  class="label label-info">Book Issued</span>
+	</td>
+	[% ELSE %]
+	<td>
+	<button type="button" id="[% messages.$msg.Id %]" name='book_request' class="btn btn-sm btn-primary book_req"><span class="glyphicon glyphicon-send"></button>
+	<span id="lbl[%messages.$msg.Id%]"  class="label label-info displaymessage hidden">Book Requested</span>
+	</td>
+	[% END %]
+	[% END %]
+	[% IF role == 'Admin' %]
+	<td>
+	<button type="submit" id="[% messages.$msg.Id %]" name='txt_details' data-toggle="modal" data-target=".bs-example-modal-lg" class="btn btn-primary btn-sm a1"><span class="glyphicon glyphicon-eye-open"></button>
+	</td>
+	[% END %]
+	<td>
+	<button type="button" name='txt_review' value="Review" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-comment"></button>
+	</td>
+	</tr>
+	[% END %]
 	</tbody>
 </table>
 
@@ -238,6 +249,7 @@
 
 				},
 				noOfCopies : {
+					required:true,
 					number :true,
 					digits: true
 				}
@@ -262,10 +274,16 @@
 
 						$('#sucess_message').html(data.message);
 						$('#book_insertion')[0].reset();
+						var validator = $( "#book_insertion" ).validate();
+						validator.resetForm();
 					}
 				});
 			}
 		});
+	});
+
+	$( "input" ).focus(function() {
+		$('#sucess_message').html('');
 	});
 
 	$(".close").click(function(){
@@ -280,9 +298,8 @@
 				bookId :bookid,
 			},
 			success:function(data){
-				if(data.deniedRequest =="Each person Have maximum 2 Book Request")
+				if(data.deniedflag)
 				{
-				//	$('.alert').show();
 					$('.alert').removeClass('hidden');
 
 				}
