@@ -2,6 +2,7 @@ package ExcelLibrary::Controller::DashBoard;
 use Moose;
 use namespace::autoclean;
 use DateTime;
+use Data::Dumper;
 BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
@@ -20,7 +21,7 @@ Catalyst Controller.
 
 =cut
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan 18/11/2014~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub dashboard : Path : Args(0)
 {
     my ($self, $c) = @_;
@@ -77,7 +78,6 @@ sub request : Path('/request')
             }
         );
     }
-	$c->forward('View::TT')
 }
 
 sub managerequest : Local
@@ -104,7 +104,7 @@ sub managerequest : Local
     }
 
     $c->forward('request');
-    $c->stash->{template} = "admindashboard/request.tt";
+    $c->stash->{template} = "dashboard/request.tt";
 }
 
 sub getbookcopies : Local
@@ -210,7 +210,7 @@ sub book : Path('/book')
 
 }
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan 18/11/2014~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub copydetails : Local
 {
 
@@ -354,7 +354,7 @@ sub bookrequest : Local
     }
 }
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan 18/11/2014~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub bookreturn : Path('/bookreturn')
 {
     my ($self, $c) = @_;
@@ -374,16 +374,16 @@ sub gettransactionbycopyid : Local
         {
             join      => ['employee',      'book'],
             '+select' => ['employee.Name', 'book.Name'],
-            '+as'     => ['Employee Name', 'Book Name']
+            '+as'     => ['EmployeeName', 'BookName']
         }
     );
     if (my $transaction = $transaction_rs->next) {
         $c->stash->{flag}        = 1;
         $c->stash->{id}          = $transaction->EmployeeId;
-        $c->stash->{empname}     = $transaction->get_column('Employee Name');
-        $c->stash->{bookname}    = $transaction->get_column('Book Name');
+        $c->stash->{empname}     = $transaction->get_column('EmployeeName');
+        $c->stash->{bookname}    = $transaction->get_column('BookName');
         $c->stash->{issuedate}   = $transaction->IssuedDate;
-        $c->stash->{ereturndate} = $transaction->ExpectedReturnDate;
+        $c->stash->{expreturndate} = $transaction->ExpectedReturnDate;
     }
     else {
         $c->stash->{flag} = 0;
@@ -394,45 +394,62 @@ sub gettransactionbycopyid : Local
 sub gettransactionbyemployeeid : Local
 {
 	my ($self, $c) = @_;
-    my $copyid         = $c->req->params->{copy_id};
+    my $employeeid  = $c->req->params->{emp_id};
     my @transaction_rs = $c->model('Library::Transaction')->search(
         {
-            "me.BookCopyId"   => $copyid,
+            "me.EmployeeId"   => $employeeid,
             "me.Status"       => 'Issued',
             "me.ReturnedDate" => {'=', undef}
         },
         {
             join      => ['employee',      'book'],
             '+select' => ['employee.Name', 'book.Name'],
-            '+as'     => ['Employee Name', 'Book Name']
+            '+as'     => ['EmployeeName', 'BookName']
         }
     );
+	
+	
+
 	foreach my $transaction (@transaction_rs)
 	{
-
+		$c->stash->{flag} = 1;	
+		push (@{$c->stash->{booktaken}},{
+				bookname => $transaction->get_column('BookName'),
+				bookcopyid => $transaction->BookCopyId,
+				issuedate => $transaction->IssuedDate,
+				expreturndate => $transaction->ExpectedReturnDate
+			}); 
 	}
+	
+    $c->forward('View::JSON');
 
 }
+
 sub returnbook : Local
 {
     my ($self, $c) = @_;
 
     my $loginId        = $c->user->Id;
-    my $bookcopy_id    = $c->req->params->{copy_id};
+    my @bookcopy_id;
+	push(@bookcopy_id, $c->req->params->{'copy_id[]'});
     my $comment        = $c->req->params->{comment};
     my $current_date   = DateTime->now(time_zone => 'Asia/Kolkata');
     my $returneddate   = $current_date->ymd('-') . " " . $current_date->hms(':');
-    my $transaction_rs = $c->model('Library::Transaction')->search({"BookCopyId" => $bookcopy_id});
-    $transaction_rs->update(
-        {
-            "ReturnedDate" => $returneddate,
-            "RecivedBy"    => $loginId,
-            "Comment"      => $comment
-
-        }
-    );
-    my $bookcopy_rs = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
-    $bookcopy_rs->update({"Status" => 'Available'});
+	$c->log->info ("hai");
+	$c->log->info(Dumper \@bookcopy_id);
+	foreach my $copyid (@bookcopy_id)
+	{	
+		my $transaction_rs = $c->model('Library::Transaction')->search({"BookCopyId" => $copyid});
+		$transaction_rs->update(
+			{
+				"ReturnedDate" => $returneddate,
+				"RecivedBy"    => $loginId,
+				"Comment"      => $comment
+			}
+		);
+		my $bookcopy_rs = $c->model('Library::BookCopy')->search({"Id" => $copyid});
+		$bookcopy_rs->update({"Status" => 'Available'});
+	}
     $c->stash->{result} = 1;
     $c->forward('View::JSON');
 }
