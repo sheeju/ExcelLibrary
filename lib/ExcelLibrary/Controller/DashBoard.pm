@@ -358,7 +358,8 @@ sub bookrequest : Local
 
     my $validatebook = $c->model('Library::Transaction')->search(
         {
-            "Status"     => 'Requested',
+	   "Status" => {'!=', 'Denied'},
+	   "ReturnedDate" =>{'=', undef},
             "EmployeeId" => $loginid,
         }
     );
@@ -386,21 +387,30 @@ sub user : Path('/user')
 {
 	my ($self, $c) = @_;
 
-  my @user_rs = $c->model('Library::Employee')->search({});
+	my @user_rs = $c->model('Library::Employee')->search({});
+	my $count =1;
+	my %userdetail;
+	foreach my $userinfo (@user_rs) {
+
+		$userdetail{$userinfo->Id} = {
+			Count => $count++,
+			Id         => $userinfo->Id,
+			Name     => $userinfo->Name,
+			Role    => $userinfo->Role,
+			Email => $userinfo->Email,
+		};
+
+	}
+
+	$c->stash->{userinfo} =\%userdetail;
+	$c->forward('View::TT');
+}
 
 
-  foreach my $userinfo (@user_rs) {
-   
-		$c->stash->{userid} =$userinfo->Name;
-		$c->stash->{role}= $userinfo->Role;
-		$c->stash->{id}= $userinfo->Id;
-  		$c->stash->{email}= $userinfo->Email;
-			
+sub deleteuser : Local
+{
 
 
- }
-
-        $c->forward('View::TT')
 }
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan 18/11/2014~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub bookreturn : Path('/bookreturn')
