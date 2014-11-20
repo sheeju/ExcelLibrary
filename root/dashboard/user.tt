@@ -1,0 +1,37 @@
+<br><br>
+<table id="user_tabel" class="display" cellspacing="0" width="100%">
+        <thead>
+                <tr>
+                        <th>Number</th>
+                        <th>Role</th>
+                        <th>Employee Name</th>
+                        <th>Email</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                </tr>
+        </thead>
+        <tbody>
+                [% FOREACH m = messages %]
+                        <tr>
+                                <td> [% m.no %]</td>
+                                <td> [% m.requesteddate %]</td>
+                                <td> [% m.employeename %]</td>
+                                <td> [% m.bookid %]</td>
+                                <td> [% m.bookname %]</td>
+                             	<td> Hi </td>
+                        </tr>
+                [% END %]
+        </tbody>
+</table>
+    <link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
+        <link rel="stylesheet" type="text/css" href="source/DataTable/media/css/dataTables.bootstrap.css" />
+        <script type="text/javascript" src="../source/js/jquery.js"></script>
+        <script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js"></script>
+        <script type="text/javascript" src="source/DataTable/media/js/dataTables.bootstrap.js"></script>
+	<script>
+	$(document).ready(function (){
+			$('#user_tabel').DataTable({});
+			});
+	</script>
+
