@@ -1,24 +1,106 @@
 <script type="text/javascript" src="../source/js/jquery.js"></script>
 <script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
 <link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
-<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
-<script type="text/javascript" src="source/DataTable/media/js/dataTables.bootstrap.js"></script>
+<script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="../source/DataTable/media/js/dataTables.bootstrap.js"></script>
 <link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/dataTables.bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/dataTables.bootstrap.css" />
 <script type="text/javascript" src="source/bootstrap/dist/js/bootstrap.js"></script>
-
-
 <script>
-	$('.selection').click(function(){
-		var item=$(this).attr('id');
-	$.ajax( 
-	{
-		url:'admindashboard/copy_details',
-		contentType:'text/html', 
-		data:{
-			Selection:item,
-		},
+	$(document).ready(function() {
+		var table=$('#historyTable').dataTable();
+		$('.radio').change(function()
+		{
+			var item=$(this).attr('id');
+			alert(item);
+			if(item == 'transaction')
+			{
+				$.ajax
+				({
+					url:'/history',
+					contentType:'text/html', 
+					data:{
+						Selection:item,
+					},
+				}).done(function(data)
+				{
+					table.fnClearTable();
+					$('#myDiv').hide();
+					$.each(data, function(index1, value1)
+					{
+						$.each(value1, function(index,value)
+						{
+							table.fnAddData([value.Count,value.EmpName,value.BookName,value.RequestDate,value.IssuedDate,value.IssuedBy,value.Status]);
+						}); 
+					});
+				});
+			}
+			else if(item == 'book')
+			{
+				$('#myDiv').show();
+			}
+		});
+		$('#go').click(function(){
+			var bookName=document.getElementById("bookTextBox").value;
+			table.fnClearTable();
+			alert(bookName);
+			$.ajax(
+			{
+				url:'/history',
+				data:{
+					Selection:'book',
+					bookname:bookName
+				}
+				}).done(function(data){
+				$.each(data, function(index1, value1)
+				{
+					$.each(value1, function(index,value)
+					{
+						table.fnAddData([value.Count,value.EmployeeName,value.CopyId,value.IssuedDate,value.ReturnedDate,value.BookName]);
+					}); 
+
+				});
+			});
+		});
+
 	});
-});
-	</script>
+	console.log([% choice %]);
+</script>
+[% IF role == 'Admin' %]
+<div class="radio" id="book">
+	<label><input type="radio" name="optradio">Book</label>
+</div>
+<div class="radio" id="transaction">
+	<label><input type="radio" name="optradio">Transaction</label>
+</div>
+
+<div id="myDiv" class="row" style="display:none">
+	<div class="col-lg-4">
+		<div class="input-group">
+			<span class="input-group-addon">Book Name</span>
+			<input type="text" id="bookTextBox" class="form-control">
+			<span class="input-group-btn">
+				<button class="btn btn-default" id="go" type="button">Go!</button>
+			</span>
+		</div>
+	</div>
+</div>
+
+<br>
+<table id="historyTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+	<thead>
+		<tr>
+			<th>Count</th>
+			<th>Employee Name</th>
+			<th>Book Name</th>
+			<th>Request Date</th>
+			<th>Issued Date</th>
+			<th>Issued By</th>
+			<th>Status</th>
+		</tr>
+	</thead>
+</table>
+[% ELSIF role == 'Employee' %]
+<table id="historyTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+[% END %]
