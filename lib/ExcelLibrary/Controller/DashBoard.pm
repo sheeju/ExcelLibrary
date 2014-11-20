@@ -78,6 +78,10 @@ sub request : Path('/request')
             }
         );
     }
+
+	$c->stash->{template} = "dashboard/request.tt";
+	$c->forward('View::TT');
+
 }
 
 sub managerequest : Local
@@ -87,9 +91,11 @@ sub managerequest : Local
     my $response       = $c->req->params->{response};
     my $loginId        = $c->user->Id;
     my $transaction_rs = $c->model('Library::Transaction')->search({"Id" => $req_id});
-    my $t              = $transaction_rs->next;
+    my $transaction    = $transaction_rs->next;
+	$c->log->info("Hai");
+	$c->log->info($transaction);
 
-    if ($t->UpdatedBy eq undef) {
+    if ($transaction->UpdatedBy eq '') {
         if ($response eq 'Allow') {
             $transaction_rs->update({"UpdatedBy" => $loginId});
         }
@@ -103,8 +109,7 @@ sub managerequest : Local
         }
     }
 
-    $c->forward('request');
-    $c->stash->{template} = "dashboard/request.tt";
+    $c->detach('request');
 }
 
 sub getbookcopies : Local
@@ -112,9 +117,9 @@ sub getbookcopies : Local
     my ($self, $c) = @_;
     my $req_id         = $c->req->params->{req_id};
     my $transaction_rs = $c->model('Library::Transaction')->search({"Id" => $req_id});
-    my $t              = $transaction_rs->next;
+    my $transaction              = $transaction_rs->next;
 
-    my $bookid   = $t->BookId;
+    my $bookid   = $transaction->BookId;
     my @books_rs = $c->model('Library::BookCopy')->search(
         {
             "Status" => 'Available',
@@ -151,7 +156,7 @@ sub issuebook : Local
 
     my $transaction_rs = $c->model('Library::Transaction')->search({"Id" => $req_id});
     my $transaction = $transaction_rs->next;
-    if ($transaction->IssuedDate eq undef) {
+    if ($transaction->IssuedDate eq '' ) {
         $transaction_rs->update(
             {
                 "BookCopyId"         => $bookcopy_id,
@@ -165,8 +170,7 @@ sub issuebook : Local
         my $bookcopy_rs = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
         $bookcopy_rs->update({"Status" => 'Reading'});
     }
-    $c->forward('request');
-    $c->stash->{template} = "dashboard/request.tt";
+    $c->detach('request');
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

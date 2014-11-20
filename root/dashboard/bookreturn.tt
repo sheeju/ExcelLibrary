@@ -194,25 +194,33 @@
 			{
 				alert('hai');
 				 copy_id.push($('#txt_copy_id').val());
-			}
-			console.log(copy_id);
-            $.ajax({
-                url: 'dashboard/returnbook',
-                contentType: 'text/html',
-                dataType: 'json',
-                data: {
-                    copy_id: copy_id,
-                    comment: comment
-                }
-            }).done(function(data) {
-                if (data.result) {
-                    $('#msg').removeClass("hidden");
-                    $('#detail_div').addClass("hidden");
-                    $('#msg').text('Book Marked As Returned');
-                }
-            }).fail(function(err) {
-                alert("error" + err);
-            });
-        });
+			 }
+
+			 if(copy_id.length >0)
+			 {
+
+				 $.ajax({
+					 url: 'dashboard/returnbook',
+					 contentType: 'text/html',
+					 dataType: 'json',
+					 data: {
+						 copy_id: copy_id,
+						 comment: comment
+					 }
+					 }).done(function(data) {
+					 if (data.result) {
+						 $('#msg').removeClass("hidden");
+						 $('#detail_div').addClass("hidden");
+						 $('#msg').text('Book Marked As Returned');
+					 }
+					 }).fail(function(err) {
+					 alert("error" + err);
+				     });
+			 }
+			 else{
+				 $('#msg').removeClass("hidden");
+				 $('#msg').text('Select the book want to return');
+			 }
+			     });
     });
 </script>
