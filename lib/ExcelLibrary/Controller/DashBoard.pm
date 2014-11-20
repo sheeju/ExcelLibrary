@@ -123,7 +123,6 @@ sub getbookcopies : Local
         }
     );
     foreach my $b (@books_rs) {
-        $c->log->info($b->Id);
         push(@{$c->stash->{books}}, $b->Id);
     }
 
@@ -383,6 +382,30 @@ sub bookrequest : Local
     }
 }
 
+
+
+
+
+sub user : Path('/user')
+{
+	my ($self, $c) = @_;
+
+  my @user_rs = $c->model('Library::Employee')->search({});
+
+
+  foreach my $userinfo (@user_rs) {
+   
+		$c->stash->{userid} =$userinfo->Name;
+		$c->stash->{role}= $userinfo->Role;
+		$c->stash->{id}= $userinfo->Id;
+  		$c->stash->{email}= $userinfo->Email;
+			
+
+
+ }
+
+        $c->forward('View::TT')
+}
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan 18/11/2014~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub bookreturn : Path('/bookreturn')
 {
