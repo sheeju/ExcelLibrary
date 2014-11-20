@@ -262,7 +262,7 @@
 				var noOfCopies = $('#noOfCopies').val();
 				$.ajax({
 					type :"POST",
-					url :url,
+					url  : url,
 					data :{
 						name:name,
 						author:author,

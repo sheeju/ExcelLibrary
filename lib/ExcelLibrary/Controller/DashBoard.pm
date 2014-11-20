@@ -21,7 +21,7 @@ Catalyst Controller.
 
 =cut
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub dashboard : Path : Args(0)
 {
     my ($self, $c) = @_;
@@ -172,7 +172,8 @@ sub issuebook : Local
     $c->detach('request');
 }
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block wriiten by pavan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block updated by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub book : Path('/book')
 {
     my ($self, $c) = @_;
@@ -209,8 +210,6 @@ sub book : Path('/book')
         }
 
     }
-
-
  my @transaction_rs = $c->model('Library::Transaction')->search(
         {
             "EmployeeId" => $userid,
@@ -236,13 +235,12 @@ sub book : Path('/book')
 
 	}
 
-
     $c->stash->{messages} = \%books;
     $c->stash->{role}     = $c->user->Role;
 
 }
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub copydetails : Local
 {
 
@@ -303,7 +301,7 @@ sub copydetails : Local
 
 }
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~copy edited by skanda 19-11-2014~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~copy block written by skanda~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub deletecopy : Local
 {
     my ($self, $c) = @_;
@@ -413,7 +411,30 @@ sub user : Path('/user')
 	$c->forward('View::TT');
 }
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+sub adduser : Local
+{
+	my ($self, $c) = @_;
+	my $empname = $c->req->params->{name};
+	my $emprole = $c->req->params->{role};
+	my $empemail = $c->req->params->{email};
+    my $userid     = $c->user->Id;
+    my $currentdate = DateTime->now(time_zone => 'Asia/Kolkata');
+    my $createdon = $currentdate->ymd('-') . " " . $currentdate->hms(':');
 
+	my $employee_rs = $c->model('Library::Employee')->create(
+		{
+			"Name"    => $empname,
+			"Role"	=> $emprole,
+			"Email" 	=> $empemail,
+			"CreatedBy" => $userid,
+			"CreatedOn" => $createdon
+		}
+	);
+    $c->forward('user');
+
+}
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~copy block written by skanda~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
 sub deleteuser : Local
 {
  my ($self, $c) =@_;
@@ -426,7 +447,7 @@ sub deleteuser : Local
 
 
 }
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan 18/11/2014~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub bookreturn : Path('/bookreturn')
 {
     my ($self, $c) = @_;
@@ -479,8 +500,6 @@ sub gettransactionbyemployeeid : Local
             '+as'     => ['EmployeeName', 'BookName']
         }
     );
-	
-	
 
 	foreach my $transaction (@transaction_rs)
 	{
@@ -526,7 +545,7 @@ sub returnbook : Local
     $c->forward('View::JSON');
 }
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by skanda~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub history : Path('/history')
 {
     my ($self, $c) = @_;
