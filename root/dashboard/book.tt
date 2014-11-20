@@ -103,40 +103,40 @@
 	[% FOREACH msg IN messages.keys %]
 	<tr>
 	<td>
-	[% messages.$msg.Count %]
+	[% messages.$msg.count %]
 	</td>
 	<td>
-	[% messages.$msg.Name %]
+	[% messages.$msg.name %]
 	</td>
 	<td>
-	[% messages.$msg.Type %]
+	[% messages.$msg.type %]
 	</td>
 	<td>
-	[% messages.$msg.Author %]
+	[% messages.$msg.author %]
 	</td>
 	<td>
-	[% messages.$msg.Status %]
+	[% messages.$msg.status %]
 	</td>
 	[% IF role == 'Employee' %]
 
 	[% IF messages.$msg.element == 'requested' %]
 	<td>
-	<span id="lbl[%messages.$msg.Id%]"  class="label label-info">Book Requested</span>
+	<span id="lbl[%messages.$msg.id%]"  class="label label-info">Book Requested</span>
 	</td>
 	[% ELSIF messages.$msg.element == 'issued'%]
 	<td>
-	<span id="lbl[%messages.$msg.Id%]"  class="label label-info">Book Issued</span>
+	<span id="lbl[%messages.$msg.id%]"  class="label label-info">Book Issued</span>
 	</td>
 	[% ELSE %]
 	<td>
-	<button type="button" id="[% messages.$msg.Id %]" name='book_request' class="btn btn-sm btn-primary book_req"><span class="glyphicon glyphicon-send"></button>
+	<button type="button" id="[% messages.$msg.id %]" name='book_request' class="btn btn-sm btn-primary book_req"><span class="glyphicon glyphicon-send"></button>
 	<span id="lbl[%messages.$msg.Id%]"  class="label label-info displaymessage hidden">Book Requested</span>
 	</td>
 	[% END %]
 	[% END %]
 	[% IF role == 'Admin' %]
 	<td>
-	<button type="submit" id="[% messages.$msg.Id %]" name='txt_details' data-toggle="modal" data-target=".bs-example-modal-lg" class="btn btn-primary btn-sm viewdetails"><span class="glyphicon glyphicon-eye-open"></button>
+	<button type="submit" id="[% messages.$msg.id %]" name='txt_details' data-toggle="modal" data-target=".bs-example-modal-lg" class="btn btn-primary btn-sm viewdetails"><span class="glyphicon glyphicon-eye-open"></button>
 	</td>
 	[% END %]
 	<td>
@@ -164,7 +164,7 @@
 		});
 
 
-			$('.details').click(function(){
+			$('.viewdetails').click(function(){
 				var bookid=$(this).attr('id');
 				$.ajax( 
 				{
@@ -182,7 +182,7 @@
 					{
 						$.each(value1, function(index,value)
 						{
-							$('#details_table').append('<tr class="bookcopy'+ value.Id+'">'+
+							$('#details_table').append('<tr class="bookcopy '+ value.id+'">'+
 								'<td>'+ count +'</td>'+
 								'<td>'+ value.id +'</td>'+
 								'<td>'+ value.status +'</td>'+
