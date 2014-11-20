@@ -11,14 +11,16 @@
                 </tr>
         </thead>
         <tbody>
-                [% FOREACH m = messages %]
+                [% FOREACH m =userinfo.keys  %]
                         <tr>
-                                <td> [% m.no %]</td>
-                                <td> [% m.requesteddate %]</td>
-                                <td> [% m.employeename %]</td>
-                                <td> [% m.bookid %]</td>
-                                <td> [% m.bookname %]</td>
-                             	<td> Hi </td>
+                                <td> [%userinfo.$m.Count%]</td>
+                                <td> [% userinfo.$m.Role %]</td>
+                                <td> [% userinfo.$m.Name %]</td>
+                                <td> [% userinfo.$m.Email %]</td>
+                                <td><input type="button" id="[% userinfo.$m.Id %]" name="btn_issue" value="Edit" class="btn btn-primary" />
+</td>
+                             	<td><input type="button" id="[% userinfo.$m.Id %]" name="btn_issue" value="Delete" class="btn btn-primary deleteuser"/>
+ </td>
                         </tr>
                 [% END %]
         </tbody>
@@ -31,7 +33,27 @@
         <script type="text/javascript" src="source/DataTable/media/js/dataTables.bootstrap.js"></script>
 	<script>
 	$(document).ready(function (){
-			$('#user_tabel').DataTable({});
+			$('#user_tabel').DataTable({
+       "columnDefs": [ { "targets":[4,5], "orderable": false } ]
+});
+
+
+  $('.deleteuser').click(function(){
+		  user_id = $(this).attr('id');
+			alert(user_id);
+                        $.ajax(
+                        {
+                                url :'dashboard/deleteuser',
+                                contentType :'text/html',
+                                data :{userid : user_id}
+                        }).done(function(data)
+                        {
+                       $('#content').html(data); 
+				        
+                        });
+
+                });
+
 			});
 	</script>
 
