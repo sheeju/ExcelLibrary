@@ -127,7 +127,6 @@ sub getbookcopies : Local
         }
     );
     foreach my $b (@books_rs) {
-        $c->log->info($b->Id);
         push(@{$c->stash->{books}}, $b->Id);
     }
 
@@ -327,7 +326,6 @@ sub addbook : Local
     my $adminid      = $c->user->Id;
     my @respdata     = $c->model('Library::Book')->create(
         {
-
             Name       => $name,
             Type       => $type,
             Author     => $author,
@@ -363,7 +361,8 @@ sub bookrequest : Local
 
     my $validatebook = $c->model('Library::Transaction')->search(
         {
-            "Status"     => 'Requested',
+	   "Status" => {'!=', 'Denied'},
+	   "ReturnedDate" =>{'=', undef},
             "EmployeeId" => $loginid,
         }
     );
@@ -381,12 +380,53 @@ sub bookrequest : Local
     }
     else {
 	$c->stash->{deniedflag} =1;
-        $c->stash->{deniedRequest} = "Each person Have maximum 2 Book Request";
         $c->forward('View::JSON');
     }
 }
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+sub user : Path('/user')
+{
+	my ($self, $c) = @_;
+
+	my @user_rs = $c->model('Library::Employee')->search(
+			{
+			"Status" => {'!=','Disable'},
+			}
+		);
+	my $count =1;
+	my %userdetail;
+	foreach my $userinfo (@user_rs) {
+
+		$userdetail{$userinfo->Id} = {
+			Count => $count++,
+			Id         => $userinfo->Id,
+			Name     => $userinfo->Name,
+			Role    => $userinfo->Role,
+			Email => $userinfo->Email,
+		};
+
+	}
+
+	$c->stash->{userinfo} =\%userdetail;
+	$c->stash->{template} ="dashboard/user.tt";
+	$c->forward('View::TT');
+}
+
+
+sub deleteuser : Local
+{
+ my ($self, $c) =@_;
+
+   my $userid = $c->req->params->{userid};
+    my $deleteuser = $c->model('Library::Employee')->find({Id => $userid});
+    $deleteuser->Status('Disable');
+    $deleteuser->update;
+    $c->forward('user');
+
+
+}
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code edited by venkatesan 18/11/2014~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub bookreturn : Path('/bookreturn')
 {
     my ($self, $c) = @_;
