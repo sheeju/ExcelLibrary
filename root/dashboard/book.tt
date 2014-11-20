@@ -1,7 +1,7 @@
 <br>
 <div class="alert alert-danger hidden">
     <a href="#" class="close">&times;</a>
-    <strong>Warning!</strong> Maximum 2 books Requested.
+    <strong>Warning!</strong> Maximum 2 books can Requested.
 </div>
 [% IF role == 'Admin' %]
 <button type="button" style="margin:5px 5px" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
@@ -19,22 +19,22 @@
             <div class="modal-body">
                 <form role="form" id="book_insertion" method="POST">
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Book Name</label>
+                        <label >Book Name</label>
                         <input type="Name" class="form-control" id="bookName" name="bookName" placeholder="Name">
                     </div>
                     <br/>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Book Type</label>
+                        <label>Book Type</label>
                         <input type="text" class="form-control" id="bookType" name="bookType" placeholder="Type">
                     </div>
                     <br/>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Author</label>
-                        <input type="text" class="form-control" id="Author" name="Author" placeholder="Author">
+                        <label>Author</label>
+                        <input type="text" class="form-control" id="author" name="author" placeholder="Author">
                     </div>
                     <br/>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">No Of Copies</label>
+                        <label>No Of Copies</label>
                         <input type="number" class="form-control" id="noOfCopies" name="noOfCopies" placeholder="Count" min=1 value=1>
                     </div>
 
@@ -97,42 +97,53 @@
             [% END %]
             <th>Comment</th>
         </tr>
-    </thead>
+	</thead>
 
-    <tbody class="details">
-        [% FOREACH msg IN messages.keys %]
-        <tr>
-            <td>
-                [% messages.$msg.count %]
-            </td>
-            <td>
-                [% messages.$msg.name %]
-            </td>
-            <td>
-                [% messages.$msg.type %]
-            </td>
-            <td>
-                [% messages.$msg.author %]
-            </td>
-            <td>
-                [% messages.$msg.status %]
-            </td>
-            [% IF role == 'Employee' %]
-            <td>
-                <button type="button" id="[% messages.$msg.Id %]" name='book_request' class="btn btn-sm btn-primary book_req"><span class="glyphicon glyphicon-send"></button>
-			  <span id="lbl[%messages.$msg.Id%]"  class="label label-info displaymessage hidden">Book Requested</span>
-            </td>
-            [% END %]
-            [% IF role == 'Admin' %]
-            <td>
-                <button type="submit" id="[% messages.$msg.Id %]" name='txt_details' data-toggle="modal" data-target=".bs-example-modal-lg" class="btn btn-primary btn-sm viewdetails"><span class="glyphicon glyphicon-eye-open"></button>
-				</td>
-				[% END %]
-			<td>
-				<button type="button" name='txt_review' value="Review" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-comment"></button>
-			</td>
-		</tr>
-		[% END %]
+	<tbody class="details">
+	[% FOREACH msg IN messages.keys %]
+	<tr>
+	<td>
+	[% messages.$msg.Count %]
+	</td>
+	<td>
+	[% messages.$msg.Name %]
+	</td>
+	<td>
+	[% messages.$msg.Type %]
+	</td>
+	<td>
+	[% messages.$msg.Author %]
+	</td>
+	<td>
+	[% messages.$msg.Status %]
+	</td>
+	[% IF role == 'Employee' %]
+
+	[% IF messages.$msg.element == 'requested' %]
+	<td>
+	<span id="lbl[%messages.$msg.Id%]"  class="label label-info">Book Requested</span>
+	</td>
+	[% ELSIF messages.$msg.element == 'issued'%]
+	<td>
+	<span id="lbl[%messages.$msg.Id%]"  class="label label-info">Book Issued</span>
+	</td>
+	[% ELSE %]
+	<td>
+	<button type="button" id="[% messages.$msg.Id %]" name='book_request' class="btn btn-sm btn-primary book_req"><span class="glyphicon glyphicon-send"></button>
+	<span id="lbl[%messages.$msg.Id%]"  class="label label-info displaymessage hidden">Book Requested</span>
+	</td>
+	[% END %]
+	[% END %]
+	[% IF role == 'Admin' %]
+	<td>
+	<button type="submit" id="[% messages.$msg.Id %]" name='txt_details' data-toggle="modal" data-target=".bs-example-modal-lg" class="btn btn-primary btn-sm viewdetails"><span class="glyphicon glyphicon-eye-open"></button>
+	</td>
+	[% END %]
+	<td>
+	<button type="button" name='txt_review' value="Review" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-comment"></button>
+	</td>
+	</tr>
+	[% END %]
 	</tbody>
 </table>
 
@@ -213,10 +224,8 @@
 	}); 
 
 
-//	$('.alert').hide();
 	$('#addbook').click(function(){
 
-		var name = $('#bookName').val();
 		jQuery.validator.setDefaults({
 			debug: true,
 			success: "valid"
@@ -226,27 +235,34 @@
 		$("#book_insertion").validate({
 			rules: {
 				bookName: {
-					required:true
+					required:true,
+					alphanumeric:true
 				},
 				bookType: {
-					required :true
+					required :true,
+					  alphanumeric:true
+
 				},
-				Author: {
-					required :true
+				author: {
+					required :true,
+					lettersonly:true
+
 				},
 				noOfCopies : {
-					number :true
+					required:true,
+					number :true,
+					digits: true
 				}
 			},
 			submitHandler : function(form){
 				var url = "/dashboard/addbook";
 				var name = $('#bookName').val();
-				var author = $('#Author').val();
+				var author = $('#author').val();
 				var type = $('#bookType').val();
 				var noOfCopies = $('#noOfCopies').val();
 				$.ajax({
 					type :"POST",
-					url :url,
+					url  : url,
 					data :{
 						name:name,
 						author:author,
@@ -258,10 +274,16 @@
 
 						$('#sucess_message').html(data.message);
 						$('#book_insertion')[0].reset();
+						var validator = $( "#book_insertion" ).validate();
+						validator.resetForm();
 					}
 				});
 			}
 		});
+	});
+
+	$( "input" ).focus(function() {
+		$('#sucess_message').html('');
 	});
 
 	$(".close").click(function(){
@@ -276,9 +298,8 @@
 				bookId :bookid,
 			},
 			success:function(data){
-				if(data.deniedRequest =="Each person Have maximum 2 Book Request")
+				if(data.deniedflag)
 				{
-				//	$('.alert').show();
 					$('.alert').removeClass('hidden');
 
 				}
