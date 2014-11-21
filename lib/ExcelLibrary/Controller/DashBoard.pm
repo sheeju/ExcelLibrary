@@ -576,7 +576,6 @@ sub history : Path('/history')
 						Status      => $_->Status,
 						RequestDate => $_->RequestDate,
 						IssuedDate  => $_->IssuedDate,
-						IssuedBy    => $_->IssuedBy
 					}
 				) foreach @alldata;
 				$c->log->info(Dumper $c->stash->{history});
@@ -600,9 +599,9 @@ sub history : Path('/history')
 					@{$c->stash->{history}},
 					{
 						Count        => $count++,
-						CopyId       => $_->BookCopyId,
 						EmployeeName => $_->get_column('EmployeeName'),
-						BookName     => $_->get_column('BookName'),
+						CopyId       => $_->BookCopyId,
+						RequestDate  => $_->RequestDate,
 						IssuedDate   => $_->IssuedDate,
 						ReturnedDate => $_->ReturnedDate,
 					}
@@ -640,10 +639,20 @@ sub history : Path('/history')
 				RequestDate => $_->RequestDate,
 				IssueDate => $_->IssuedDate,
 				ReturnDate => $_->ExpectedReturnDate,
+				Status => $_->Status,
 			}
 		) foreach @emphistory;
 		$c->log->info(Dumper $c->stash->{emphistory});
 	}
+}
+
+sub addcopies :Local
+{
+	my($self,$c)=@_;
+	my $no_of_copies=$c->req->params->{no_of_copies};
+	my $bookid=$c->req->params->{bbokid};
+
+	$c->forward('View::JSON');
 }
 
 =encoding utf8

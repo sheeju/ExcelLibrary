@@ -31,7 +31,7 @@
 					{
 						$.each(value1, function(index,value)
 						{
-							table.fnAddData([value.Count,value.EmpName,value.BookName,value.RequestDate,value.IssuedDate,value.IssuedBy,value.Status]);
+							table.fnAddData([value.Count,value.EmpName,value.BookName,value.RequestDate,value.IssuedDate,value.Status]);
 						}); 
 					});
 				});
@@ -57,7 +57,7 @@
 				{
 					$.each(value1, function(index,value)
 					{
-						table.fnAddData([value.Count,value.EmployeeName,value.CopyId,value.IssuedDate,value.ReturnedDate,value.BookName]);
+						table.fnAddData([value.Count,value.EmployeeName,value.RequestDate,value.IssuedDate,value.ReturnedDate,value.CopyId]);
 					}); 
 
 				});
@@ -93,10 +93,9 @@
 		<tr>
 			<th>Count</th>
 			<th>Employee Name</th>
-			<th>Book Name</th>
 			<th>Request Date</th>
 			<th>Issued Date</th>
-			<th>Issued By</th>
+			<th>Returned Date</th>
 			<th>Status</th>
 		</tr>
 	</thead>
@@ -110,6 +109,7 @@
 			<th>Request Date</th>
 			<th>Issue Date</th>
 			<th>Expected Return Date</th>
+			<th>Status</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -120,6 +120,7 @@
 			<td>[% var.RequestDate %]</td>
 			<td>[% var.IssueDate %]</td>
 			<td>[% var.ReturnDate %]</td>
+			<td>[% var.Status %]</td>
 		</tr>
 		[% END %]
 	</tbody>
