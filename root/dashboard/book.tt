@@ -60,7 +60,7 @@
             <div class="modal-body">
                 <br/>
                 <div class="form-group pull-right">
-                    <label for="exampleInputPassword1">No Of Copies</label>
+                    <label >No Of Copies</label>
                     <input type="number" class="form-control" id="Count_id" placeholder="Count">
 
                 </div>
@@ -130,7 +130,7 @@
 	[% ELSE %]
 	<td>
 	<button type="button" id="[% messages.$msg.id %]" name='book_request' class="btn btn-sm btn-primary book_req"><span class="glyphicon glyphicon-send"></button>
-	<span id="lbl[%messages.$msg.Id%]"  class="label label-info displaymessage hidden">Book Requested</span>
+	<span id="lbl[%messages.$msg.id%]"  class="label label-info displaymessage hidden">Book Requested</span>
 	</td>
 	[% END %]
 	[% END %]
@@ -178,14 +178,14 @@
 				{
 
 					var count = 1;
-					var element;
+					var btn;
 					$.each(data, function(index1, value1)
 					{
 						$.each(value1, function(index,value)
 						{
 							if(value.button == 'delete')
 								{
-									element = '<td>'+
+									btn = '<td>'+
 								 				'<button type="button" id='+ value.id +' class="btn btn-primary btn-sm dlt">'+
 													'<span class="glyphicon glyphicon-trash"></span>'+
 												'</button>'+
@@ -193,7 +193,7 @@
 								}
 								else
 								{	
-									element = '<td>'+
+									btn = '<td>'+
 												'<button type="button" id='+ value.id +' class="btn btn-primary btn-sm dlt disabled">'+
 													'<span class="glyphicon glyphicon-lock"></span>'+
 												'</button>'+
@@ -207,7 +207,7 @@
 								'<td>'+ value.empname +'</td>'+
 								'<td>'+ value.issueddate +'</td>'+
 								'<td>'+ value.returndate +'</td>'+
-								'<td>'+ element +'</td></tr>'
+								'<td>'+ btn +'</td></tr>'
 								);
 
 								count = count + 1;
