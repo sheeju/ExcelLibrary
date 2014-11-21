@@ -63,13 +63,7 @@
                     <label >No Of Copies</label>
                     <input type="number" class="form-control" id="Count_id" placeholder="Count">
 
-                <div class="form-group col-lg-3 pull-right">
-                    <label for="exampleInputPassword1">No Of Copies</label>
-                    <input type="text" class="form-control" id="Count_id" placeholder="Count" disabled>
-					<button type="button" class="btn btn-default btn-sm addcopies">
-						  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-					  </button>
-				  </div>
+                </div>
                 <table id="details_table" class="table table-hover table-bordered table-stripped table-condensed info table-responsive" cellspacing="0" width="100%">
                     <thead>
                         <tr>
@@ -86,7 +80,6 @@
             </div>
         </div>
     </div>
-</div>
 <table id="table" class="display" cellspacing="0" width="100%">
     <thead>
         <tr>
@@ -192,6 +185,7 @@
 				{
 					$.each(value1, function(index,value)
 					{
+		
 							if(value.button == 'delete')
 								{
 									btn = '<td>'+
@@ -218,6 +212,7 @@
 								'<td>'+ value.returndate +'</td>'+
 								'<td>'+ btn +'</td></tr>'
 								);
+
 						count = count + 1;
 					}); 
 				});
@@ -244,25 +239,6 @@
 					{ 
 						alert("error"+ err); 
 					});
-
-					$('.addcopies').click(function()
-					{
-						var bookid = $('.viewdetails').attr('id');
-						count = count + 1;
-						$('#Count_id').val(count);
-						var copies=$('#Count_id').val();
-						$.ajax(
-						{
-							url:'dashboard/addcopies',
-							data:{
-								bookid:bookid,
-								no_of_copies:copies,
-							},
-						})
-
-					});
-
-
 				});
 
 			});
