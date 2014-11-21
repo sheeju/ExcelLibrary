@@ -419,6 +419,19 @@ sub deleteuser : Local
     $deleteuser->Status('Disable');
     $deleteuser->update;
     $c->forward('user');
+}
+
+
+sub updaterole :Local
+{
+
+my ($self,$c) =@_;
+ my $empid =	$c->req->params->{empid};
+ my $emprole =	$c->req->params->{emprole};
+
+ my $updaterole = $c->model('Library::Employee')->search({"Id" => $empid});
+    $updaterole->update({"Role" => $emprole});
+    $c->forward('user');
 
 
 }

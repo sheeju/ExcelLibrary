@@ -1,59 +1,126 @@
-<br><br>
+<br>
+<br>
 <table id="user_tabel" class="display" cellspacing="0" width="100%">
-        <thead>
-                <tr>
-                        <th>Number</th>
-                        <th>Role</th>
-                        <th>Employee Name</th>
-                        <th>Email</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
-                </tr>
-        </thead>
-        <tbody>
-                [% FOREACH m =userinfo.keys  %]
-                        <tr>
-                                <td> [%userinfo.$m.Count%]</td>
-                                <td> [% userinfo.$m.Role %]</td>
-                                <td> [% userinfo.$m.Name %]</td>
-                                <td> [% userinfo.$m.Email %]</td>
-                                <td><input type="button" id="[% userinfo.$m.Id %]" name="btn_issue" value="Edit" class="btn btn-primary" />
-</td>
-                             	<td><input type="button" id="[% userinfo.$m.Id %]" name="btn_issue" value="Delete" class="btn btn-primary deleteuser"/>
- </td>
-                        </tr>
-                [% END %]
-        </tbody>
+    <thead>
+        <tr>
+            <th>Number</th>
+            <th>Role</th>
+            <th>Employee Name</th>
+            <th>Email</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        [% FOREACH m =userinfo.keys %]
+        <tr>
+            <td>
+                [% userinfo.$m.Count%]
+            </td>
+            <td>
+                [% userinfo.$m.Role %]
+            </td>
+            <td>
+                [% userinfo.$m.Name %]
+            </td>
+            <td>
+                [% userinfo.$m.Email %]
+            </td>
+            <td>
+                <input type="button" id="[% userinfo.$m.Id %]" name="[% userinfo.$m.Role %]" value="Edit" class="btn btn-primary empupdate" data-toggle="modal" data-target="#editModal" />
+            </td>
+            <td>
+                <input type="button" id="[% userinfo.$m.Id %]" name="btn_issue" value="Delete" class="btn btn-primary deleteuser" />
+            </td>
+        </tr>
+        [% END %]
+    </tbody>
 </table>
-    <link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
-        <link rel="stylesheet" type="text/css" href="source/DataTable/media/css/dataTables.bootstrap.css" />
-        <script type="text/javascript" src="../source/js/jquery.js"></script>
-        <script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js"></script>
-        <script type="text/javascript" src="source/DataTable/media/js/dataTables.bootstrap.js"></script>
-	<script>
-	$(document).ready(function (){
-			$('#user_tabel').DataTable({
-       "columnDefs": [ { "targets":[4,5], "orderable": false } ]
-});
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Change Role</h4>
+            </div>
+            <div class="modal-body">
+                <center>
+                    <label>Role</label>
+                    <select id="emprole" class="btn dropdown-toggle">
+                        <option>Employee</option>
+                        <option>Admin</option>
+                    </select>
+                </center>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="updaterole" data-dismiss="modal">Update</button>
+                    <button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/dataTables.bootstrap.css" />
+<script type="text/javascript" src="../source/js/jquery.js"></script>
+<script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="source/DataTable/media/js/dataTables.bootstrap.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#user_tabel').DataTable({
+            "columnDefs": [{
+                "targets": [4, 5],
+                "orderable": false
+            }]
+        });
 
 
-  $('.deleteuser').click(function(){
-		  user_id = $(this).attr('id');
-			alert(user_id);
-                        $.ajax(
-                        {
-                                url :'dashboard/deleteuser',
-                                contentType :'text/html',
-                                data :{userid : user_id}
-                        }).done(function(data)
-                        {
-                       $('#content').html(data); 
-				        
-                        });
+        $('.deleteuser').click(function() {
+            user_id = $(this).attr('id');
+            alert(user_id);
+            $.ajax({
+                url: 'dashboard/deleteuser',
+                contentType: 'text/html',
+                data: {
+                    userid: user_id
+                }
+            }).done(function(data) {
+                $('#content').html(data);
 
+            });
+
+        });
+
+
+
+        $('.empupdate').click(function() {
+            var empid = $(this).attr('id');
+            var emprole = $(this).attr('name');
+            $("#emprole").val(emprole);
+
+
+            $('#updaterole').click(function() {
+                updaterole = $("#emprole").val();
+                $.ajax({
+                    url: 'dashboard/updaterole',
+                    contentType: 'text/html',
+                    data: {
+                        empid: empid,
+                        emprole: updaterole
+                    }
+                }).done(function(data) {
+
+                    $('#content').html(data);
                 });
 
-			});
-	</script>
+
+            });
+        });
+
+    });
+</script>
 
