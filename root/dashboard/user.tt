@@ -28,7 +28,7 @@
 					<br/>
 					<div class="form-group">
 						<label>Email</label>
-						<input type="email" class="form-control" id="txt_empemail" name="empemial" placeholder="emial">
+						<input type="email" class="form-control" id="txt_empemail" name="empemial" placeholder="email">
 					</div>  
 					<br/>
 					<label id="sucess_message"></label>
@@ -57,7 +57,7 @@
         [% FOREACH m =userinfo.keys %]
         <tr>
             <td>
-                [%userinfo.$m.Count%]
+                [% userinfo.$m.Count%]
             </td>
             <td>
                 [% userinfo.$m.Role %]
@@ -68,16 +68,42 @@
             <td>
                 [% userinfo.$m.Email %]
             </td>
-			<td>
-				<input type="button" id="[% userinfo.$m.Id %]" name="btn_issue" value="Edit" class="btn btn-primary" />
-			</td>
-			<td>
-				<input type="button" id="[% userinfo.$m.Id %]" name="btn_issue" value="Delete" class="btn btn-primary deleteuser" />
-			</td>
-		</tr>
-		[% END %]
-	</tbody>
+            <td>
+                <input type="button" id="[% userinfo.$m.Id %]" name="[% userinfo.$m.Role %]" value="Edit" class="btn btn-primary empupdate" data-toggle="modal" data-target="#editModal" />
+            </td>
+            <td>
+                <input type="button" id="[% userinfo.$m.Id %]" name="btn_issue" value="Delete" class="btn btn-primary deleteuser" />
+            </td>
+        </tr>
+        [% END %]
+    </tbody>
 </table>
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Change Role</h4>
+            </div>
+            <div class="modal-body">
+                <center>
+                    <label>Role</label>
+                    <select id="emprole" class="btn dropdown-toggle">
+                        <option>Employee</option>
+                        <option>Admin</option>
+                    </select>
+                </center>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="updaterole" data-dismiss="modal">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <link rel="stylesheet" type="text/css" href="../source/bootstrap/dist/css/bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/dataTables.bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/jquery.dataTables.css" />
@@ -130,9 +156,13 @@
 					},
 					success : function ( data ) {
 
-						$('#sucess_message').html(data.message);
-						var validator = $("#form_adduser").validate();
-						validator.resetForm();
+
+							console.log(data.message);
+						 $('#sucess_message').html(data.message);
+                                                $('#form_adduser')[0].reset();
+                                                var validator = $( "#form_adduser" ).validate();
+                                                validator.resetForm();
+
 					}
 				});
 			}
@@ -152,6 +182,32 @@
 
             });
 
+        });
+
+
+
+        $('.empupdate').click(function() {
+            var empid = $(this).attr('id');
+            var emprole = $(this).attr('name');
+            $("#emprole").val(emprole);
+
+
+            $('#updaterole').click(function() {
+                updaterole = $("#emprole").val();
+                $.ajax({
+                    url: 'dashboard/updaterole',
+                    contentType: 'text/html',
+                    data: {
+                        empid: empid,
+                        emprole: updaterole
+                    }
+                }).done(function(data) {
+
+                    $('#content').html(data);
+                });
+
+
+            });
         });
 
     });

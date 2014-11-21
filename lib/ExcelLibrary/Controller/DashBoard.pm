@@ -426,7 +426,8 @@ sub adduser : Local
             "CreatedOn" => $createdon
         }
     );
-    $c->forward('user');
+   $c->stash->{message} ="Employee added sucessfully";
+    $c->forward('View::JSON');
 
 }
 
@@ -439,6 +440,26 @@ sub deleteuser : Local
     my $deleteuser = $c->model('Library::Employee')->find({Id => $userid});
     $deleteuser->Status('Disable');
     $deleteuser->update;
+    $c->forward('user');
+}
+
+
+sub updaterole :Local
+{
+
+my ($self,$c) =@_;
+ my $empid =	$c->req->params->{empid};
+ my $emprole =	$c->req->params->{emprole};
+ my $adminid  = $c->user->Id;
+ my $currentdate = DateTime->now(time_zone => 'Asia/Kolkata');
+ my $updatedate = $currentdate->ymd('-') . " " . $currentdate->hms(':');
+
+ my $updaterole = $c->model('Library::Employee')->search({"Id" => $empid});
+    $updaterole->update({
+	"Role" => $emprole,
+	"UpdatedBy" => $adminid,
+	"UpdatedOn" =>$updatedate
+});
     $c->forward('user');
 
 }
