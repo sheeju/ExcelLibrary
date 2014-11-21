@@ -4,9 +4,9 @@
     <strong>Warning!</strong> Maximum 2 books can Requested.
 </div>
 [% IF role == 'Admin' %]
-<button type="button" style="margin:5px 5px" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
-    Add New Book
-</button>
+	<button type="button" style="margin:5px 5px" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
+    	Add New Book
+	</button>
 [% END %]
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -165,6 +165,7 @@
 
 
 			$('.viewdetails').click(function(){
+				$('.bookcopy').remove();
 				var bookid=$(this).attr('id');
 				$.ajax( 
 				{
@@ -176,12 +177,29 @@
 				}).done(function(data)
 				{
 
-					$('.bookcopy').remove();
 					var count = 1;
+					var element;
 					$.each(data, function(index1, value1)
 					{
 						$.each(value1, function(index,value)
 						{
+							if(value.button == 'delete')
+								{
+									element = '<td>'+
+								 				'<button type="button" id='+ value.id +' class="btn btn-primary btn-sm dlt">'+
+													'<span class="glyphicon glyphicon-trash"></span>'+
+												'</button>'+
+											'</td>'
+								}
+								else
+								{	
+									element = '<td>'+
+												'<button type="button" id='+ value.id +' class="btn btn-primary btn-sm dlt disabled">'+
+													'<span class="glyphicon glyphicon-lock"></span>'+
+												'</button>'+
+											'</td>'
+								}
+
 							$('#details_table').append('<tr class="bookcopy '+ value.id+'">'+
 								'<td>'+ count +'</td>'+
 								'<td>'+ value.id +'</td>'+
@@ -189,8 +207,10 @@
 								'<td>'+ value.empname +'</td>'+
 								'<td>'+ value.issueddate +'</td>'+
 								'<td>'+ value.returndate +'</td>'+
-								'<td>'+ value.button +'</td></tr>');
-							count = count + 1;
+								'<td>'+ element +'</td></tr>'
+								);
+
+								count = count + 1;
 						}); 
 					});
 					count = count - 1;

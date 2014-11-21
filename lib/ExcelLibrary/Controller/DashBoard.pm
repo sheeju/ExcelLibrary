@@ -180,7 +180,7 @@ sub book : Path('/book')
     my ($self, $c) = @_;
     my $count = 1;
 
-    my @array = $c->model('Library::Book')->search(
+    my @book_rs = $c->model('Library::Book')->search(
         {
             Status => {'!=', 'Removed'},
         },
@@ -195,19 +195,19 @@ sub book : Path('/book')
     $c->stash->{user} = $c->user->Name;
     my $userid = $c->user->Id;
     my %books;
-    foreach my $ar (@array) {
-        if (!exists($books{$ar->Id})) {
-            $books{$ar->Id} = {
+    foreach my $var (@book_rs) {
+        if (!exists($books{$var->Id})) {
+            $books{$var->Id} = {
                 count  => $count++,
-                id     => $ar->Id,
-                name   => $ar->Name,
-                type   => $ar->Type,
-                author => $ar->Author,
-                status => $ar->get_column('Status')
+                id     => $var->Id,
+                name   => $var->Name,
+                type   => $var->Type,
+                author => $var->Author,
+                status => $var->get_column('Status')
             };
         }
-        elsif ($books{$ar->Id}{Status} eq "Reading" and $ar->get_column('Status') eq "Available") {
-            $books{$ar->Id}{Status} = "Available";
+        elsif ($books{$var->Id}{Status} eq "Reading" and $var->get_column('Status') eq "Available") {
+            $books{$var->Id}{Status} = "Available";
         }
 
     }
@@ -263,10 +263,11 @@ sub copydetails : Local
             empname    => "-",
             issueddate => "-",
             returndate => "-",
-            button     => '<button type="button" id="'
-              . $book->Id
-              . '" class="btn btn-primary btn-sm dlt">'
-              . '<span class="glyphicon glyphicon-trash"></span></button>'
+            button     => "delete"
+			
+			
+			#<button type="button" id="'$book->Id'" class="btn btn-primary btn-sm dlt">
+			#<span class="glyphicon glyphicon-trash"></span></button>
         };
     }
 
@@ -287,11 +288,9 @@ sub copydetails : Local
         $bookcopy{$transaction->BookCopyId}{empname}    = $transaction->get_column('EmpName');
         $bookcopy{$transaction->BookCopyId}{issueddate} = $transaction->IssuedDate;
         $bookcopy{$transaction->BookCopyId}{returndate} = $transaction->ExpectedReturnDate;
-        $bookcopy{$transaction->BookCopyId}{button} =
-            '<button type="button" id="'
-          . $transaction->BookCopyId
-          . '" class="btn btn-primary btn-sm dlt disabled">'
-          . '<span class="glyphicon glyphicon-lock "></span></button>';
+        $bookcopy{$transaction->BookCopyId}{button} = "lock"
+		#   '<button type="button" id="'+$transaction->BookCopyId" class="btn btn-primary btn-sm dlt disabled">'
+		# . '<span class="glyphicon glyphicon-lock "></span></button>';
     }
     $c->stash->{detail} = \%bookcopy;
     $c->forward('View::JSON');
@@ -306,7 +305,7 @@ sub deletecopy : Local
     my $del_copy = $c->model('Library::BookCopy')->find({Id => $copyid});
     $del_copy->Status('Removed');
     $del_copy->update;
-    $c->forward('copy_details');
+    $c->forward('copydetails');
 }
 
 sub addbook : Local
