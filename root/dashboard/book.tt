@@ -163,174 +163,175 @@
 			"columnDefs": [ { "targets": [5,6], "orderable": false } ]	
 		});
 
+		$('#table').delegate('.viewdetails', 'click', function() {
+			var bookid=$(this).attr('id');
+			getbookcopy(bookid);
+		});
 
-			$('.viewdetails').click(function(){
-				$('.bookcopy').remove();
-				var bookid=$(this).attr('id');
-				$.ajax( 
+
+		function getbookcopy(bookid){
+			$('.bookcopy').remove();
+
+			$.ajax( 
+			{
+				url:'dashboard/copydetails',
+				contentType:'text/html', 
+				data:{
+					Id:bookid,
+				},
+			}).done(function(data)
+			{
+				var count = 1;
+				var element;
+				$.each(data, function(index1, value1)
 				{
-					url:'dashboard/copydetails',
-					contentType:'text/html', 
-					data:{
-						Id:bookid,
-					},
-				}).done(function(data)
-				{
-
-					var count = 1;
-					var element;
-					$.each(data, function(index1, value1)
+					$.each(value1, function(index,value)
 					{
-						$.each(value1, function(index,value)
+						if(value.button == 'delete')
 						{
-							if(value.button == 'delete')
-								{
-									element = '<td>'+
-								 				'<button type="button" id='+ value.id +' class="btn btn-primary btn-sm dlt">'+
-													'<span class="glyphicon glyphicon-trash"></span>'+
-												'</button>'+
-											'</td>'
-								}
-								else
-								{	
-									element = '<td>'+
-												'<button type="button" id='+ value.id +' class="btn btn-primary btn-sm dlt disabled">'+
-													'<span class="glyphicon glyphicon-lock"></span>'+
-												'</button>'+
-											'</td>'
-								}
+							element = '<td>'+
+								'<button type="button" id='+ value.id +' class="btn btn-primary btn-sm dlt">'+
+									'<span class="glyphicon glyphicon-trash"></span>'+
+									'</button>'+
+								'</td>'
+						}
+						else
+						{	
+							element = '<td>'+
+								'<button type="button" id='+ value.id +' class="btn btn-primary btn-sm dlt disabled">'+
+									'<span class="glyphicon glyphicon-lock"></span>'+
+									'</button>'+
+								'</td>'
+						}
+						$('#details_table').append('<tr class="bookcopy '+ value.id+'">'+
+							'<td>'+ count +'</td>'+
+							'<td>'+ value.id +'</td>'+
+							'<td>'+ value.status +'</td>'+
+							'<td>'+ value.empname +'</td>'+
+							'<td>'+ value.issueddate +'</td>'+
+							'<td>'+ value.returndate +'</td>'+
+							'<td>'+ element +'</td></tr>'
+						);
 
-							$('#details_table').append('<tr class="bookcopy '+ value.id+'">'+
-								'<td>'+ count +'</td>'+
-								'<td>'+ value.id +'</td>'+
-								'<td>'+ value.status +'</td>'+
-								'<td>'+ value.empname +'</td>'+
-								'<td>'+ value.issueddate +'</td>'+
-								'<td>'+ value.returndate +'</td>'+
-								'<td>'+ element +'</td></tr>'
-								);
-
-								count = count + 1;
-						}); 
-					});
-					count = count - 1;
-					$('#Count_id').val(count);
-					$('.dlt').click(function()
-					{
-						var id = $(this).attr('id');
-						var copyid = id; 
-						$.ajax( 
-						{
-							url:'dashboard/deletecopy',
-							contentType:'text/html', 
-							data:{
-								CopyId:copyid,
-							}
-						}).done(function (data)
-						{
-							id= '.'+id;
-							$(id).remove();
-							count = count-1;
-							$('#Count_id').val(count);
-						}).fail(function(err) 
-						{ 
-							alert("error"+ err); 
-						});
-					});
-
+						count = count + 1;
+					}); 
 				});
+				count = count - 1;
+				$('#Count_id').val(count);
+				$('.dlt').click(function()
+				{
+					var id = $(this).attr('id');
+					var copyid = id; 
+					$.ajax( 
+					{
+						url:'dashboard/deletecopy',
+						contentType:'text/html', 
+						data:{
+							CopyId:copyid,
+						}
+					}).done(function (data)
+					{
+						id= '.'+id;
+						$(id).remove();
+						count = count-1;
+						$('#Count_id').val(count);
+					}).fail(function(err) 
+					{ 
+						alert("error"+ err); 
+					});
+				});
+
+			});
+		}
+
+		$('#addbook').click(function(){
+
+			jQuery.validator.setDefaults({
+				debug: true,
+				success: "valid"
 			});
 
-	}); 
 
-
-	$('#addbook').click(function(){
-
-		jQuery.validator.setDefaults({
-			debug: true,
-			success: "valid"
-		});
-
-
-		$("#book_insertion").validate({
-			rules: {
-				bookName: {
-					required:true,
-					alphanumeric:true
-				},
-				bookType: {
-					required :true,
-					  alphanumeric:true
-
-				},
-				author: {
-					required :true,
-					lettersonly:true
-
-				},
-				noOfCopies : {
-					required:true,
-					number :true,
-					digits: true
-				}
-			},
-			submitHandler : function(form){
-				var url = "/dashboard/addbook";
-				var name = $('#bookName').val();
-				var author = $('#author').val();
-				var type = $('#bookType').val();
-				var noOfCopies = $('#noOfCopies').val();
-				$.ajax({
-					type :"POST",
-					url  : url,
-					data :{
-						name:name,
-						author:author,
-						type:type,
-						count:noOfCopies,
+			$("#book_insertion").validate({
+				rules: {
+					bookName: {
+						required:true,
+						alphanumeric:true
+					},
+					bookType: {
+						required :true,
+						alphanumeric:true
 
 					},
-					success : function ( data ) {
+					author: {
+						required :true,
+						lettersonly:true
 
-						$('#sucess_message').html(data.message);
-						$('#book_insertion')[0].reset();
-						var validator = $( "#book_insertion" ).validate();
-						validator.resetForm();
+					},
+					noOfCopies : {
+						required:true,
+						number :true,
+						digits: true
 					}
-				});
-			}
-		});
-	});
+				},
+				submitHandler : function(form){
+					var url = "/dashboard/addbook";
+					var name = $('#bookName').val();
+					var author = $('#author').val();
+					var type = $('#bookType').val();
+					var noOfCopies = $('#noOfCopies').val();
+					$.ajax({
+						type :"POST",
+						url  : url,
+						data :{
+							name:name,
+							author:author,
+							type:type,
+							count:noOfCopies,
 
-	$( "input" ).focus(function() {
-		$('#sucess_message').html('');
-	});
+						},
+						success : function ( data ) {
 
-	$(".close").click(function(){
-		 $('.alert').addClass('hidden');
-      });
-
-	$('.book_req').click(function(){
-		var bookid=$(this).attr('id');
-		$.ajax({    
-			url:"/dashboard/bookrequest",
-			data :{
-				bookId :bookid,
-			},
-			success:function(data){
-				if(data.deniedflag)
-				{
-					$('.alert').removeClass('hidden');
-
+							$('#sucess_message').html(data.message);
+							$('#book_insertion')[0].reset();
+							var validator = $( "#book_insertion" ).validate();
+							validator.resetForm();
+						}
+					});
 				}
-				else
-				{
-					id = '#'+bookid;
-					var msg = '#lbl'+ bookid;
-					$(id).addClass('hidden');
-					$(msg).removeClass('hidden');
-				}   
-			}
+			});
 		});
-	})
+
+		$( "input" ).focus(function() {
+			$('#sucess_message').html('');
+		});
+
+		$(".close").click(function(){
+			$('.alert').addClass('hidden');
+		});
+
+		$('.book_req').click(function(){
+			var bookid=$(this).attr('id');
+			$.ajax({    
+				url:"/dashboard/bookrequest",
+				data :{
+					bookId :bookid,
+				},
+				success:function(data){
+					if(data.deniedflag)
+					{
+						$('.alert').removeClass('hidden');
+
+					}
+					else
+					{
+						id = '#'+bookid;
+						var msg = '#lbl'+ bookid;
+						$(id).addClass('hidden');
+						$(msg).removeClass('hidden');
+					}   
+				}
+			});
+		});
+	});
 </script>
