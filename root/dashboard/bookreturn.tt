@@ -1,40 +1,40 @@
 <br>
 <br>
 <form name="book_return">
-	<div class="row ">
-		<center>
-			<select id="cmb_searchby" class="btn dropdown-toggle">
-				<option>Search By Bookcopy Id</option> 
-				<option>Search By Employee Id</optino>
-			</select>
-		</center>
-		<br>
-		<br>
-		<div class="col-lg-4 col-lg-offset-4">
-			<div id="div_searchby_copy_id" class="input-group">
+    <div class="row ">
+        <center>
+            <select id="cmb_searchby" class="btn dropdown-toggle">
+                <option>Search By Bookcopy Id</option>
+                <option>Search By Employee Id</optino>
+            </select>
+        </center>
+        <br>
+        <br>
+        <div class="col-lg-4 col-lg-offset-4">
+            <div id="div_searchby_copy_id" class="input-group">
                 <span class="input-group-addon">Book Copy ID</span>
                 <input type="text" id="txt_copy_id" class="form-control">
                 <span class="input-group-btn">
 					<button id="btn_checkby_copyid" class="btn btn-default" type="button">Check</button>
 				</span>
-			</div>
-			<div id="div_searchby_employee_id" class="input-group">
+            </div>
+            <div id="div_searchby_employee_id" class="input-group">
                 <span class="input-group-addon">Employee ID</span>
                 <input type="text" id="txt_employee_id" class="form-control">
                 <span class="input-group-btn">
 					<button id="btn_checkby_employeeid" class="btn btn-default" type="button">Check</button>
 				</span>
-			</div>
+            </div>
 
-			
+
         </div>
     </div>
     <br>
     <br>
     <div class="row">
-		<center>
+        <center>
             <span id="msg" class="label label-info"> </span>
-		</center>
+        </center>
     </div>
     <br>
     <br>
@@ -48,13 +48,13 @@
                 <th>Expected Return Date</th>
             </tr>
         </table>
-		<table id="tbl_detail_employeeid" class="table table-bordered">
-			<tr class="info">
-				<th>Book Copy Id</th>
+        <table id="tbl_detail_employeeid" class="table table-bordered">
+            <tr class="info">
+                <th>Book Copy Id</th>
                 <th>Book Name</th>
                 <th>Issue Date</th>
                 <th>Expected Return Date</th>
-				<th></th>
+                <th></th>
             </tr>
         </table>
 
@@ -78,20 +78,20 @@
 
 <script>
     $(document).ready(function() {
-		var index = 0;
-		
-		$('#detail_div').addClass("hidden");
+        var index = 0;
+
+        $('#detail_div').addClass("hidden");
         $('#msg').addClass("hidden");
-		$('#div_searchby_employee_id').hide();	
+        $('#div_searchby_employee_id').hide();
 
-		$('#cmb_searchby').change(function(){
-			$('#div_searchby_copy_id').toggle();
-			$('#div_searchby_employee_id').toggle();
-			$('#detail_div').addClass("hidden");
-			index = $('option:selected',$('#cmb_searchby')).index();
-		});
+        $('#cmb_searchby').change(function() {
+            $('#div_searchby_copy_id').toggle();
+            $('#div_searchby_employee_id').toggle();
+            $('#detail_div').addClass("hidden");
+            index = $('option:selected', $('#cmb_searchby')).index();
+        });
 
-	    $('#btn_checkby_copyid').click(function() {
+        $('#btn_checkby_copyid').click(function() {
             var copy_id = $('#txt_copy_id').val();
             var regex = /^[1-9]+$/;
             if (regex.test(copy_id)) {
@@ -106,9 +106,9 @@
                     if (data.flag) {
                         $('#tbl_row_cpyadded').remove();
                         $('#msg').addClass("hidden");
-						$('#detail_div').removeClass("hidden");
-						$('#tbl_detail_employeeid').addClass("hidden");
-						$('#tbl_detail_copyid').removeClass("hidden");
+                        $('#detail_div').removeClass("hidden");
+                        $('#tbl_detail_employeeid').addClass("hidden");
+                        $('#tbl_detail_copyid').removeClass("hidden");
 
                         $('#tbl_detail_copyid').append('<tr id="tbl_row_cpyadded"><td>' + data.id + '</td>' +
                             '<td>' + data.empname + '</td>' +
@@ -116,8 +116,7 @@
                             '<td>' + data.issuedate + '</td>' +
                             '<td>' + data.expreturndate + '</td>' +
                             '</tr>');
-					} 
-					else {
+                    } else {
                         $('#detail_div').addClass("hidden");
                         $('#msg').removeClass("hidden");
                         $('#msg').text('No Book Issued For This ID');
@@ -132,9 +131,9 @@
                 $('#msg').text('Invalid input enter book copy id');
 
             }
-		});
+        });
 
-		$('#btn_checkby_employeeid').click(function(){
+        $('#btn_checkby_employeeid').click(function() {
             var emp_id = $('#txt_employee_id').val();
             var regex = /^[1-9]+$/;
             if (regex.test(emp_id)) {
@@ -143,26 +142,24 @@
                     contentType: 'text/html',
                     dataType: 'json',
                     data: {
-                        emp_id : emp_id
+                        emp_id: emp_id
                     }
                 }).done(function(data) {
                     if (data.flag) {
                         $('.tbl_row_empadded').remove();
                         $('#msg').addClass("hidden");
-						$('#detail_div').removeClass("hidden");
-						$('#tbl_detail_employeeid').removeClass("hidden");
-						$('#tbl_detail_copyid').addClass("hidden");
-						$.each(data.booktaken, function(index, value)
-						{
-							$('#tbl_detail_employeeid').append('<tr class="tbl_row_empadded"><td>'+ value.bookcopyid +'</td>'+
-									'<td>' + value.bookname + '</td>' +
-                            		'<td>' + value.issuedate + '</td>' +
-                            		'<td>' + value.expreturndate + '</td>' +
-									'<td> <input type="checkbox" name="bookcopyid" class="chk_bookreturn" value="'+ value.bookcopyid +'" /></td>'+
-									'</tr>');
-						});
-					} 
-					else {
+                        $('#detail_div').removeClass("hidden");
+                        $('#tbl_detail_employeeid').removeClass("hidden");
+                        $('#tbl_detail_copyid').addClass("hidden");
+                        $.each(data.booktaken, function(index, value) {
+                            $('#tbl_detail_employeeid').append('<tr class="tbl_row_empadded"><td>' + value.bookcopyid + '</td>' +
+                                '<td>' + value.bookname + '</td>' +
+                                '<td>' + value.issuedate + '</td>' +
+                                '<td>' + value.expreturndate + '</td>' +
+                                '<td> <input type="checkbox" name="bookcopyid" class="chk_bookreturn" value="' + value.bookcopyid + '" /></td>' +
+                                '</tr>');
+                        });
+                    } else {
                         $('#detail_div').addClass("hidden");
                         $('#msg').removeClass("hidden");
                         $('#msg').text('No Book Issued For ID');
@@ -171,48 +168,50 @@
                 }).fail(function(err) {
                     alert("error" + err);
                 });
-			}
-			else {
+            } else {
                 $('#msg').removeClass("hidden");
                 $('#detail_div').addClass("hidden");
                 $('#msg').text('Invalid input enter employee id');
             }
-		});
+        });
 
 
         $('#btn_return').click(function() {
             var comment = $('#comment').val();
-			var copy_id = new Array;
-			if(index == 1)
-			{
-				
-				$('.chk_bookreturn:checked').each(function () {
-				            copy_id.push( $(this).val());
-				});
-			}
-			else
-			{
-				alert('hai');
-				 copy_id.push($('#txt_copy_id').val());
-			}
-			console.log(copy_id);
-            $.ajax({
-                url: 'dashboard/returnbook',
-                contentType: 'text/html',
-                dataType: 'json',
-                data: {
-                    copy_id: copy_id,
-                    comment: comment
-                }
-            }).done(function(data) {
-                if (data.result) {
-                    $('#msg').removeClass("hidden");
-                    $('#detail_div').addClass("hidden");
-                    $('#msg').text('Book Marked As Returned');
-                }
-            }).fail(function(err) {
-                alert("error" + err);
-            });
+            var copy_id = new Array;
+            if (index == 1) {
+
+                $('.chk_bookreturn:checked').each(function() {
+                    copy_id.push($(this).val());
+                });
+            } else {
+                alert('hai');
+                copy_id.push($('#txt_copy_id').val());
+            }
+
+            if (copy_id.length > 0) {
+
+                $.ajax({
+                    url: 'dashboard/returnbook',
+                    contentType: 'text/html',
+                    dataType: 'json',
+                    data: {
+                        copy_id: copy_id,
+                        comment: comment
+                    }
+                }).done(function(data) {
+                    if (data.result) {
+                        $('#msg').removeClass("hidden");
+                        $('#detail_div').addClass("hidden");
+                        $('#msg').text('Book Marked As Returned');
+                    }
+                }).fail(function(err) {
+                    alert("error" + err);
+                });
+            } else {
+                $('#msg').removeClass("hidden");
+                $('#msg').text('Select the book want to return');
+            }
         });
     });
 </script>
