@@ -306,7 +306,7 @@ sub deletecopy : Local
     my $del_copy = $c->model('Library::BookCopy')->find({Id => $copyid});
     $del_copy->Status('Removed');
     $del_copy->update;
-    $c->forward('copy_details');
+    $c->forward('copydetails');
 }
 
 sub addbook : Local
@@ -548,75 +548,103 @@ sub returnbook : Local
 sub history : Path('/history')
 {
     my ($self, $c) = @_;
-    $c->stash->{role} = $c->user->Role;
-    if (defined $c->req->params->{Selection}) {
-        my $selection = $c->req->params->{Selection};
-        print $selection;
-        my $count = 1;
-        if ($selection eq 'transaction') {
-            $c->log->info("-------------------------------------");
-            my @alldata = $c->model('Library::Transaction')->search(
-                {
-                    'me.Status' => {'!=', 'Requested'},
-                },
-                {
-                    join      => ['employee',      'book'],
-                    '+select' => ['employee.Name', 'book.Name'],
-                    '+as'     => ['EmployeeName',  'BookName']
-                }
-            );
-            push(
-                @{$c->stash->{history}},
-                {
-                    Count       => $count++,
-                    EmpName     => $_->get_column('EmployeeName'),
-                    BookName    => $_->get_column('BookName'),
-                    Status      => $_->Status,
-                    RequestDate => $_->RequestDate,
-                    IssuedDate  => $_->IssuedDate,
-                    IssuedBy    => $_->IssuedBy
-                }
-            ) foreach @alldata;
-            $c->log->info(Dumper $c->stash->{history});
-            $c->forward('View::JSON');
-        }
-        elsif ($selection eq "book") {
+	$c->stash->{role} = $c->user->Role;
+	my $userId=$c->user->Id;
+	if($c->user->Role eq 'Admin')
+	{
+		if (defined $c->req->params->{Selection}) {
+			my $selection = $c->req->params->{Selection};
+			print $selection;
+			my $count = 1;
+			if ($selection eq 'transaction') {
+				$c->log->info("-------------------------------------");
+				my @alldata = $c->model('Library::Transaction')->search(
+					{
+						'me.Status' => {'!=', 'Requested'},
+					},
+					{
+						join      => ['employee',      'book'],
+						'+select' => ['employee.Name', 'book.Name'],
+						'+as'     => ['EmployeeName',  'BookName']
+					}
+				);
+				push(
+					@{$c->stash->{history}},
+					{
+						Count       => $count++,
+						EmpName     => $_->get_column('EmployeeName'),
+						BookName    => $_->get_column('BookName'),
+						Status      => $_->Status,
+						RequestDate => $_->RequestDate,
+						IssuedDate  => $_->IssuedDate,
+						IssuedBy    => $_->IssuedBy
+					}
+				) foreach @alldata;
+				$c->log->info(Dumper $c->stash->{history});
+				$c->forward('View::JSON');
+			}
+			elsif ($selection eq "book") {
 
-            my $bookname = $c->req->params->{bookname};
-            print Dumper $bookname;
-            my @alldata = $c->model('Library::Transaction')->search(
-                {
-                    'book.Name' => $bookname,
-                },
-                {
-                    join      => ['employee',      'book'],
-                    '+select' => ['employee.Name', 'book.Name'],
-                    '+as'     => ['EmployeeName',  'BookName']
-                }
-            );
-            push(
-                @{$c->stash->{history}},
-                {
-                    Count        => $count++,
-                    CopyId       => $_->BookCopyId,
-                    EmployeeName => $_->get_column('EmployeeName'),
-                    BookName     => $_->get_column('BookName'),
-                    IssuedDate   => $_->IssuedDate,
-                    ReturnedDate => $_->ReturnedDate,
-                }
-            ) foreach @alldata;
-            $c->log->info(Dumper $c->stash->{history});
-            $c->forward('View::JSON');
-        }
-        else {
-            $c->forward('View::TT');
-        }
-    }
-    else {
-        $c->log->info("----------- IN ELSE -----------------");
-        $c->forward('View::TT');
-    }
+				my $bookname = $c->req->params->{bookname};
+				print Dumper $bookname;
+				my @alldata = $c->model('Library::Transaction')->search(
+					{
+						'book.Name' => $bookname,
+					},
+					{
+						join      => ['employee',      'book'],
+						'+select' => ['employee.Name', 'book.Name'],
+						'+as'     => ['EmployeeName',  'BookName']
+					}
+				);
+				push(
+					@{$c->stash->{history}},
+					{
+						Count        => $count++,
+						CopyId       => $_->BookCopyId,
+						EmployeeName => $_->get_column('EmployeeName'),
+						BookName     => $_->get_column('BookName'),
+						IssuedDate   => $_->IssuedDate,
+						ReturnedDate => $_->ReturnedDate,
+					}
+				) foreach @alldata;
+				$c->log->info(Dumper $c->stash->{history});
+				$c->forward('View::JSON');
+			}
+			else {
+				$c->forward('View::TT');
+			}
+		}
+		else {
+			$c->log->info("----------- IN ELSE -----------------");
+			$c->forward('View::TT');
+		}
 
+	}
+	elsif($c->user->Role eq 'Employee')
+	{
+			my $count = 1;
+		my @emphistory = $c->model('Library::Transaction')->search(
+			{
+				'me.EmployeeId' => $userId,
+			},
+			{
+				join => ['book'],
+				'+select' => ['book.Name'],
+				'+as' => ['BookName'],
+			});
+		push(
+			@{$c->stash->{emphistory}},
+			{
+				Count => $count++,
+				BookName => $_->get_column('BookName'),
+				RequestDate => $_->RequestDate,
+				IssueDate => $_->IssuedDate,
+				ReturnDate => $_->ExpectedReturnDate,
+			}
+		) foreach @emphistory;
+		$c->log->info(Dumper $c->stash->{emphistory});
+	}
 }
 
 =encoding utf8
