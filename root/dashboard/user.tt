@@ -28,7 +28,7 @@
 					<br/>
 					<div class="form-group">
 						<label>Email</label>
-						<input type="email" class="form-control" id="txt_empemail" name="empemial" placeholder="emial">
+						<input type="email" class="form-control" id="txt_empemail" name="empemial" placeholder="email">
 					</div>  
 					<br/>
 					<label id="sucess_message"></label>
@@ -98,7 +98,6 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" id="updaterole" data-dismiss="modal">Update</button>
-                    <button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
                 </div>
             </div>
         </div>
@@ -157,9 +156,13 @@
 					},
 					success : function ( data ) {
 
-						$('#sucess_message').html(data.message);
-						var validator = $("#form_adduser").validate();
-						validator.resetForm();
+
+							console.log(data.message);
+						 $('#sucess_message').html(data.message);
+                                                $('#form_adduser')[0].reset();
+                                                var validator = $( "#form_adduser" ).validate();
+                                                validator.resetForm();
+
 					}
 				});
 			}

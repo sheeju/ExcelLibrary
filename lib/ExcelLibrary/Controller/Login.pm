@@ -30,7 +30,8 @@ sub index : Path('/login') : Args(0)
             $c->authenticate(
                 {
                     "Email"    => $c->request->params->{'email'},
-                    "Password" => $c->request->params->{'password'}
+                    "Password" => $c->request->params->{'password'},
+		     "Status"  => 'Active'
                 }
             )
           )
