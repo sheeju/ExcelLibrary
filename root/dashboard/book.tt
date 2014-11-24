@@ -101,7 +101,7 @@
 
 	<tbody class="details">
 	[% FOREACH msg IN messages.keys %]
-	<tr>
+	<tr id=[% messages.$msg.id %]>
 	<td>
 	[% messages.$msg.count %]
 	</td>
@@ -198,7 +198,7 @@
 						else
 						{	
 							btn = '<td>'+
-								'<button type="button" id='+ value.id +' class="btn btn-primary btn-sm dlt disabled">'+
+								'<button type="button" id='+ value.id +' class="btn btn-primary btn-sm disabled">'+
 									'<span class="glyphicon glyphicon-lock"></span>'+
 									'</button>'+
 								'</td>'
@@ -210,7 +210,8 @@
 							'<td>'+ value.empname +'</td>'+
 							'<td>'+ value.issueddate +'</td>'+
 							'<td>'+ value.returndate +'</td>'+
-							'<td>'+ btn +'</td></tr>'
+							btn +
+							'</tr>'
 						);
 
 						count = count + 1;
@@ -221,13 +222,12 @@
 				$('.dlt').click(function()
 				{
 					var id = $(this).attr('id');
-					var copyid = id; 
 					$.ajax( 
 					{
 						url:'dashboard/deletecopy',
 						contentType:'text/html', 
 						data:{
-							CopyId:copyid,
+							CopyId:id,
 						}
 					}).done(function (data)
 					{

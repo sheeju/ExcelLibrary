@@ -206,8 +206,8 @@ sub book : Path('/book')
                 status => $var->get_column('Status')
             };
         }
-        elsif ($books{$var->Id}{Status} eq "Reading" and $var->get_column('Status') eq "Available") {
-            $books{$var->Id}{Status} = "Available";
+        elsif ($books{$var->Id}{status} eq "Reading" and $var->get_column('status') eq "Available") {
+            $books{$var->Id}{status} = "Available";
         }
 
     }
@@ -264,10 +264,6 @@ sub copydetails : Local
             issueddate => "-",
             returndate => "-",
             button     => "delete"
-			
-			
-			#<button type="button" id="'$book->Id'" class="btn btn-primary btn-sm dlt">
-			#<span class="glyphicon glyphicon-trash"></span></button>
         };
     }
 
@@ -289,8 +285,6 @@ sub copydetails : Local
         $bookcopy{$transaction->BookCopyId}{issueddate} = $transaction->IssuedDate;
         $bookcopy{$transaction->BookCopyId}{returndate} = $transaction->ExpectedReturnDate;
         $bookcopy{$transaction->BookCopyId}{button} = "lock"
-		#   '<button type="button" id="'+$transaction->BookCopyId" class="btn btn-primary btn-sm dlt disabled">'
-		# . '<span class="glyphicon glyphicon-lock "></span></button>';
     }
     $c->stash->{detail} = \%bookcopy;
     $c->forward('View::JSON');
