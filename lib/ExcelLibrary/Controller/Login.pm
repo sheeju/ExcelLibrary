@@ -22,38 +22,70 @@ Catalyst Controller.
 
 =cut
 
-sub index : Path('/login') : Args(0)
+sub index : Path('/login')
 {
     my ($self, $c) = @_;
-
+    my $token = $c->req->params->{token};
+    if ($c->req->method eq "POST") {
+        my $password = md5_hex($c->req->params->{password});
         if (
             $c->authenticate(
                 {
-                    "Email"    => $c->request->params->{'email'},
-                    "Password" => $c->request->params->{'password'},
-		     "Status"  => 'Active'
+                    "Email"    => $c->req->params->{'email'},
+                    "Password" => $password,
+                    "Status"   => 'Active'
                 }
             )
           )
-
         {
             $c->res->redirect($c->uri_for_action('dashboard/dashboard'));
         }
         else {
-		if(defined $c->req->params->{email})
-		{
+            if (defined $c->req->params->{email}) {
+                $c->stash->{failmessage} = 1;
+            }
+            else {
+                $c->stash->{failmessage} = 0;
+            }
+        }
+    }
+    else {
+        $c->log->info($token);
+        if ($token ne '') {
+            my $employee_rs = $c->model('Library::Employee')->search({Token => $token});
+            my $employee = $employee_rs->next;
 
-			$c->stash->{failmessage} = 1;
-		}
-		else
-		{
+            if ($employee->Status eq 'InActive') {
+                $c->stash->{token}    = $token;
+                $c->stash->{template} = "login/createpassword.tt";
+            }
+            else {
+                $c->stash->{template} = "login/index.tt";
+            }
+        }
+        else {
+            $c->stash->{template} = "login/index.tt";
+        }
+    }
+    $c->forward('View::TT');
+}
 
-			$c->stash->{failmessage} = 0;
+sub createpassword : Local
+{
+    my ($self, $c) = @_;
 
-		}
+    my $password    = md5_hex($c->req->params->{password});
+    my $token       = $c->req->params->{token};
+    my $employee_rs = $c->model('Library::Employee')->search({Token => $token});
 
-		$c->forward('View::TT');
-	}
+    $employee_rs->update(
+        {
+            "Password" => $password,
+            "Status"   => 'Active'
+        }
+    );
+
+    $c->forward('View::JSON');
 }
 
 sub logout : Local

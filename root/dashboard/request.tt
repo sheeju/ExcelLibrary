@@ -1,5 +1,5 @@
 <br><br>
-<table id="request_tabel" class="display" cellspacing="0" width="100%">
+<table id="request_table" class="display" cellspacing="0" width="100%">
 	<thead>
 		<tr>
 			<th>SI No</th>
@@ -71,9 +71,19 @@
 		$(document).ready(function ()
 		{
 		var req_id;
-		$('#request_tabel').DataTable({});
+		$('#request_table').DataTable({});
 
-		$('.req_allow').click(function(){
+		$('#request_table').delegate('.req_allow', 'click', function() {
+			var id = $(this).attr('id');
+			addresponse(id,"Allow");
+		});
+
+		$('#request_table').delegate('.req_deny', 'click', function() {
+			var id = $(this).attr('id');
+			addresponse(id,"Deny");
+		});
+		
+		/*$('.req_allow').click(function(){
 
 			var id = $(this).attr('id');
 			addresponse(id,"Allow");
@@ -82,7 +92,7 @@
 		$('.req_deny').click(function(){
 			var id = $(this).attr('id');
 			addresponse(id,"Deny");
-		});
+		});*/
 		function addresponse(id,response)
 		{
 			$.ajax( 
@@ -100,7 +110,7 @@
 			});
 		}
 
-		$('.book_issue').click(function(){
+		$('#request_table').delegate('.book_issue', 'click',function(){
 			req_id = $(this).attr('id');
 			$('#cmb_booklist').empty();
 			$('#div_model_msg').addClass('hidden');
@@ -131,6 +141,7 @@
 			});
 
 		});
+
 		$('#btn_issue').click(function(){
 			var bc_id = $('#cmb_booklist').val();
 			$.ajax( 
