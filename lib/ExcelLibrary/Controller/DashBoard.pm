@@ -628,7 +628,6 @@ sub history : Path('/history')
             print $selection;
             my $count = 1;
             if ($selection eq 'transaction') {
-                $c->log->info("-------------------------------------");
                 my @alldata = $c->model('Library::Transaction')->search(
                     {
                         'me.Status' => {'!=', 'Requested'},
@@ -650,13 +649,11 @@ sub history : Path('/history')
                         IssuedDate  => $_->IssuedDate,
                     }
                 ) foreach @alldata;
-                $c->log->info(Dumper $c->stash->{history});
                 $c->forward('View::JSON');
             }
             elsif ($selection eq "book") {
 
                 my $bookname = $c->req->params->{bookname};
-                print Dumper $bookname;
                 my @alldata = $c->model('Library::Transaction')->search(
                     {
                         'book.Name' => $bookname,
@@ -678,7 +675,6 @@ sub history : Path('/history')
                         ReturnedDate => $_->ReturnedDate,
                     }
                 ) foreach @alldata;
-                $c->log->info(Dumper $c->stash->{history});
                 $c->forward('View::JSON');
             }
             else {
@@ -686,7 +682,6 @@ sub history : Path('/history')
             }
         }
         else {
-            $c->log->info("----------- IN ELSE -----------------");
             $c->forward('View::TT');
         }
 
@@ -714,7 +709,6 @@ sub history : Path('/history')
                 Status      => $_->Status,
             }
         ) foreach @emphistory;
-        $c->log->info(Dumper $c->stash->{emphistory});
     }
 }
 
