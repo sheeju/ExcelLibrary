@@ -109,7 +109,6 @@ sub request : Path('/request')
 
     $c->stash->{template} = "dashboard/request.tt";
     $c->forward('View::TT');
-#dsfsdfsd
 }
 
 sub managerequest : Local
@@ -120,12 +119,12 @@ sub managerequest : Local
     my $loginId        = $c->user->Id;
     my $transaction_rs = $c->model('Library::Transaction')->search(
         {
-            "Id" => $req_id,
+            "me.Id" => $req_id
         },
         {
-            join      => ['employee',      'book'],
-            '+select' => ['employee.Name', 'book.Name'],
-            '+as'     => ['EmployeeName',  'BookName']
+            join      => ['employee',       'book'],
+            '+select' => ['employee.Email', 'employee.Name', 'book.Name'],
+            '+as'     => ['EmployeeEmail',  'EmployeeName', 'BookName']
         }
     );
     my $transaction = $transaction_rs->next;
@@ -145,17 +144,35 @@ sub managerequest : Local
         }
     }
 
-    my $employee_rs = $c->model('Library::Employee')->search({"Role" => 'Admin'});
-    my $employee;
-    while ($employee = $employee_rs->next) {
-
-        my $subject = "ExcelLibrary response for book request";
-        my $message = "Hai <p> Your request for " . $transaction->get_column("BookName") . "is " . $response . "</p>";
-        excellibrarysendmail($subject, $message, $employee->Email);
+    my $subject     = "ExcelLibrary response for book request";
+    my $contenttype = "text/plain";
+    my $message;
+    if ($response eq 'Accepted') {
+        $message = "Hai "
+          . $transaction->get_column("EmployeeName")
+          . "\n\nYour request for \""
+          . $transaction->get_column("BookName")
+          . "\" book is "
+          . $response
+          . ".you can collect the book.\n";
     }
-
+    else {
+        $message = "Hai "
+          . $transaction->get_column("EmployeeName")
+          . "\n\nYour request for \""
+          . $transaction->get_column("BookName")
+          . "\" book is "
+          . $response . "\n";
+    }
+    excellibrarysendmail($contenttype, $subject, $message, $transaction->get_column("EmployeeEmail"));
     $c->detach('request');
 }
+
+
+
+
+
+
 
 sub getbookcopies : Local
 {
