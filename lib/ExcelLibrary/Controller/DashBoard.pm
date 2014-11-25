@@ -117,8 +117,8 @@ sub managerequest : Local
     my $loginId        = $c->user->Id;
     my $transaction_rs = $c->model('Library::Transaction')->search(
 								{
-									"Id" => $req_id
-								}
+									"Id" => $req_id,
+								},
 	 							{
             						join      => ['employee',      'book'],
             						'+select' => ['employee.Name', 'book.Name'],
@@ -143,7 +143,7 @@ sub managerequest : Local
     }
 	
 	my $employee_rs = $c->model('Library::Employee')->search({"Role" => 'Admin'});
-	my $employee 
+	my $employee; 
 	while ($employee= $employee_rs->next)
 	{
 
@@ -277,6 +277,7 @@ sub book : Path('/book')
 
     $c->stash->{messages} = \%books;
     $c->stash->{role}     = $c->user->Role;
+	$c->forward('View::TT');
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -716,9 +717,17 @@ sub history : Path('/history')
 sub addcopies :Local
 {
 	my($self,$c)=@_;
-	my $no_of_copies=$c->req->params->{no_of_copies};
-	my $bookid=$c->req->params->{bbokid};
-
+	my $no_of_copies=0;
+	$no_of_copies=$c->req->params->{Count};
+	my $bookid=$c->req->params->{bookId};
+	$c->model('Library::BookCopy')->create(
+		{
+			BookId => $bookid,
+			Status => 'Available',
+		});	
+	my $copy_update = $c->model('Library::Book')->find({Id => $bookid});
+	$copy_update->NoOfCopies($no_of_copies);
+	$copy_update->update;
 	$c->forward('View::JSON');
 }
 

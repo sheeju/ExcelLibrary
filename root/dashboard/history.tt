@@ -12,10 +12,12 @@
 		var table=$('#historyTable').dataTable();
 		$('.radio').change(function()
 		{
+			table.fnClearTable();
 			var item=$(this).attr('id');
-			alert(item);
 			if(item == 'transaction')
 			{
+				$("#col6").text('Status');
+				$("#col3").text('Book Name');
 				$.ajax
 				({
 					url:'/history',
@@ -38,13 +40,13 @@
 			}
 			else if(item == 'book')
 			{
+				$("#col3").text('Request Date');
+				$("#col6").text('Copy Id');
 				$('#myDiv').show();
 			}
 		});
-		$('#go').click(function(){
+		$('#bookHistory').click(function(){
 			var bookName=document.getElementById("bookTextBox").value;
-			table.fnClearTable();
-			alert(bookName);
 			$.ajax(
 			{
 				url:'/history',
@@ -65,7 +67,6 @@
 		});
 
 	});
-	console.log([% choice %]);
 </script>
 [% IF role == 'Admin' %]
 <div class="radio" id="book">
@@ -81,7 +82,7 @@
 			<span class="input-group-addon">Book Name</span>
 			<input type="text" id="bookTextBox" class="form-control">
 			<span class="input-group-btn">
-				<button class="btn btn-default" id="go" type="button">Go!</button>
+				<button class="btn btn-default" id="bookHistory" type="button">Check History</button>
 			</span>
 		</div>
 	</div>
@@ -93,10 +94,10 @@
 		<tr>
 			<th>Count</th>
 			<th>Employee Name</th>
-			<th>Request Date</th>
+			<th id="col3">Request Date</th>
 			<th>Issued Date</th>
 			<th>Returned Date</th>
-			<th>Status</th>
+			<th id="col6">Status</th>
 		</tr>
 	</thead>
 </table>

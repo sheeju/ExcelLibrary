@@ -60,11 +60,17 @@
             <div class="modal-body">
                 <br/>
                 <div class="form-group pull-right">
-                    <label for="exampleInputPassword1">No Of Copies</label>
-                    <input type="number" class="form-control" id="Count_id" placeholder="Count">
-
-                </div>
-                <table id="details_table" class="table table-hover table-bordered table-stripped table-condensed info table-responsive" cellspacing="0" width="100%">
+					<div class="col-lg-5 pull-right">
+						<div class="input-group">
+							<span class="input-group-addon">No Of Copies</span>
+							<input type="text" id="Count_id" class="form-control" disabled>
+							<span class="input-group-btn">
+								<button class="btn btn-primary addCopies" type="button"><b>+</b></button>
+							</span>
+						</div>
+					</div>
+				</div>
+				<table class="table table-hover table-bordered table-stripped table-condensed info table-responsive" cellspacing="0" width="100%">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -75,7 +81,9 @@
                             <th>Return Date</th>
                             <th>Delete</th>
                         </tr>
-                    </thead>
+					</thead>
+					<tbody id="details_table">
+					</tbody>
                 </table>
             </div>
         </div>
@@ -101,7 +109,7 @@
 
 	<tbody class="details">
 	[% FOREACH msg IN messages.keys %]
-	<tr id=[% messages.$msg.id %]>
+	<tr id="a[% messages.$msg.id %]" class="bugari">
 	<td>
 	[% messages.$msg.count %]
 	</td>
@@ -158,20 +166,27 @@
 <link rel="stylesheet" type="text/css" href="source/DataTable/media/css/dataTables.bootstrap.css" />
 <script type="text/javascript" src="source/bootstrap/dist/js/bootstrap.js"></script>
 <script>
+	var oTable;
 	$(document).ready(function() {
-		$('#table').DataTable({
+		oTable=$('#table').dataTable({
 			"columnDefs": [ { "targets": [5,6], "orderable": false } ]	
 		});
-
+		var bookid;
+		var count = 1;
 		$('#table').delegate('.viewdetails', 'click', function() {
-			var bookid=$(this).attr('id');
+			bookid=$(this).attr('id');
 			getbookcopy(bookid);
 		});
 
-
+		var dharma;
+		$('.bugari').click(function()
+		{
+			dharma = $(this).attr('id');
+		});
 		function getbookcopy(bookid){
-			$('.bookcopy').remove();
-
+			$('#detail_body').html('');
+			var detail_body;
+			count = 1;
 			$.ajax( 
 			{
 				url:'dashboard/copydetails',
@@ -181,7 +196,6 @@
 				},
 			}).done(function(data)
 			{
-				var count = 1;
 				var btn;
 				$.each(data, function(index1, value1)
 				{
@@ -203,7 +217,7 @@
 									'</button>'+
 								'</td>'
 						}
-						$('#details_table').append('<tr class="bookcopy '+ value.id+'">'+
+						detail_body +='<tr class="bookcopy '+ value.id+'">'+
 							'<td>'+ count +'</td>'+
 							'<td>'+ value.id +'</td>'+
 							'<td>'+ value.status +'</td>'+
@@ -212,13 +226,13 @@
 							'<td>'+ value.returndate +'</td>'+
 							btn +
 							'</tr>'
-						);
-
-						count = count + 1;
-					}); 
+						count++;
+					});
 				});
+				$('#details_table').html(detail_body);
 				count = count - 1;
 				$('#Count_id').val(count);
+
 				$('.dlt').click(function()
 				{
 					var id = $(this).attr('id');
@@ -235,14 +249,37 @@
 						$(id).remove();
 						count = count-1;
 						$('#Count_id').val(count);
+						if(count < 1)
+						{
+							oTable.fnDeleteRow('#'+dharma);
+						}
 					}).fail(function(err) 
 					{ 
 						alert("error"+ err); 
 					});
 				});
-
 			});
 		}
+
+
+		$('.addCopies').click(function()
+		{
+			count = count + 1;
+			alert(count);
+			$('#Count_id').val(count);
+			$.ajax(
+			{
+				url:'dashboard/addcopies',
+				data:{
+					bookId:bookid,
+					Count:count,
+				}
+			}).done(function(responseText)
+			{
+				getbookcopy(bookid);
+			});
+
+		});
 
 		$('#addbook').click(function(){
 
