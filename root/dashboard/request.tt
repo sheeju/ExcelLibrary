@@ -83,16 +83,6 @@
 			addresponse(id,"Deny");
 		});
 		
-		/*$('.req_allow').click(function(){
-
-			var id = $(this).attr('id');
-			addresponse(id,"Allow");
-
-		});
-		$('.req_deny').click(function(){
-			var id = $(this).attr('id');
-			addresponse(id,"Deny");
-		});*/
 		function addresponse(id,response)
 		{
 			$.ajax( 
