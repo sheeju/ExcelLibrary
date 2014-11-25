@@ -28,6 +28,11 @@ Catalyst Controller.
 
 my $generator = Session::Token->new(length => 20);
 
+
+sub Disp
+{
+
+}
 sub excellibrarysendmail
 {
 
@@ -495,7 +500,7 @@ sub adduser : Local
 
     excellibrarysendmail($subject, $message, $empemail);
 
-    $c->forward('user');
+  #  $c->forward('user');
     $c->stash->{message} = "Employee added sucessfully";
     $c->forward('View::JSON');
 
