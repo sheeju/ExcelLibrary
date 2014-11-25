@@ -4,6 +4,7 @@ use namespace::autoclean;
 use DateTime;
 use Data::Dumper;
 use JSON;
+use Digest::MD5 qw(md5_hex);
 BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
@@ -264,10 +265,9 @@ sub copydetails : Local
             issueddate => "-",
             returndate => "-",
             button     => "delete"
-			
-			
-			#<button type="button" id="'$book->Id'" class="btn btn-primary btn-sm dlt">
-			#<span class="glyphicon glyphicon-trash"></span></button>
+
+              #<button type="button" id="'$book->Id'" class="btn btn-primary btn-sm dlt">
+              #<span class="glyphicon glyphicon-trash"></span></button>
         };
     }
 
@@ -288,9 +288,10 @@ sub copydetails : Local
         $bookcopy{$transaction->BookCopyId}{empname}    = $transaction->get_column('EmpName');
         $bookcopy{$transaction->BookCopyId}{issueddate} = $transaction->IssuedDate;
         $bookcopy{$transaction->BookCopyId}{returndate} = $transaction->ExpectedReturnDate;
-        $bookcopy{$transaction->BookCopyId}{button} = "lock"
-		#   '<button type="button" id="'+$transaction->BookCopyId" class="btn btn-primary btn-sm dlt disabled">'
-		# . '<span class="glyphicon glyphicon-lock "></span></button>';
+        $bookcopy{$transaction->BookCopyId}{button}     = "lock"
+
+          #   '<button type="button" id="'+$transaction->BookCopyId" class="btn btn-primary btn-sm dlt disabled">'
+          # . '<span class="glyphicon glyphicon-lock "></span></button>';
     }
     $c->stash->{detail} = \%bookcopy;
     $c->forward('View::JSON');
@@ -426,7 +427,7 @@ sub adduser : Local
             "CreatedOn" => $createdon
         }
     );
-   $c->stash->{message} ="Employee added sucessfully";
+    $c->stash->{message} = "Employee added sucessfully";
     $c->forward('View::JSON');
 
 }
@@ -443,24 +444,91 @@ sub deleteuser : Local
     $c->forward('user');
 }
 
-
-sub updaterole :Local
+sub updaterole : Local
 {
 
-my ($self,$c) =@_;
- my $empid =	$c->req->params->{empid};
- my $emprole =	$c->req->params->{emprole};
- my $adminid  = $c->user->Id;
- my $currentdate = DateTime->now(time_zone => 'Asia/Kolkata');
- my $updatedate = $currentdate->ymd('-') . " " . $currentdate->hms(':');
+    my ($self, $c) = @_;
+    my $empid       = $c->req->params->{empid};
+    my $emprole     = $c->req->params->{emprole};
+    my $adminid     = $c->user->Id;
+    my $currentdate = DateTime->now(time_zone => 'Asia/Kolkata');
+    my $updatedate  = $currentdate->ymd('-') . " " . $currentdate->hms(':');
 
- my $updaterole = $c->model('Library::Employee')->search({"Id" => $empid});
-    $updaterole->update({
-	"Role" => $emprole,
-	"UpdatedBy" => $adminid,
-	"UpdatedOn" =>$updatedate
-});
+    my $updaterole = $c->model('Library::Employee')->search({"Id" => $empid});
+    $updaterole->update(
+        {
+            "Role"      => $emprole,
+            "UpdatedBy" => $adminid,
+            "UpdatedOn" => $updatedate
+        }
+    );
     $c->forward('user');
+
+}
+
+sub dashboardConfig : Local
+{
+    my ($self, $c) = @_;
+    my $noofbooks = $c->req->params->{noofbooks};
+    my $noofdays  = $c->req->params->{noofdays};
+    my @reqbook   = $c->model('Library::Config')->update(
+        {
+            "MaxAllowedDays"  => $noofdays,
+            "MaxAllowedBooks" => $noofbooks,
+        }
+    );
+    $c->stash->{updatemessage} = " Settings Updated";
+    $c->forward('View::JSON');
+}
+
+sub defaultsetting : Local
+{
+
+    my ($self, $c) = @_;
+    my $config_rs = $c->model('Library::Config')->search(
+        undef,
+        {
+            columns => [qw/MaxAllowedDays MaxAllowedBooks/],
+        }
+    );
+
+    my $configinfo    = $config_rs->next;
+    my $maxallowdays  = $configinfo->MaxAllowedDays;
+    my $maxallowbooks = $configinfo->MaxAllowedBooks;
+    $c->stash->{maxallowedbooks} = $maxallowbooks;
+    $c->stash->{maxalloweddays}  = $maxallowdays;
+
+    # $c->stash->{template} = "dashboard/dashboard.tt";
+    $c->forward('View::JSON');
+
+}
+
+sub changepassword : Local
+{
+
+    my ($self, $c) = @_;
+    my $currentpassword        = $c->req->params->{oldpassword};
+    my $newpassword            = $c->req->params->{newpassword};
+    my $empid                  = $c->user->Id;
+    my $encryptnewpassword     = md5_hex($newpassword);
+    my $encryptcurrentpassword = md5_hex($currentpassword);
+    my $employee_rs            = $c->model('Library::Employee')->search(
+        {
+            "Id" => $empid,
+        }
+    );
+    my $employee   = $employee_rs->next;
+    my $dbpassword = $employee->Password;
+
+    if ($dbpassword eq $encryptcurrentpassword) {
+        $employee->update({"Password" => $encryptnewpassword});
+        $c->stash->{validmessage} = 1;
+        $c->forward('View::JSON');
+    }
+    else {
+        $c->stash->{invalidmessage} = "Invalid Current Password";
+        $c->forward('View::JSON');
+    }
 
 }
 
@@ -568,112 +636,111 @@ sub returnbook : Local
 sub history : Path('/history')
 {
     my ($self, $c) = @_;
-	$c->stash->{role} = $c->user->Role;
-	my $userId=$c->user->Id;
-	if($c->user->Role eq 'Admin')
-	{
-		if (defined $c->req->params->{Selection}) {
-			my $selection = $c->req->params->{Selection};
-			print $selection;
-			my $count = 1;
-			if ($selection eq 'transaction') {
-				$c->log->info("-------------------------------------");
-				my @alldata = $c->model('Library::Transaction')->search(
-					{
-						'me.Status' => {'!=', 'Requested'},
-					},
-					{
-						join      => ['employee',      'book'],
-						'+select' => ['employee.Name', 'book.Name'],
-						'+as'     => ['EmployeeName',  'BookName']
-					}
-				);
-				push(
-					@{$c->stash->{history}},
-					{
-						Count       => $count++,
-						EmpName     => $_->get_column('EmployeeName'),
-						BookName    => $_->get_column('BookName'),
-						Status      => $_->Status,
-						RequestDate => $_->RequestDate,
-						IssuedDate  => $_->IssuedDate,
-					}
-				) foreach @alldata;
-				$c->log->info(Dumper $c->stash->{history});
-				$c->forward('View::JSON');
-			}
-			elsif ($selection eq "book") {
+    $c->stash->{role} = $c->user->Role;
+    my $userId = $c->user->Id;
+    if ($c->user->Role eq 'Admin') {
+        if (defined $c->req->params->{Selection}) {
+            my $selection = $c->req->params->{Selection};
+            print $selection;
+            my $count = 1;
+            if ($selection eq 'transaction') {
+                $c->log->info("-------------------------------------");
+                my @alldata = $c->model('Library::Transaction')->search(
+                    {
+                        'me.Status' => {'!=', 'Requested'},
+                    },
+                    {
+                        join      => ['employee',      'book'],
+                        '+select' => ['employee.Name', 'book.Name'],
+                        '+as'     => ['EmployeeName',  'BookName']
+                    }
+                );
+                push(
+                    @{$c->stash->{history}},
+                    {
+                        Count       => $count++,
+                        EmpName     => $_->get_column('EmployeeName'),
+                        BookName    => $_->get_column('BookName'),
+                        Status      => $_->Status,
+                        RequestDate => $_->RequestDate,
+                        IssuedDate  => $_->IssuedDate,
+                    }
+                ) foreach @alldata;
+                $c->log->info(Dumper $c->stash->{history});
+                $c->forward('View::JSON');
+            }
+            elsif ($selection eq "book") {
 
-				my $bookname = $c->req->params->{bookname};
-				print Dumper $bookname;
-				my @alldata = $c->model('Library::Transaction')->search(
-					{
-						'book.Name' => $bookname,
-					},
-					{
-						join      => ['employee',      'book'],
-						'+select' => ['employee.Name', 'book.Name'],
-						'+as'     => ['EmployeeName',  'BookName']
-					}
-				);
-				push(
-					@{$c->stash->{history}},
-					{
-						Count        => $count++,
-						EmployeeName => $_->get_column('EmployeeName'),
-						CopyId       => $_->BookCopyId,
-						RequestDate  => $_->RequestDate,
-						IssuedDate   => $_->IssuedDate,
-						ReturnedDate => $_->ReturnedDate,
-					}
-				) foreach @alldata;
-				$c->log->info(Dumper $c->stash->{history});
-				$c->forward('View::JSON');
-			}
-			else {
-				$c->forward('View::TT');
-			}
-		}
-		else {
-			$c->log->info("----------- IN ELSE -----------------");
-			$c->forward('View::TT');
-		}
+                my $bookname = $c->req->params->{bookname};
+                print Dumper $bookname;
+                my @alldata = $c->model('Library::Transaction')->search(
+                    {
+                        'book.Name' => $bookname,
+                    },
+                    {
+                        join      => ['employee',      'book'],
+                        '+select' => ['employee.Name', 'book.Name'],
+                        '+as'     => ['EmployeeName',  'BookName']
+                    }
+                );
+                push(
+                    @{$c->stash->{history}},
+                    {
+                        Count        => $count++,
+                        EmployeeName => $_->get_column('EmployeeName'),
+                        CopyId       => $_->BookCopyId,
+                        RequestDate  => $_->RequestDate,
+                        IssuedDate   => $_->IssuedDate,
+                        ReturnedDate => $_->ReturnedDate,
+                    }
+                ) foreach @alldata;
+                $c->log->info(Dumper $c->stash->{history});
+                $c->forward('View::JSON');
+            }
+            else {
+                $c->forward('View::TT');
+            }
+        }
+        else {
+            $c->log->info("----------- IN ELSE -----------------");
+            $c->forward('View::TT');
+        }
 
-	}
-	elsif($c->user->Role eq 'Employee')
-	{
-			my $count = 1;
-		my @emphistory = $c->model('Library::Transaction')->search(
-			{
-				'me.EmployeeId' => $userId,
-			},
-			{
-				join => ['book'],
-				'+select' => ['book.Name'],
-				'+as' => ['BookName'],
-			});
-		push(
-			@{$c->stash->{emphistory}},
-			{
-				Count => $count++,
-				BookName => $_->get_column('BookName'),
-				RequestDate => $_->RequestDate,
-				IssueDate => $_->IssuedDate,
-				ReturnDate => $_->ExpectedReturnDate,
-				Status => $_->Status,
-			}
-		) foreach @emphistory;
-		$c->log->info(Dumper $c->stash->{emphistory});
-	}
+    }
+    elsif ($c->user->Role eq 'Employee') {
+        my $count      = 1;
+        my @emphistory = $c->model('Library::Transaction')->search(
+            {
+                'me.EmployeeId' => $userId,
+            },
+            {
+                join      => ['book'],
+                '+select' => ['book.Name'],
+                '+as'     => ['BookName'],
+            }
+        );
+        push(
+            @{$c->stash->{emphistory}},
+            {
+                Count       => $count++,
+                BookName    => $_->get_column('BookName'),
+                RequestDate => $_->RequestDate,
+                IssueDate   => $_->IssuedDate,
+                ReturnDate  => $_->ExpectedReturnDate,
+                Status      => $_->Status,
+            }
+        ) foreach @emphistory;
+        $c->log->info(Dumper $c->stash->{emphistory});
+    }
 }
 
-sub addcopies :Local
+sub addcopies : Local
 {
-	my($self,$c)=@_;
-	my $no_of_copies=$c->req->params->{no_of_copies};
-	my $bookid=$c->req->params->{bbokid};
+    my ($self, $c) = @_;
+    my $no_of_copies = $c->req->params->{no_of_copies};
+    my $bookid       = $c->req->params->{bbokid};
 
-	$c->forward('View::JSON');
+    $c->forward('View::JSON');
 }
 
 =encoding utf8
