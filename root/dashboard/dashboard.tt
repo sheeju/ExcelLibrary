@@ -3,20 +3,21 @@
 	<title>ExcelLibrary</title>
 </head>
 <body>
+
 	<div class = "container">
 		<nav class="navbar navbar-default" role="navigation">
 		<div class="container-fluid">
 			<a class="navbar-brand" href="#">Exceleron Library</a>
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav navbar-right">
-					<li  style="margin-top: 15px;">  <p ><strong>Welcome [% username  %]</strong> </p></li>
+				<li  style="margin-top: 15px;">  <p ><strong>Welcome [% username  %]</strong> </p></li>
 					<li class="dropdown">
 					<a href="#" class="dropdown-toggle  glyphicon glyphicon-cog" data-toggle="dropdown"></a>
 					<ul class="dropdown-menu" role="menu">
 						[% IF role  == 'Admin' %]
-						<li role="presentation"><a class="glyphicon glyphicon-wrench" role="menuitem" tabindex="-1" href="#"> Settings</a></li>
+		<li role="presentation"><a class="glyphicon glyphicon-wrench btn_setting" role="menuitem" tabindex="-1" href="" data-toggle="modal" data-target="#settingModal"> Settings</a></li>
 						[% END %]
-						<li><a class = " glyphicon glyphicon-pencil" href="#"> ChangePassword</a></li>
+		<li><a class = " glyphicon glyphicon-pencil btn_changepaswd" href="" tabindex="-1" data-toggle="modal" data-target="#passwordModal" > ChangePassword</a></li>
 						<li class="divider"></li>
 						<li><a class="glyphicon glyphicon-off" href="#"> Logout</a></li>
 					</ul>
@@ -25,10 +26,8 @@
 			</div><!-- /.navbar-collapse -->
 		</div><!-- /.container-fluid -->
 		</nav>
-		<div class ="row">
-		</div>
 		<div>
-			<ul class="nav nav-tabs nav-justified" role="tablist">
+			<ul class="nav nav-pills nav-justified" role="tablist">
 				<p> </p>
 				[% IF role == 'Admin' %]
 				<li role="presentation" id="request"  class="menu" ><a href="#"><span class="glyphicon glyphicon-home"> Home</span></a></li>
@@ -45,6 +44,91 @@
 			</div>
 		</div>
 	</div>
+
+
+
+
+
+
+
+<div class="modal fade" id="settingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Settings </h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" id="settingform" method="POST">
+                  
+                    <div class="form-group">
+                        <label>MaxAllowedDays</label>
+                        <input type="number" class="form-control" id="noofdays" name="noofdays" placeholder="Count" min=1>
+                    </div>
+			<br/>
+			 <div class="form-group">
+                        <label>MaxAllowedBooks</label>
+                        <input type="number" class="form-control" id="noofbooks" name="noofbooks" placeholder="Count" min=1>
+                    </div>
+ 			<br/>
+                    <label id= "message"></label>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="configlib">UPDATE</button>
+                        <button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+<div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="oneModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="oneModalLabel">Change Password</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" id="passwordform" method="POST">
+                    <div class="form-group">
+                        <label >Current Password</label>
+                        <input type="password" class="form-control" id="oldpassword" name="oldpassword">
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" class="form-control" id="newpassword" name="newpassword">
+                    </div>
+                    <br/>
+                      <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirmpassword" name="confirmpassword">
+                    </div>
+                    <br/>
+
+			 <label id="passwordmessage"></label>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="changepassword">Change Password</button>
+                        <button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+</div>
+
+</div>
+
 </body>
 <link rel="stylesheet" type="text/css" href="../source/bootstrap/dist/css/bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/jquery.dataTables.css"/>
@@ -55,6 +139,24 @@
 <script>
 	$(document).ready(function() 
 	{
+
+
+		
+
+$.ajax({
+        url:"dashboard/defaultsetting",
+        success:function(data){
+	$('#noofdays').val(data.maxalloweddays);
+	$('#noofbooks').val(data.maxallowedbooks);
+        }
+});
+
+
+
+
+
+
+
 		var curent;
 		var element;
 		if($('#request').length)
@@ -95,6 +197,123 @@
 			curent = id;
 			loadpage(path);
         });
+
+		$('#configlib').click(function(){
+
+  				   jQuery.validator.setDefaults({
+                                debug: true,
+                                success: "valid"
+                        });
+
+
+                        $("#settingform").validate({
+                                rules: {
+                                       
+                                        noofbooks : {
+                                                required:true,
+                                                number :true,
+                                                digits: true
+                                        },
+					noofdays : {
+						required:true,
+						number :true,
+						digits :true
+						}
+                                },
+                                submitHandler : function(form){
+                                        var url = "/dashboard/dashboardConfig";
+                                        var duration = $('#noofdays').val();
+                                        var bookcount = $('#noofbooks').val();
+
+                                        $.ajax({
+                                                type :"POST",
+                                                url  : url,
+                                                data :{
+                                                        noofbooks:bookcount,
+							noofdays :duration
+
+                                                },
+                                                success : function ( data ) {
+                                                        $('#message').html(data.updatemessage);
+                                                  //      $('#settingform')[0].reset();
+                                                       var validator = $( "#settingform" ).validate();
+                                                        validator.resetForm();
+                                                }
+                                        });
+                                }
+                        });
+
+			});
+
+ $('#changepassword').click(function(){
+
+  jQuery.validator.setDefaults({
+                                debug: true,
+                                success: "valid"
+                        });
+
+
+                        $("#passwordform").validate({
+                                rules: {
+                                       
+                                       oldpassword  : {
+                                                required:true,
+                                        },
+                                        newpassword : {
+                                                required:true,
+                                                },
+					confirmpassword :{
+					         required:true,
+						equalTo: "#newpassword"	
+					}
+                                },
+                                submitHandler : function(form){
+                                    	   var url = "/dashboard/changepassword";
+                                        var oldpassword = $('#oldpassword').val();
+                                        var newpassword = $('#newpassword').val();
+					var confirmpassword =$('#confirmpassword').val();
+ 				
+                                        $.ajax({
+                                                type :"POST",
+                                                url  : url,
+                                                data :{
+                                                        oldpassword :oldpassword,
+                                                        newpassword :newpassword
+
+                                                },
+                                                success : function (data) {
+							if(data.validmessage)
+							{
+                                                        $('#passwordmessage').html("Password Change Sucessfully");
+                                                        $('#passwordform')[0].reset();
+                                                       var validator = $( "#passwordform").validate();
+                                                        validator.resetForm();
+							}
+							else
+							{
+							$('#passwordmessage').html(data.invalidmessage);
+							$('#oldpassword').val('');
+							}
+										
+                                                }
+                                        });
+
+
+                                }
+                        });
+
+                        });
+
+
+
+  $.ajax({
+	url:"dashboard/defaultsetting",
+	success:function(result){
+	console.log(result);
+  	}
+});
+
+
    });
  </script>
 

@@ -7,6 +7,7 @@ use Email::MIME;
 use Email::Sender::Simple qw(sendmail);
 use Session::Token;
 use JSON;
+use Digest::MD5 qw(md5_hex);
 BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
@@ -44,7 +45,8 @@ sub excellibrarysendmail
         },
     );
     $message->content_type_set($contenttype);
-    if ($contenttype eq 'text/html') {
+
+	if ($contenttype eq 'text/html') {
         $message->body_str_set($body . "<p>Regards<br>ExcelLibrary</p>");
     }
     else {
@@ -55,6 +57,7 @@ sub excellibrarysendmail
 
 }
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub dashboard : Path : Args(0)
 {
     my ($self, $c) = @_;
@@ -171,7 +174,6 @@ sub managerequest : Local
           . $response . "\n";
     }
     excellibrarysendmail($contenttype, $subject, $message, $transaction->get_column("EmployeeEmail"));
-
     $c->detach('request');
 }
 
@@ -269,7 +271,7 @@ sub book : Path('/book')
                 status => $var->get_column('Status')
             };
         }
-        elsif ($books{$var->Id}{status} eq "Reading" and $var->get_column('status') eq "Available") {
+        elsif ($books{$var->Id}{status} eq "Reading" and $var->get_column('Status') eq "Available") {
             $books{$var->Id}{status} = "Available";
         }
     }
@@ -327,9 +329,6 @@ sub copydetails : Local
             issueddate => "-",
             returndate => "-",
             button     => "delete"
-
-              #<button type="button" id="'$book->Id'" class="btn btn-primary btn-sm dlt">
-              #<span class="glyphicon glyphicon-trash"></span></button>
         };
     }
 
@@ -350,10 +349,8 @@ sub copydetails : Local
         $bookcopy{$transaction->BookCopyId}{empname}    = $transaction->get_column('EmpName');
         $bookcopy{$transaction->BookCopyId}{issueddate} = $transaction->IssuedDate;
         $bookcopy{$transaction->BookCopyId}{returndate} = $transaction->ExpectedReturnDate;
-        $bookcopy{$transaction->BookCopyId}{button}     = "lock"
+        $bookcopy{$transaction->BookCopyId}{button}     = "lock";
 
-          #   '<button type="button" id="'+$transaction->BookCopyId" class="btn btn-primary btn-sm dlt disabled">'
-          # . '<span class="glyphicon glyphicon-lock "></span></button>';
     }
     $c->stash->{detail} = \%bookcopy;
     $c->forward('View::JSON');
@@ -543,7 +540,7 @@ sub adduser : Local
 
     excellibrarysendmail($contenttype, $subject, $message, $empemail);
 
-    $c->forward('user');
+	$c->forward('user');
     $c->stash->{message} = "Employee added sucessfully";
     $c->forward('View::JSON');
 
@@ -580,6 +577,72 @@ sub updaterole : Local
         }
     );
     $c->forward('user');
+
+}
+
+sub dashboardConfig : Local
+{
+    my ($self, $c) = @_;
+    my $noofbooks = $c->req->params->{noofbooks};
+    my $noofdays  = $c->req->params->{noofdays};
+    my @reqbook   = $c->model('Library::Config')->update(
+        {
+            "MaxAllowedDays"  => $noofdays,
+            "MaxAllowedBooks" => $noofbooks,
+        }
+    );
+    $c->stash->{updatemessage} = " Settings Updated";
+    $c->forward('View::JSON');
+}
+
+sub defaultsetting : Local
+{
+
+    my ($self, $c) = @_;
+    my $config_rs = $c->model('Library::Config')->search(
+        undef,
+        {
+            columns => [qw/MaxAllowedDays MaxAllowedBooks/],
+        }
+    );
+
+    my $configinfo    = $config_rs->next;
+    my $maxallowdays  = $configinfo->MaxAllowedDays;
+    my $maxallowbooks = $configinfo->MaxAllowedBooks;
+    $c->stash->{maxallowedbooks} = $maxallowbooks;
+    $c->stash->{maxalloweddays}  = $maxallowdays;
+
+    # $c->stash->{template} = "dashboard/dashboard.tt";
+    $c->forward('View::JSON');
+
+}
+
+sub changepassword : Local
+{
+
+    my ($self, $c) = @_;
+    my $currentpassword        = $c->req->params->{oldpassword};
+    my $newpassword            = $c->req->params->{newpassword};
+    my $empid                  = $c->user->Id;
+    my $encryptnewpassword     = md5_hex($newpassword);
+    my $encryptcurrentpassword = md5_hex($currentpassword);
+    my $employee_rs            = $c->model('Library::Employee')->search(
+        {
+            "Id" => $empid,
+        }
+    );
+    my $employee   = $employee_rs->next;
+    my $dbpassword = $employee->Password;
+
+    if ($dbpassword eq $encryptcurrentpassword) {
+        $employee->update({"Password" => $encryptnewpassword});
+        $c->stash->{validmessage} = 1;
+        $c->forward('View::JSON');
+    }
+    else {
+        $c->stash->{invalidmessage} = "Invalid Current Password";
+        $c->forward('View::JSON');
+    }
 
 }
 
@@ -692,10 +755,9 @@ sub history : Path('/history')
     if ($c->user->Role eq 'Admin') {
         if (defined $c->req->params->{Selection}) {
             my $selection = $c->req->params->{Selection};
-            print $selection;
             my $count = 1;
             if ($selection eq 'transaction') {
-                $c->log->info("-------------------------------------");
+				
                 my @alldata = $c->model('Library::Transaction')->search(
                     {
                         'me.Status' => {'!=', 'Requested'},
@@ -717,13 +779,11 @@ sub history : Path('/history')
                         IssuedDate  => $_->IssuedDate,
                     }
                 ) foreach @alldata;
-                $c->log->info(Dumper $c->stash->{history});
                 $c->forward('View::JSON');
             }
             elsif ($selection eq "book") {
 
                 my $bookname = $c->req->params->{bookname};
-                print Dumper $bookname;
                 my @alldata = $c->model('Library::Transaction')->search(
                     {
                         'book.Name' => $bookname,
@@ -745,7 +805,6 @@ sub history : Path('/history')
                         ReturnedDate => $_->ReturnedDate,
                     }
                 ) foreach @alldata;
-                $c->log->info(Dumper $c->stash->{history});
                 $c->forward('View::JSON');
             }
             else {
@@ -753,7 +812,6 @@ sub history : Path('/history')
             }
         }
         else {
-            $c->log->info("----------- IN ELSE -----------------");
             $c->forward('View::TT');
         }
 
@@ -784,15 +842,23 @@ sub history : Path('/history')
         $c->log->info(Dumper $c->stash->{emphistory});
     }
 
-    $c->forward('View::TT');
 }
 
 sub addcopies : Local
 {
     my ($self, $c) = @_;
-    my $no_of_copies = $c->req->params->{no_of_copies};
-    my $bookid       = $c->req->params->{bbokid};
-
+	my $no_of_copies = 0;
+    $no_of_copies = $c->req->params->{Count};
+    my $bookid = $c->req->params->{bookId};
+    $c->model('Library::BookCopy')->create(
+        {
+            BookId => $bookid,
+            Status => 'Available',
+        }
+    );
+    my $copy_update = $c->model('Library::Book')->find({Id => $bookid});
+    $copy_update->NoOfCopies($no_of_copies);
+    $copy_update->update;
     $c->forward('View::JSON');
 }
 
