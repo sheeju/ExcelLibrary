@@ -3,6 +3,9 @@ use Moose;
 use namespace::autoclean;
 use DateTime;
 use Data::Dumper;
+use Email::MIME;
+use Email::Sender::Simple qw(sendmail);
+use Session::Token;
 use JSON;
 use Digest::MD5 qw(md5_hex);
 BEGIN { extends 'Catalyst::Controller'; }
@@ -22,6 +25,29 @@ Catalyst Controller.
 =head2 index
 
 =cut
+
+my $generator = Session::Token->new(length => 20);
+
+sub excellibrarysendmail
+{
+
+    my ($subject, $body, $to) = @_;
+    my $message = Email::MIME->create(
+        header_str => [
+            From    => 'ExcelLibrary@exceleron.com',
+            To      => $to,
+            Subject => $subject,
+        ],
+        attributes => {
+            content_type => 'text/html',
+            encoding     => 'quoted-printable',
+            charset      => 'UTF-8',
+        },
+        body_str => $body . "<p> Regards <br>ExcelLibrary</p>"
+    );
+    sendmail($message);
+
+}
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub dashboard : Path : Args(0)
@@ -47,7 +73,7 @@ sub request : Path('/request')
         {
             join      => ['employee',      'book'],
             '+select' => ['employee.Name', 'book.Name'],
-            '+as'     => ['Employee Name', 'Book Name']
+            '+as'     => ['EmployeeName',  'BookName']
         }
     );
     my $bookcopy_rs = $c->model('Library::BookCopy')->search({});
@@ -73,9 +99,9 @@ sub request : Path('/request')
                 no            => $count++,
                 id            => $transaction->Id,
                 requesteddate => $transaction->RequestDate,
-                employeename  => $transaction->get_column('Employee Name'),
+                employeename  => $transaction->get_column('EmployeeName'),
                 bookid        => $transaction->BookId,
-                bookname      => $transaction->get_column('Book Name'),
+                bookname      => $transaction->get_column('BookName'),
                 status        => $status
             }
         );
@@ -92,13 +118,21 @@ sub managerequest : Local
     my $req_id         = $c->req->params->{id};
     my $response       = $c->req->params->{response};
     my $loginId        = $c->user->Id;
-    my $transaction_rs = $c->model('Library::Transaction')->search({"Id" => $req_id});
-    my $transaction    = $transaction_rs->next;
-    $c->log->info("Hai");
-    $c->log->info($transaction);
+    my $transaction_rs = $c->model('Library::Transaction')->search(
+        {
+            "Id" => $req_id,
+        },
+        {
+            join      => ['employee',      'book'],
+            '+select' => ['employee.Name', 'book.Name'],
+            '+as'     => ['EmployeeName',  'BookName']
+        }
+    );
+    my $transaction = $transaction_rs->next;
 
     if ($transaction->UpdatedBy eq '') {
         if ($response eq 'Allow') {
+            $response = 'Accepted';
             $transaction_rs->update({"UpdatedBy" => $loginId});
         }
         else {
@@ -109,6 +143,15 @@ sub managerequest : Local
                 }
             );
         }
+    }
+
+    my $employee_rs = $c->model('Library::Employee')->search({"Role" => 'Admin'});
+    my $employee;
+    while ($employee = $employee_rs->next) {
+
+        my $subject = "ExcelLibrary response for book request";
+        my $message = "Hai <p> Your request for " . $transaction->get_column("BookName") . "is " . $response . "</p>";
+        excellibrarysendmail($subject, $message, $employee->Email);
     }
 
     $c->detach('request');
@@ -197,6 +240,7 @@ sub book : Path('/book')
     my $userid = $c->user->Id;
     my %books;
     foreach my $var (@book_rs) {
+
         if (!exists($books{$var->Id})) {
             $books{$var->Id} = {
                 count  => $count++,
@@ -207,10 +251,9 @@ sub book : Path('/book')
                 status => $var->get_column('Status')
             };
         }
-        elsif ($books{$var->Id}{Status} eq "Reading" and $var->get_column('Status') eq "Available") {
-            $books{$var->Id}{Status} = "Available";
+        elsif ($books{$var->Id}{status} eq "Reading" and $var->get_column('Status') eq "Available") {
+            $books{$var->Id}{status} = "Available";
         }
-
     }
     my @transaction_rs = $c->model('Library::Transaction')->search(
         {
@@ -236,6 +279,7 @@ sub book : Path('/book')
 
     $c->stash->{messages} = \%books;
     $c->stash->{role}     = $c->user->Role;
+    $c->forward('View::TT');
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -265,9 +309,6 @@ sub copydetails : Local
             issueddate => "-",
             returndate => "-",
             button     => "delete"
-
-              #<button type="button" id="'$book->Id'" class="btn btn-primary btn-sm dlt">
-              #<span class="glyphicon glyphicon-trash"></span></button>
         };
     }
 
@@ -288,10 +329,8 @@ sub copydetails : Local
         $bookcopy{$transaction->BookCopyId}{empname}    = $transaction->get_column('EmpName');
         $bookcopy{$transaction->BookCopyId}{issueddate} = $transaction->IssuedDate;
         $bookcopy{$transaction->BookCopyId}{returndate} = $transaction->ExpectedReturnDate;
-        $bookcopy{$transaction->BookCopyId}{button}     = "lock"
+        $bookcopy{$transaction->BookCopyId}{button}     = "lock";
 
-          #   '<button type="button" id="'+$transaction->BookCopyId" class="btn btn-primary btn-sm dlt disabled">'
-          # . '<span class="glyphicon glyphicon-lock "></span></button>';
     }
     $c->stash->{detail} = \%bookcopy;
     $c->forward('View::JSON');
@@ -418,15 +457,28 @@ sub adduser : Local
     my $currentdate = DateTime->now(time_zone => 'Asia/Kolkata');
     my $createdon   = $currentdate->ymd('-') . " " . $currentdate->hms(':');
 
+    my $token = $generator->get;
+
     my $employee_rs = $c->model('Library::Employee')->create(
         {
             "Name"      => $empname,
             "Role"      => $emprole,
             "Email"     => $empemail,
+            "Token"     => $token,
             "CreatedBy" => $userid,
             "CreatedOn" => $createdon
         }
     );
+
+    my $subject = 'Activate ExcelLibrary Account';
+    my $message =
+'Hai<br> <p> We happy to inform that your account is created in ExcelLibrary. To activate your account click the bellow button<p><a href="http://10.10.10.30:3000?'
+      . $token
+      . '"> <button> Click me </button></a>';
+
+    excellibrarysendmail($subject, $message, $empemail);
+
+    $c->forward('user');
     $c->stash->{message} = "Employee added sucessfully";
     $c->forward('View::JSON');
 
@@ -644,7 +696,6 @@ sub history : Path('/history')
             print $selection;
             my $count = 1;
             if ($selection eq 'transaction') {
-                $c->log->info("-------------------------------------");
                 my @alldata = $c->model('Library::Transaction')->search(
                     {
                         'me.Status' => {'!=', 'Requested'},
@@ -666,13 +717,11 @@ sub history : Path('/history')
                         IssuedDate  => $_->IssuedDate,
                     }
                 ) foreach @alldata;
-                $c->log->info(Dumper $c->stash->{history});
                 $c->forward('View::JSON');
             }
             elsif ($selection eq "book") {
 
                 my $bookname = $c->req->params->{bookname};
-                print Dumper $bookname;
                 my @alldata = $c->model('Library::Transaction')->search(
                     {
                         'book.Name' => $bookname,
@@ -694,7 +743,6 @@ sub history : Path('/history')
                         ReturnedDate => $_->ReturnedDate,
                     }
                 ) foreach @alldata;
-                $c->log->info(Dumper $c->stash->{history});
                 $c->forward('View::JSON');
             }
             else {
@@ -702,7 +750,6 @@ sub history : Path('/history')
             }
         }
         else {
-            $c->log->info("----------- IN ELSE -----------------");
             $c->forward('View::TT');
         }
 
@@ -730,16 +777,24 @@ sub history : Path('/history')
                 Status      => $_->Status,
             }
         ) foreach @emphistory;
-        $c->log->info(Dumper $c->stash->{emphistory});
     }
 }
 
 sub addcopies : Local
 {
     my ($self, $c) = @_;
-    my $no_of_copies = $c->req->params->{no_of_copies};
-    my $bookid       = $c->req->params->{bbokid};
-
+    my $no_of_copies = 0;
+    $no_of_copies = $c->req->params->{Count};
+    my $bookid = $c->req->params->{bookId};
+    $c->model('Library::BookCopy')->create(
+        {
+            BookId => $bookid,
+            Status => 'Available',
+        }
+    );
+    my $copy_update = $c->model('Library::Book')->find({Id => $bookid});
+    $copy_update->NoOfCopies($no_of_copies);
+    $copy_update->update;
     $c->forward('View::JSON');
 }
 
