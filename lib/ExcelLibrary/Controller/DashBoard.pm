@@ -26,17 +26,13 @@ Catalyst Controller.
 
 =cut
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 my $generator = Session::Token->new(length => 20);
 
-
-sub Disp
-{
-
-}
 sub excellibrarysendmail
 {
 
-    my ($subject, $body, $to) = @_;
+    my ($contenttype, $subject, $body, $to) = @_;
     my $message = Email::MIME->create(
         header_str => [
             From    => 'ExcelLibrary@exceleron.com',
@@ -44,12 +40,19 @@ sub excellibrarysendmail
             Subject => $subject,
         ],
         attributes => {
-            content_type => 'text/html',
-            encoding     => 'quoted-printable',
-            charset      => 'UTF-8',
+            encoding => 'quoted-printable',
+            charset  => 'UTF-8'
         },
-        body_str => $body . "<p> Regards <br>ExcelLibrary</p>"
     );
+    $message->content_type_set($contenttype);
+
+	if ($contenttype eq 'text/html') {
+        $message->body_str_set($body . "<p>Regards<br>ExcelLibrary</p>");
+    }
+    else {
+        $message->body_str_set($body . "\n\nRegards\nExcelLibrary");
+    }
+
     sendmail($message);
 
 }
@@ -114,6 +117,7 @@ sub request : Path('/request')
 
     $c->stash->{template} = "dashboard/request.tt";
     $c->forward('View::TT');
+
 }
 
 sub managerequest : Local
@@ -140,6 +144,7 @@ sub managerequest : Local
             $transaction_rs->update({"UpdatedBy" => $loginId});
         }
         else {
+            $response = 'Denied';
             $transaction_rs->update(
                 {
                     "Status"    => 'Denied',
@@ -172,12 +177,6 @@ sub managerequest : Local
     excellibrarysendmail($contenttype, $subject, $message, $transaction->get_column("EmployeeEmail"));
     $c->detach('request');
 }
-
-
-
-
-
-
 
 sub getbookcopies : Local
 {
@@ -214,7 +213,6 @@ sub issuebook : Local
     my $config_rs = $c->model('Library::Config')->search({});
     if (my $con = $config_rs->next) {
         $maxallowday = $con->MaxAllowedDays;
-
     }
 
     my $expectedreturn_date = $current_date->add(days => $maxallowday);
@@ -301,7 +299,7 @@ sub book : Path('/book')
 
     $c->stash->{messages} = \%books;
     $c->stash->{role}     = $c->user->Role;
-    $c->forward('View::TT');
+    $c->forward("View::TT");
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -397,7 +395,6 @@ sub addbook : Local
 
 sub bookrequest : Local
 {
-
     my ($self, $c) = @_;
     my $maxbookfromconfig = 0;
     my $bookid            = $c->request->params->{'bookId'};
@@ -415,14 +412,21 @@ sub bookrequest : Local
         $maxbookfromconfig = $Maxbook->MaxAllowedBooks;
     }
 
-    my $validatebook = $c->model('Library::Transaction')->search(
+    my $transaction_rs = $c->model('Library::Transaction')->search(
         {
-            "Status"       => {'!=', 'Denied'},
+            "me.Status"    => {'!=', 'Denied'},
             "ReturnedDate" => {'=',  undef},
             "EmployeeId"   => $loginid,
+        },
+        {
+            join      => 'employee',
+            '+select' => 'employee.Name',
+            '+as'     => 'EmployeeName'
         }
+
     );
-    my $numberofrequest = $validatebook->count;
+
+    my $numberofrequest = $transaction_rs->count;
     if ($maxbookfromconfig > $numberofrequest) {
         my @reqbook = $c->model('Library::Transaction')->create(
             {
@@ -432,6 +436,41 @@ sub bookrequest : Local
                 "RequestDate" => $requestdate,
             }
         );
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        my @employee_rs = $c->model('Library::Employee')->search(
+            {
+                "Role"   => 'Admin',
+                "Status" => 'Active'
+            }
+        );
+        my $employee;
+
+        my $book_rs = $c->model('Library::Book')->search(
+            {
+                "Id" => $bookid
+            }
+        );
+
+        my $book = $book_rs->next;
+
+        my $transaction = $transaction_rs->next;
+
+        foreach $employee (@employee_rs) {
+
+            my $subject = "Book Request";
+            my $message = "Hai "
+              . $employee->Name
+              . "\n\n\t"
+              . $transaction->get_column('EmployeeName')
+              . " Request the \""
+              . $book->Name
+              . "\"  book.";
+            my $contenttype = "text/plain";
+            excellibrarysendmail($contenttype, $subject, $message, $employee->Email);
+        }
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~copy block written by skanda~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         $c->forward('View::JSON');
     }
     else {
@@ -494,13 +533,14 @@ sub adduser : Local
 
     my $subject = 'Activate ExcelLibrary Account';
     my $message =
-'Hai<br> <p> We happy to inform that your account is created in ExcelLibrary. To activate your account click the bellow button<p><a href="http://10.10.10.30:3000?'
+'Hai<br> <p> We happy to inform that your account is created in ExcelLibrary. To activate your account click the bellow button<p><a href="http://10.10.10.30:3000/login?token='
       . $token
       . '"> <button> Click me </button></a>';
+    my $contenttype = 'text/html';
 
-    excellibrarysendmail($subject, $message, $empemail);
+    excellibrarysendmail($contenttype, $subject, $message, $empemail);
 
-  #  $c->forward('user');
+	$c->forward('user');
     $c->stash->{message} = "Employee added sucessfully";
     $c->forward('View::JSON');
 
@@ -715,9 +755,9 @@ sub history : Path('/history')
     if ($c->user->Role eq 'Admin') {
         if (defined $c->req->params->{Selection}) {
             my $selection = $c->req->params->{Selection};
-            print $selection;
             my $count = 1;
             if ($selection eq 'transaction') {
+				
                 my @alldata = $c->model('Library::Transaction')->search(
                     {
                         'me.Status' => {'!=', 'Requested'},
@@ -799,13 +839,15 @@ sub history : Path('/history')
                 Status      => $_->Status,
             }
         ) foreach @emphistory;
+        $c->log->info(Dumper $c->stash->{emphistory});
     }
+
 }
 
 sub addcopies : Local
 {
     my ($self, $c) = @_;
-    my $no_of_copies = 0;
+	my $no_of_copies = 0;
     $no_of_copies = $c->req->params->{Count};
     my $bookid = $c->req->params->{bookId};
     $c->model('Library::BookCopy')->create(
