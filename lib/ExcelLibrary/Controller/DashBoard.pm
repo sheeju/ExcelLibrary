@@ -250,7 +250,7 @@ sub book : Path('/book')
                 status => $var->get_column('Status')
             };
         }
-        elsif ($books{$var->Id}{status} eq "Reading" and $var->get_column('status') eq "Available") {
+        elsif ($books{$var->Id}{status} eq "Reading" and $var->get_column('Status') eq "Available") {
             $books{$var->Id}{status} = "Available";
         }
     }
@@ -368,7 +368,7 @@ sub addbook : Local
         }
     );
     $c->stash->{message} = "Book added sucessfully";
-    $c->forward('View::JSON');
+    $c->forward('book');
 }
 
 sub bookrequest : Local

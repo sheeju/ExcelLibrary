@@ -3,49 +3,60 @@
 	<title>ExcelLibrary</title>
 </head>
 <body>
-	<div class = "container">
-		<nav class="navbar navbar-default" role="navigation">
-		<div class="container-fluid">
-			<a class="navbar-brand" href="#">Exceleron Library</a>
-			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-				<ul class="nav navbar-nav navbar-right">
-					<li  style="margin-top: 15px;">  <p ><strong>Welcome [% username  %]</strong> </p></li>
-					<li class="dropdown">
-					<a href="#" class="dropdown-toggle  glyphicon glyphicon-cog" data-toggle="dropdown"></a>
-					<ul class="dropdown-menu" role="menu">
-						[% IF role  == 'Admin' %]
-						<li role="presentation"><a class="glyphicon glyphicon-wrench" role="menuitem" tabindex="-1" href="#"> Settings</a></li>
-						[% END %]
-						<li><a class = " glyphicon glyphicon-pencil" href="#"> ChangePassword</a></li>
-						<li class="divider"></li>
-						<li><a class="glyphicon glyphicon-off" href="#"> Logout</a></li>
-					</ul>
-					</li>
-				</ul>
-			</div><!-- /.navbar-collapse -->
-		</div><!-- /.container-fluid -->
-		</nav>
-		<div class ="row">
-		</div>
-		<div>
-			<ul class="nav nav-tabs nav-justified" role="tablist">
-				<p> </p>
-				[% IF role == 'Admin' %]
-				<li role="presentation" id="request"  class="menu" ><a href="#"><span class="glyphicon glyphicon-home"> Home</span></a></li>
+	<nav class="navbar navbar-default" style="min-height:40px;margin-bottom:2px">
+	<div class="container-fluid">
+		<ul>
+			<li><p style="color:#18bc9c;padding:5px 5px"><strong>Welcome [% username %]</strong></p></li>
+			<li class="dropdown pull-right">
+			<a href="#" class="dropdown-toggle  glyphicon glyphicon-cog" data-toggle="dropdown"></a>
+			<ul class="dropdown-menu" role="menu">
+				[% IF role  == 'Admin' %]
+				<li role="presentation"><a class="glyphicon glyphicon-wrench" role="menuitem" tabindex="-1" href="#"> Settings</a></li>
 				[% END %]
+				<li><a class = "glyphicon glyphicon-pencil" href="#"> Change Password</a></li>
+				<li class="divider"></li>
+				<li><a class="glyphicon glyphicon-off" href="#"> Logout</a></li>
+			</ul>
+			</li>
+		</ul>
+	</div>
+	</nav>
+	<div style="width:1140px;margin-left:auto;margin-right:auto;padding-left:15px;padding-right:15px">
+		<img src="./source/images/ExcelLibraryLogo.png" style="width:250px;height:100px" />
+	</div>
+	<nav class="navbar navbar-default" role="navigation">
+	<div class="container-fluid">
+		<ul class="nav nav-pills nav-justified" role="tablist"style="width:1140px;margin-left:auto;margin-right:auto;padding-left:15px;padding-right:15px">
+			<p> </p>
+			[% IF role == 'Admin' %]
+			<li role="presentation" id="request"  class="menu" ><a href="#"><span class="glyphicon glyphicon-home"> Home</span></a></li>
+			[% END %]
 
-				<li role="presentation" id="book" class="menu"><a href="#"><span class="glyphicon glyphicon-book"> Book</span></a></li>
-				<li role="presentation" id="history" class="menu"><a href="#"><span class="glyphicon glyphicon-list-alt"> History</span></a></li>
-				[% IF role == 'Admin' %]
-				<li role="presentation" id="user" class="menu"><a href="#"><span class="glyphicon glyphicon-user"> User</span></a></li>
-				<li role="presentation" id="bookreturn" class="menu"><a href="#"><span class="glyphicon glyphicon-import"> Return</span></a></li>
-				[% END %]
-			</ul>   
-			<div id = "content">
-			</div>
+			<li role="presentation" id="book" class="menu"><a href="#"><span class="glyphicon glyphicon-book"> Book</span></a></li>
+			<li role="presentation" id="history" class="menu"><a href="#"><span class="glyphicon glyphicon-list-alt"> History</span></a></li>
+			[% IF role == 'Admin' %]
+			<li role="presentation" id="user" class="menu"><a href="#"><span class="glyphicon glyphicon-user"> User</span></a></li>
+			<li role="presentation" id="bookreturn" class="menu"><a href="#"><span class="glyphicon glyphicon-import"> Return</span></a></li>
+			[% END %]
+			
+		</ul>   
+
+	</div>
+	</nav>
+
+	<div class = "container">
+
+		<div id = "content">
 		</div>
 	</div>
+</div>
+<nav class="navbar navbar-default" role="navigation">
+<div class="container-fluid">
+	<a class="navbar-brand" href="#">Exceleron Library</a>
+</div><!-- /.container-fluid -->
+</nav>
 </body>
+
 <link rel="stylesheet" type="text/css" href="../source/bootstrap/dist/css/bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/jquery.dataTables.css"/>
 <script src="../source/DataTable/media/js/jquery.dataTables.js" type="text/javascript"></script>
@@ -94,8 +105,7 @@
 			$(id).addClass("active");
 			curent = id;
 			loadpage(path);
-        });
-   });
- </script>
-
+		});
+	});
+</script>
 

@@ -23,7 +23,6 @@
                         Selection: item,
                     },
                 }).done(function(data) {
-                    table.fnClearTable();
                     $('#myDiv').hide();
                     $.each(data, function(index1, value1) {
                         $.each(value1, function(index, value) {
@@ -58,22 +57,22 @@
     });
 </script>
 [% IF role == 'Admin' %]
-<div class="radio" id="book">
-    <label>
-        <input type="radio" name="optradio">Book</label>
+<div class="radio" id="book" style="min-height:25px">
+    <label style="height:16px">
+        <input type="radio" name="optradio" style="width:16px;height:17px">Book</label>
 </div>
-<div class="radio" id="transaction">
-    <label>
-        <input type="radio" name="optradio">Transaction</label>
+<div class="radio" id="transaction"style="min-height:25px">
+    <label style="height:16px">
+        <input type="radio" name="optradio" style="width:16px;height:17px">Transaction</label>
 </div>
 
 <div id="myDiv" class="row" style="display:none">
-    <div class="col-lg-4 pull-right">
+    <div class="col-lg-5 pull-right">
         <div class="input-group">
             <span class="input-group-addon">Book Name</span>
             <input type="text" id="bookTextBox" class="form-control">
             <span class="input-group-btn">
-				<button class="btn btn-default" id="bookHistory" type="button">Check History</button>
+				<button class="btn btn-primary" id="bookHistory" type="button">Check History</button>
 			</span>
         </div>
     </div>

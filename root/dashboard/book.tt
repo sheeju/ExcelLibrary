@@ -4,7 +4,7 @@
 	<strong>Warning!</strong> Maximum 2 books can Requested.
 </div>
 [% IF role == 'Admin' %]
-<button type="button" style="margin:5px 5px" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
+<button type="button" style="margin:5px 5px" class="btn btn-outline btn-primary pull-right" data-toggle="modal" data-target="#myModal">
 	Add New Book
 </button>
 [% END %]
@@ -137,7 +137,7 @@
 			</td>
 			[% ELSE %]
 			<td>
-				<button type="button" id="[% messages.$msg.id %]" name='book_request' class="btn btn-sm btn-primary book_req"><span class="glyphicon glyphicon-send"></button>
+				<button type="button" id="[% messages.$msg.id %]" name='book_request' class="btn btn-sm btn-primary btn-circle book_req"><span class="glyphicon glyphicon-send"></button>
 					<span id="lbl[%messages.$msg.id%]"  class="label label-info displaymessage hidden">Book Requested</span>
 				</td>
 				[% END %]
@@ -222,9 +222,8 @@
 										'<td>'+ value.status +'</td>'+
 										'<td>'+ value.empname +'</td>'+
 										'<td>'+ value.issueddate +'</td>'+
-										'<td>'+ value.returndate +'</td>'+
-										btn +
-										'</tr>'
+										'<td>'+ value.returndate +'</td>'+ btn +
+										'</tr>';
 									count++;
 								});
 							});
@@ -331,6 +330,7 @@
 										$('#book_insertion')[0].reset();
 										var validator = $( "#book_insertion" ).validate();
 										validator.resetForm();
+										window.location("dashboard");
 									}
 								});
 							}
