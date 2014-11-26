@@ -18,10 +18,9 @@
                 $("#col3").text('Book Name');
                 $.ajax({
                     url: '/history',
-                    contentType: 'text/html',
                     data: {
                         Selection: item,
-                    },
+                    }
                 }).done(function(data) {
                     $('#myDiv').hide();
                     $.each(data, function(index1, value1) {
