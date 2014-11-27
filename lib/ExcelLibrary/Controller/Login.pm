@@ -25,7 +25,8 @@ Catalyst Controller.
 sub index : Path('/login')
 {
     my ($self, $c) = @_;
-    my $token = $c->req->params->{token};
+    my $token = $c->req->params->{token} || undef;
+	
     if ($c->req->method eq "POST") {
         my $password = md5_hex($c->req->params->{password});
         if (
@@ -50,8 +51,7 @@ sub index : Path('/login')
         }
     }
     else {
-        $c->log->info($token);
-        if ($token ne '') {
+        if (defined $token ) {
             my $employee_rs = $c->model('Library::Employee')->search({Token => $token});
             my $employee = $employee_rs->next;
 

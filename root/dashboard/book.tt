@@ -89,6 +89,52 @@
 		</div>
 	</div>
 </div>
+
+
+
+
+
+
+
+
+
+<!--
+---------------------------- comment model ---------------------------------
+-->
+
+<div class="modal fade" id="commentmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">Comment</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label for="comment">Add Comment:</label>
+					<textarea class="form-control" rows="3" id="txt_comment"></textarea>
+					<br>
+					<div class="col-md-6"><span id="spn_commentmsg"> </span> </div>
+					<div class="col-md-6 text-right"><button type="button" id="btn_post" class="btn btn-primary">Post</button></div>
+
+					<br>
+					<br>
+					<div class="col-md-12" style="height:250px; overflow-y:auto;" id="div_comment">
+					</div>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+</div>
+
+
+
 <table id="table" class="display" cellspacing="0" width="100%">
 	<thead>
 		<tr>
@@ -148,34 +194,119 @@
 					</td>
 					[% END %]
 					<td>
-						<button type="button" name='txt_review' value="Review" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-comment"></button>
+						<button type="button" id="[% messages.$msg.id %]" name='txt_review' value="Review" data-toggle ="modal" data-target="#commentmodal" class="btn btn-primary btn-sm btn_comment"><span class="glyphicon glyphicon-comment"></button>
 						</td>
 					</tr>
 					[% END %]
 				</tbody>
 			</table>
 
-			<script type="text/javascript" src="../source/js/jquery.js"></script>
-			<script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
-			<script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.min.js"></script>
-			<link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
-			<script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
-			<script type="text/javascript" src="source/DataTable/media/js/dataTables.bootstrap.js"></script>
+			<!--link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
 			<link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
 			<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
 			<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/dataTables.bootstrap.css" />
-			<script type="text/javascript" src="source/bootstrap/dist/js/bootstrap.js"></script>
+			<script type="text/javascript" src="../source/js/jquery.js"></script>
+			<script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
+			<script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.min.js"></script>
+			<script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js"></script>
+			<script type="text/javascript" src="../source/DataTable/media/js/dataTables.bootstrap.js"></script>
+			<script type="text/javascript" src="../source/bootstrap/dist/js/bootstrap.js"></script-->
 			<script>
 				$(document).ready(function() {
 					var oTable=$('#table').dataTable({
 						"columnDefs": [ { "targets": [5,6], "orderable": false } ]	
 					});
+
 					var bookid;
 					var count = 1;
 					$('#table').delegate('.viewdetails', 'click', function() {
-						bookid=$(this).attr('id');
+						bookid = $(this).attr('id');
 						getbookcopy(bookid);
 					});
+					
+					
+					
+
+					//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+					
+					$('#table').delegate('.btn_comment', 'click', function() {
+						bookid = $(this).attr('id');
+						diplaycomment(bookid);
+					});
+
+					function diplaycomment(bookid)
+					{
+						$.ajax(
+							{
+								url:'dashboard/getcomments',
+								data:{
+									bookid:bookid,
+								}
+							}).done(function(data)
+							{
+
+								$('#div_comment').empty();
+								if(data.flag)
+								{
+									$.each(data.comments, function(index, value)
+									{
+
+										$('#div_comment').prepend('<div class="alert alert-info" role="alert">'
+											+ '<div class = "col-md-6">'+ value.employeename +'</div>'
+											+ '<div class = "col-md-6"><p class="text-right">'+ value.commentdate +'</p></div>'
+											+ '<div class = "col-md-12"><p class="txt-left">'+ value.comment + '</p></div>'
+										+'</div>');
+									});
+								}
+								else
+								{
+									$('#div_comment').append('<div class = "alert alert-info" role="alert" ><p class="txt-center"> No Previous Comments </p></div>');
+								}
+
+							}).fail(function(err) 
+							{ 
+								alert("error"+ err); 
+							});
+
+
+					}
+
+
+
+					$('#btn_post').click(function(){
+						var comment = $('#txt_comment').val();
+					 	var regex = /\w+/;
+						if (regex.test(comment)) {
+
+						$.ajax(
+							{
+								url:'dashboard/addcomment',
+								data:{
+									bookid:bookid,
+									comment:comment,
+								}
+							}).done(function(responseText)
+							{
+
+								alert("Comment added successfully");
+								diplaycomment(bookid);
+								$('#txt_comment').val('');
+							}).fail(function(err) 
+							{ 
+								alert("error"+ err); 
+							});
+						}
+						else
+						{
+							$('#spn_commentmsg').text("Can't post empty comment");
+						}
+					});
+
+
+					//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+					
+
+				
 
 					var rowId;
 					$('.rowClass').click(function()
@@ -205,7 +336,7 @@
 										btn = '<td>'+
 											'<button type="button" id='+ value.id +' class="btn btn-primary btn-sm dlt">'+
 												'<span class="glyphicon glyphicon-trash"></span>'+
-												'</button>'+
+											'</button>'+
 											'</td>'
 									}
 									else
