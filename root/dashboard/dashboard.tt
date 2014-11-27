@@ -21,7 +21,7 @@
 						[% END %]
 						<li><a class = " glyphicon glyphicon-pencil btn_changepaswd" href="" tabindex="-1" data-toggle="modal" data-target="#passwordModal" > ChangePassword</a></li>
 						<li class="divider"></li>
-						<li><a class="glyphicon glyphicon-off" href="#"> Logout</a></li>
+						<li><a class="glyphicon glyphicon-off" href="" id= "logoutbtn"> Logout</a></li>
 					</ul>
 					</li>
 				</ul>
@@ -294,11 +294,23 @@
 
 		});
 
-$.ajax({
+		$.ajax({
 			url:"dashboard/defaultsetting",
 			success:function(result){
 			}
 		});
+
+		$('#logoutbtn').click(function(){
+
+			$.ajax({
+				url:"login/logout",
+				success:function(result){
+				}
+			});
+
+
+
+		  });
 	});
 </script>
 
