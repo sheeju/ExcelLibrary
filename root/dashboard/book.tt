@@ -6,7 +6,7 @@
 
 
 
-<div class="alert alert-warning hidden">
+<div class="alert alert-warning exceedbook hidden">
         <a href="#" class="close">&times;</a>
         <strong>Warning!</strong> Each Employee has maximum 2 Books.
 </div>
@@ -463,6 +463,7 @@
 
 									},
 									success : function ( data ) {
+									 console.log(data);
 
 
 
@@ -472,7 +473,7 @@
                                         type : 'POST',
 
                                                 }).done(function(data) {
-
+						console.log(data);
                                                 $(".modal-backdrop").hide();
                                                 $('#content').html(data);
                                                 $('.addbookalert').removeClass('hidden');
@@ -515,7 +516,7 @@
 							success:function(data){
 								if(data.deniedflag)
 								{
-									$('.alert').removeClass('hidden');
+									$('.exceedbook').removeClass('hidden');
 
 								}
 								else

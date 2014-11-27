@@ -387,8 +387,9 @@ sub addbook : Local
 
         }
     );
-    $c->stash->{message} = "Book added sucessfully";
-    $c->forward('book');
+ #   $c->stash->{message} = "Book added sucessfully";
+#    $c->forward('book');
+	 $c->forward('View::JSON');
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
