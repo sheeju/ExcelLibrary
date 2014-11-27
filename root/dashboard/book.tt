@@ -1,7 +1,14 @@
 <br>
-<div class="alert alert-danger hidden">
+<div class="alert alert-success  addbookalert hidden">
 	<a href="#" class="close">&times;</a>
-	<strong>Warning!</strong> Maximum 2 books can Requested.
+	<strong>Success!</strong> Book Added Successfully.
+</div>
+
+
+
+<div class="alert alert-warning hidden">
+        <a href="#" class="close">&times;</a>
+        <strong>Warning!</strong> Each Employee has maximum 2 Books.
 </div>
 [% IF role == 'Admin' %]
 <button type="button" style="margin:5px 5px" class="btn btn-outline btn-primary pull-right" data-toggle="modal" data-target="#myModal">
@@ -457,11 +464,33 @@
 									},
 									success : function ( data ) {
 
-										$('#sucess_message').html(data.message);
+
+
+
+								 $.ajax({
+                                        url: '/book',
+                                        type : 'POST',
+
+                                                }).done(function(data) {
+
+                                                $(".modal-backdrop").hide();
+                                                $('#content').html(data);
+                                                $('.addbookalert').removeClass('hidden');
+                                        });
+	
+
+
+								
+								//		$('#sucess_message').html(data.message);
 										$('#book_insertion')[0].reset();
 										var validator = $( "#book_insertion" ).validate();
 										validator.resetForm();
-										window.location("dashboard");
+
+
+
+									
+				
+						
 									}
 								});
 							}

@@ -302,12 +302,13 @@
 					});
 
 
+
 				}
 			});
 
 		});
 
-		$.ajax({
+$.ajax({
 			url:"dashboard/defaultsetting",
 			success:function(result){
 			}
