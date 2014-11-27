@@ -76,10 +76,10 @@
                 [% userinfo.$m.Email %]
             </td>
             <td>
-				<button type="button" id="[% userinfo.$m.Id %]" name="[% userinfo.$m.Role %]" class="btn btn-primary empupdate" data-toggle="modal" data-target="#editModal"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
+				<button type="button" id="[% userinfo.$m.Id %]" name="[% userinfo.$m.Role %]" class="btn btn-primary empupdate" data-toggle="modal" data-target="#editModal"><span class="glyphicon glyphicon-pencil"></span></button>
             </td>
             <td>
-				<button type="button" id="[% userinfo.$m.Id %]" name="[% userinfo.$m.Role %]" class="btn btn-primary empupdate" data-toggle="modal" data-target="#editModal"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+				<button type="button" id="[% userinfo.$m.Id %]" name="[% userinfo.$m.Role %]" class="btn btn-primary deleteuser"><span class="glyphicon glyphicon-trash"></span></button>
             </td>
         </tr>
         [% END %]
