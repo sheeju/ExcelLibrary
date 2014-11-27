@@ -3,16 +3,11 @@
 	<title>ExcelLibrary</title>
 </head>
 <body>
-	<div id='ajax_loader' style="position: fixed; left: 50%; top: 50%; display: none;">
-		<img src="../pagelodeindicator.gif"></img>
-	</div>
-	<div class = "container">
-		<nav class="navbar navbar-default" role="navigation">
-		<div class="container-fluid">
-			<a class="navbar-brand" href="#">Exceleron Library</a>
+	<div id="top" style=" margin: 0px auto;background: #1f3d63;height: 30px;border-bottom: 3px solid #ef7f1b;">
+		<div class="container container-fluid">
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav navbar-right">
-					<li  style="margin-top: 15px;">  <p ><strong>Welcome [% username  %]</strong> </p></li>
+					<li  style="font-size: 12px; line-height: 20px; color: #fff;">  <p ><strong>Welcome [% username  %]</strong> </p></li>
 					<li class="dropdown">
 					<a href="#" class="dropdown-toggle  glyphicon glyphicon-cog" data-toggle="dropdown"></a>
 					<ul class="dropdown-menu" role="menu">
@@ -27,24 +22,49 @@
 				</ul>
 			</div><!-- /.navbar-collapse -->
 		</div><!-- /.container-fluid -->
-		</nav>
-		<div>
-			<ul class="nav nav-pills nav-justified" role="tablist">
+	</div>
+
+	<div id='ajax_loader' style="position: fixed; left: 50%; top: 50%; display: none;">
+		<img src="../pagelodeindicator.gif"></img>
+	</div>
+	<div class = "container">
+		<div class="col-md-5">
+			<img src="../source/images/exceleron_logo_mi.jpg" style="height : 120px; width:230px; " >
+		</div>
+		<div class="col-md-7">
+			<p class="text-right">
+			<img src="../source/images/LibraryLogo2.jpg" style="height : 120px; width:330px; " >
+			</p>
+		</div>
+	</div>
+
+	<div id="top" style=" margin: 0px auto;background: #1f3d63;height: 60px;border-bottom: 3px solid #ef7f1b;" >	
+		<div class = "container">
+			<ul class="nav nav-pills nav-justified"  role="tablist">
 				<p> </p>
 				[% IF role == 'Admin' %]
-				<li role="presentation" id="request"  class="menu" ><a href="#"><span class="glyphicon glyphicon-home"> Home</span></a></li>
+				<li role="presentation" id="request"  class="menu" ><a href="#"><span class="glyphicon glyphicon-home" style="font-size: 12px; line-height: 20px; color: #fff;" > Home</span></a></li>
 				[% END %]
 
-				<li role="presentation" id="book" class="menu"><a href="#"><span class="glyphicon glyphicon-book"> Book</span></a></li>
-				<li role="presentation" id="history" class="menu"><a href="#"><span class="glyphicon glyphicon-list-alt"> History</span></a></li>
+				<li role="presentation" id="book" class="menu"><a href="#"><span class="glyphicon glyphicon-book" style="font-size: 12px; line-height: 20px; color: #fff;" > Book</span></a></li>
+				<li role="presentation" id="history" class="menu"><a href="#"><span class="glyphicon glyphicon-list-alt" style="font-size: 12px; line-height: 20px; color: #fff;" > History</span></a></li>
 				[% IF role == 'Admin' %]
-				<li role="presentation" id="user" class="menu"><a href="#"><span class="glyphicon glyphicon-user"> User</span></a></li>
-				<li role="presentation" id="bookreturn" class="menu"><a href="#"><span class="glyphicon glyphicon-import"> Return</span></a></li>
+				<li role="presentation" id="user" class="menu"><a href="#"><span class="glyphicon glyphicon-user" style="font-size: 12px; line-height: 20px; color: #fff;" > User</span></a></li>
+				<li role="presentation" id="bookreturn" class="menu"><a href="#"><span class="glyphicon glyphicon-import" style="font-size: 12px; line-height: 20px; color: #fff;" > Return</span></a></li>
 				[% END %]
 			</ul>   
-			<div id = "content">
-			</div>
 		</div>
+	</div>
+
+	<div class = "container" >
+		<div id = "content">
+		</div>
+	</div>
+	<div id="bottom" class="navbar-fixed-bottom" style=" margin: 0px auto; background: #1f3d63;height: 35px; font-size: 12px;
+		line-height: 20px;
+		color: #fff;">
+		<p class="text-center"> Copyright © Exceleron Software, All Rights Reserved. 2014
+
 	</div>
 
 	<div class="modal fade" id="settingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
