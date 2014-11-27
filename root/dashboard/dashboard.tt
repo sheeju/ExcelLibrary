@@ -47,6 +47,17 @@
 		</div>
 	</div>
 
+	<div class = "container"  >
+		<div id = "content">
+		</div>
+	</div>
+	<div id="bottom" class="navbar-fixed-bottom" style=" margin: 0px auto; background: #1f3d63;height: 35px; font-size: 12px;
+		line-height: 20px;
+		color: #fff;">
+		<p class="text-center"> Copyright © Exceleron Software, All Rights Reserved. 2014
+
+	</div>
+
 	<div class="modal fade" id="settingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
