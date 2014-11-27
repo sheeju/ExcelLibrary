@@ -1,12 +1,12 @@
-<script type="text/javascript" src="../source/js/jquery.js"></script>
-<script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
-<link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
-<script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js"></script>
-<script type="text/javascript" src="../source/DataTable/media/js/dataTables.bootstrap.js"></script>
+<!--link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
 <link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/jquery.dataTables.css" />
 <link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/dataTables.bootstrap.css" />
-<script type="text/javascript" src="source/bootstrap/dist/js/bootstrap.js"></script>
+<script type="text/javascript" src="../source/js/jquery.js"></script>
+<script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
+<script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="../source/DataTable/media/js/dataTables.bootstrap.js"></script>
+<script type="text/javascript" src="../source/bootstrap/dist/js/bootstrap.js"></script-->
 <script>
     $(document).ready(function() {
         var table = $('#historyTable').dataTable();
@@ -56,22 +56,22 @@
     });
 </script>
 [% IF role == 'Admin' %]
-<div class="radio" id="book">
-    <label>
-        <input type="radio" name="optradio">Book</label>
+<div class="radio" id="book" style="min-height:25px">
+    <label style="height:16px">
+        <input type="radio" name="optradio" style="width:16px;height:17px">Book</label>
 </div>
-<div class="radio" id="transaction">
-    <label>
-        <input type="radio" name="optradio">Transaction</label>
+<div class="radio" id="transaction"style="min-height:25px">
+    <label style="height:16px">
+        <input type="radio" name="optradio" style="width:16px;height:17px">Transaction</label>
 </div>
 
 <div id="myDiv" class="row" style="display:none">
-    <div class="col-lg-4 pull-right">
+    <div class="col-lg-5 pull-right">
         <div class="input-group">
             <span class="input-group-addon">Book Name</span>
             <input type="text" id="bookTextBox" class="form-control">
             <span class="input-group-btn">
-				<button class="btn btn-default" id="bookHistory" type="button">Check History</button>
+				<button class="btn btn-primary" id="bookHistory" type="button">Check History</button>
 			</span>
         </div>
     </div>

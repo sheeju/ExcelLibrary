@@ -76,10 +76,10 @@
                 [% userinfo.$m.Email %]
             </td>
             <td>
-                <input type="button" id="[% userinfo.$m.Id %]" name="[% userinfo.$m.Role %]" value="Edit" class="btn btn-primary empupdate" data-toggle="modal" data-target="#editModal" />
+				<button type="button" id="[% userinfo.$m.Id %]" name="[% userinfo.$m.Role %]" class="btn btn-primary empupdate" data-toggle="modal" data-target="#editModal"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
             </td>
             <td>
-                <input type="button" id="[% userinfo.$m.Id %]" name="btn_issue" value="Delete" class="btn btn-primary deleteuser" />
+				<button type="button" id="[% userinfo.$m.Id %]" name="[% userinfo.$m.Role %]" class="btn btn-primary empupdate" data-toggle="modal" data-target="#editModal"><span class="glyphicon glyphicon-trash"></span> Delete</button>
             </td>
         </tr>
         [% END %]
@@ -111,7 +111,7 @@
     </div>
 </div>
 
-<link rel="stylesheet" type="text/css" href="../source/bootstrap/dist/css/bootstrap.css" />
+<!--link rel="stylesheet" type="text/css" href="../source/bootstrap/dist/css/bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/dataTables.bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/jquery.dataTables.css" />
 <link rel="stylesheet" type="text/css" href="../source/jquery-validation/demo/site-demos.css">
@@ -121,7 +121,7 @@
 <script type="text/javascript" src="../source/js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.min.js"></script>
 <script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js"></script>
-<script type="text/javascript" src="../source/DataTable/media/js/dataTables.bootstrap.js"></script>
+<script type="text/javascript" src="../source/DataTable/media/js/dataTables.bootstrap.js"></script-->
 
 <script>
     $(document).ready(function() {
