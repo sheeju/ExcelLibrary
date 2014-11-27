@@ -46,7 +46,7 @@ sub excellibrarysendmail
     );
     $message->content_type_set($contenttype);
 
-	if ($contenttype eq 'text/html') {
+    if ($contenttype eq 'text/html') {
         $message->body_str_set($body . "<p>Regards<br>ExcelLibrary</p>");
     }
     else {
@@ -540,10 +540,8 @@ sub adduser : Local
 
     excellibrarysendmail($contenttype, $subject, $message, $empemail);
 
-	$c->forward('user');
-    $c->stash->{message} = "Employee added sucessfully";
+    #   $c->stash->{message} = "Employee added sucessfully";
     $c->forward('View::JSON');
-
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~copy block written by skanda~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -727,8 +725,6 @@ sub returnbook : Local
     my $comment      = $c->req->params->{comment};
     my $current_date = DateTime->now(time_zone => 'Asia/Kolkata');
     my $returneddate = $current_date->ymd('-') . " " . $current_date->hms(':');
-    $c->log->info("hai");
-    $c->log->info(Dumper \@bookcopy_id);
 
     foreach my $copyid (@bookcopy_id) {
         my $transaction_rs = $c->model('Library::Transaction')->search({"BookCopyId" => $copyid});
@@ -755,9 +751,9 @@ sub history : Path('/history')
     if ($c->user->Role eq 'Admin') {
         if (defined $c->req->params->{Selection}) {
             my $selection = $c->req->params->{Selection};
-            my $count = 1;
+            my $count     = 1;
             if ($selection eq 'transaction') {
-				
+
                 my @alldata = $c->model('Library::Transaction')->search(
                     {
                         'me.Status' => {'!=', 'Requested'},
@@ -784,7 +780,7 @@ sub history : Path('/history')
             elsif ($selection eq "book") {
 
                 my $bookname = $c->req->params->{bookname};
-                my @alldata = $c->model('Library::Transaction')->search(
+                my @alldata  = $c->model('Library::Transaction')->search(
                     {
                         'book.Name' => $bookname,
                     },
@@ -839,7 +835,6 @@ sub history : Path('/history')
                 Status      => $_->Status,
             }
         ) foreach @emphistory;
-        $c->log->info(Dumper $c->stash->{emphistory});
     }
 
 }
@@ -847,7 +842,7 @@ sub history : Path('/history')
 sub addcopies : Local
 {
     my ($self, $c) = @_;
-	my $no_of_copies = 0;
+    my $no_of_copies = 0;
     $no_of_copies = $c->req->params->{Count};
     my $bookid = $c->req->params->{bookId};
     $c->model('Library::BookCopy')->create(
