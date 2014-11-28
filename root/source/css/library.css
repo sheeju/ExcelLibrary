@@ -1,0 +1,37 @@
+.lib-whitefont
+{
+  font-size: 12px; 
+  line-height: 20px; 
+  color: #fff;
+}
+.lib-topbar
+{
+	 margin: 0px auto;
+	 background: #1f3d63;
+	 height: 30px;
+	 border-bottom: 3px solid #ef7f1b;
+}
+.lib-menubar
+{
+	 margin: 0px auto;
+	 background: #1f3d63;
+	 height: 60px;
+	 border-bottom: 3px solid #ef7f1b;
+}
+.lib-footer
+{
+	 margin: 0px auto; background: #1f3d63;height: 35px; font-size: 12px;
+     line-height: 20px;
+	 color: #fff;
+}
+.lib-content
+{
+	min-height: 407px;
+}
+.lib-settings
+{
+	margin-top: -17px;
+	color :  #fff;
+
+}
+

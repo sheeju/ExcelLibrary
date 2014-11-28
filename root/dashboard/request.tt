@@ -1,0 +1,207 @@
+<br>
+<br>
+<table id="request_table" class="display" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>SI No</th>
+            <th>Requested Date</th>
+            <th>Employee Name</th>
+            <th>Book Id</th>
+            <th>Book Name</th>
+            <th>Response</th>
+        </tr>
+    </thead>
+    <tbody>
+        [% FOREACH m = messages %]
+        <tr>
+            <td>
+                [% m.no %]
+            </td>
+            <td>
+                [% m.requesteddate %]
+            </td>
+            <td>
+                [% m.employeename %]
+            </td>
+            <td>
+                [% m.bookid %]
+            </td>
+            <td>
+                [% m.bookname %]
+            </td>
+            <td>
+                [% IF m.status == 'accept' %]
+                <input type="button" id="[% m.id %]" name="btn_issue" value="Issue" class="btn btn-primary book_issue" data-toggle="modal" data-target="#issueModal" />
+                [% ELSIF m.status == 'na' %]
+                <span class="label label-info">Book Not Available For Issue</span>
+                [% ELSE %]
+                <button id="[% m.id %]" name="btn_accept" class="btn btn-primary btn-sm req_allow">
+                    <span class="glyphicon    glyphicon-ok" aria-hidden="true"></span>
+                </button>
+                <button id="[% m.id %]" name="btn_reject" class="btn btn-danger btn-sm req_deny" data-toggle="modal" data-target="#denyModal">
+					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button>
+                [% END %]
+            </td>
+        </tr>
+        [% END %]
+    </tbody>
+</table>
+<div class="modal fade" id="issueModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Issue Book</h4>
+            </div>
+            <div id="div_model_msg" class="model-body">
+                <center> <span class="label label-info">Book Not Available For Issue</span>
+                </center>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+                </div>
+            </div>
+            <div id="div_model_cmb" class="modal-body">
+                Select Issued copy :
+                <select id="cmb_booklist" class="btn btn-warnings dropdown-toggle"></select>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+                    <button type="button" id="btn_issue" class="btn btn-primary" data-dismiss="modal">Issue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="denyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Deny Comment</h4>
+            </div>
+            <div id="div_model_cmb" class="modal-body">
+                <label for="txt_denyreason" class="col-sm-4 control-label">Deny Reason</label>
+                <input type="email" class="form-control" id="txt_denyreason">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+                    <button type="button" id="btn_deny" class="btn btn-primary" data-dismiss="modal">Proceed</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/dataTables.bootstrap.css" />
+<script type="text/javascript" src="../source/js/jquery.js"></script>
+<script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="source/DataTable/media/js/dataTables.bootstrap.js"></script-->
+
+<script>
+    $(document).ready(function() {
+        var req_id;
+        $('#request_table').DataTable({
+            "columnDefs": [{
+                "targets": 5,
+                "orderable": false
+            }]
+
+        });
+
+        $('#request_table').delegate('.req_allow', 'click', function() {
+            var id = $(this).attr('id');
+            $.ajax({
+                url: 'dashboard/managerequest',
+                contentType: 'text/html',
+                dataType: 'html',
+                data: {
+                    id: id,
+                    response: 'Allow'
+                }
+            }).done(function(responseText) {
+                $("#content").html(responseText);
+            }).fail(function(err) {
+                alert("error" + err);
+            });
+
+        });
+
+        $('#request_table').delegate('.req_deny', 'click', function() {
+            req_id = $(this).attr('id');
+        });
+
+        $('#btn_deny').click(function() {
+            var reason = $('#txt_denyreason').val();
+            $.ajax({
+                url: 'dashboard/managerequest',
+                contentType: 'text/html',
+                dataType: 'html',
+                data: {
+                    id: req_id,
+                    response: 'Denied',
+                    reason: reason
+                }
+            }).done(function(responseText) {
+                $("#content").html(responseText);
+            }).fail(function(err) {
+                alert("error" + err);
+            });
+
+        });
+
+        $('#request_table').delegate('.book_issue', 'click', function() {
+            req_id = $(this).attr('id');
+            $('#cmb_booklist').empty();
+            $('#div_model_msg').addClass('hidden');
+            $('#div_model_cmb').removeClass('hidden');
+            $.ajax({
+                url: 'dashboard/getbookcopies',
+                contentType: 'text/html',
+                dataType: 'json',
+                data: {
+                    req_id: req_id
+                }
+            }).done(function(data) {
+                if (typeof data.books != 'undefined') {
+
+                    $.each(data.books, function(index, value) {
+                        $('#cmb_booklist').append('<option>' + value + '</option>');
+                    });
+                } else {
+                    $('#div_model_msg').removeClass('hidden');
+                    $('#div_model_cmb').addClass('hidden');
+                }
+            }).fail(function(err) {
+                alert("error in getbook" + err);
+            });
+
+        });
+
+        $('#btn_issue').click(function() {
+            var bc_id = $('#cmb_booklist').val();
+            $.ajax({
+                url: 'dashboard/issuebook',
+                contentType: 'text/html',
+                dataType: 'html',
+                data: {
+                    req_id: req_id,
+                    bc_id: bc_id
+                }
+            }).done(function(data) {
+                $("#content").html(data);
+                $(".modal-backdrop").hide();
+
+            }).fail(function(err) {
+                alert("error in getbook" + err);
+            });
+
+        });
+
+    });
+</script>
