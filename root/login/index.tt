@@ -19,14 +19,20 @@
     <link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/jquery.dataTables.css" />
 	<script>
 		$(document).ready(function() {
-				$( "input" ).focus(function() {
-				$('#resdata').hide();
-			}); 
-			jQuery.validator.setDefaults({
-				debug: true,
-				success: "valid"
-			});
 
+			function DisableBackButton() {
+				window.history.forward()
+			}
+			DisableBackButton();
+			window.onload = DisableBackButton;
+			window.onpageshow = function(evt) { if (evt.persisted) DisableBackButton() }
+			window.onunload = function() { void (0) }
+
+            jQuery.validator.setDefaults({
+                debug: true,
+                success: "valid"
+            });
+	
 			$("#loginform").validate({
 				rules: {
 					email: {
@@ -40,31 +46,11 @@
 				submitHandler: function(form) {
 					form.submit();
 
-<<<<<<< HEAD
-    <script>
-		$(document).ready(function() {
-			function DisableBackButton() {
-				window.history.forward()
-			}
-			DisableBackButton();
-			window.onload = DisableBackButton;
-			window.onpageshow = function(evt) { if (evt.persisted) DisableBackButton() }
-			window.onunload = function() { void (0) }
-
-			$( "input" ).focus(function() {
-			$('#resdata').hide();
-			}); 
-            jQuery.validator.setDefaults({
-                debug: true,
-                success: "valid"
-            });
-=======
 				}
 			});
->>>>>>> 374ebc43d4c96d743583f36c659de238fbb7e506
 
 			$( "input" ).focus(function() {
-				$('#resdata').html('');
+				$('#resdata').hide();
 			});
 
 		});
