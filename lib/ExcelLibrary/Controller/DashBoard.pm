@@ -513,7 +513,6 @@ sub bookrequest : Local
             }
         );
         my $employee;
-
         my $book_rs = $c->model('Library::Book')->search(
             {
                 "Id" => $bookid

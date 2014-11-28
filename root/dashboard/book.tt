@@ -3,12 +3,9 @@
 	<a href="#" class="close">&times;</a>
 	<strong>Success!</strong> Book Added Successfully.
 </div>
-
-
-
-<div class="alert alert-warning maxbook hidden">
-        <a href="#" class="close">&times;</a>
-        <strong>Warning!</strong> Each Employee has maximum 2 Books.
+<div class="alert alert-danger maxbook hidden">
+	<a href="#" class="close">&times;</a>
+	<strong>Warning!</strong> Each Employee has maximum 2 Books.
 </div>
 [% IF role == 'Admin' %]
 <button type="button" style="margin:5px 5px" class="btn btn-outline btn-primary pull-right" data-toggle="modal" data-target="#myModal">
@@ -80,7 +77,7 @@
 				<table class="table table-hover table-bordered table-stripped table-condensed info table-responsive" cellspacing="0" width="100%">
 					<thead>
 						<tr>
-							<th>No</th>
+							<th>Sl No</th>
 							<th>Copy ID</th>
 							<th>Status</th>
 							<th>Employee Name</th>
@@ -96,19 +93,6 @@
 		</div>
 	</div>
 </div>
-
-
-
-
-
-
-
-
-
-<!--
----------------------------- comment model ---------------------------------
--->
-
 <div class="modal fade" id="commentmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -124,13 +108,11 @@
 					<br>
 					<div class="col-md-6"><span id="spn_commentmsg"> </span> </div>
 					<div class="col-md-6 text-right"><button type="button" id="btn_post" class="btn btn-primary">Post</button></div>
-
 					<br>
 					<br>
 					<div class="col-md-12" style="height:250px; overflow-y:auto;" id="div_comment">
 					</div>
 				</div>
-
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
 				</div>
@@ -145,7 +127,7 @@
 <table id="table" class="display" cellspacing="0" width="100%">
 	<thead>
 		<tr>
-			<th>No</th>
+			<th>Sl No</th>
 			<th>Book Name</th>
 			<th>Book Type</th>
 			<th>Book Author</th>
@@ -208,7 +190,7 @@
 				</tbody>
 			</table>
 
-		<script>
+			<script>
 				$(document).ready(function() {
 					var oTable=$('#table').dataTable({
 						"columnDefs": [ { "targets": [5,6], "orderable": false } ]	
@@ -220,12 +202,7 @@
 						bookid = $(this).attr('id');
 						getbookcopy(bookid);
 					});
-					
-					
-					
 
-					//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-					
 					$('#table').delegate('.btn_comment', 'click', function() {
 						bookid = $(this).attr('id');
 						diplaycomment(bookid);
@@ -234,36 +211,36 @@
 					function diplaycomment(bookid)
 					{
 						$.ajax(
-							{
-								url:'dashboard/getcomments',
-								data:{
-									bookid:bookid,
-								}
-							}).done(function(data)
-							{
+						{
+							url:'dashboard/getcomments',
+							data:{
+								bookid:bookid,
+							}
+						}).done(function(data)
+						{
 
-								$('#div_comment').empty();
-								if(data.flag)
+							$('#div_comment').empty();
+							if(data.flag)
+							{
+								$.each(data.comments, function(index, value)
 								{
-									$.each(data.comments, function(index, value)
-									{
 
-										$('#div_comment').prepend('<div class="alert alert-info" role="alert">'
-											+ '<div class = "col-md-6">'+ value.employeename +'</div>'
-											+ '<div class = "col-md-6"><p class="text-right">'+ value.commentdate +'</p></div>'
-											+ '<div class = "col-md-12"><p class="txt-left">'+ value.comment + '</p></div>'
+									$('#div_comment').prepend('<div class="alert alert-info" role="alert">'
+										+ '<div class = "col-md-6">'+ value.employeename +'</div>'
+										+ '<div class = "col-md-6"><p class="text-right">'+ value.commentdate +'</p></div>'
+										+ '<div class = "col-md-12"><p class="txt-left">'+ value.comment + '</p></div>'
 										+'</div>');
-									});
-								}
-								else
-								{
-									$('#div_comment').append('<div class = "alert alert-info" role="alert" ><p class="txt-center"> No Previous Comments </p></div>');
-								}
+								});
+							}
+							else
+							{
+								$('#div_comment').append('<div class = "alert alert-info" role="alert" ><p class="txt-center"> No Previous Comments </p></div>');
+							}
 
-							}).fail(function(err) 
-							{ 
-								alert("error"+ err); 
-							});
+						}).fail(function(err) 
+						{ 
+							alert("error"+ err); 
+						});
 
 
 					}
@@ -272,10 +249,10 @@
 
 					$('#btn_post').click(function(){
 						var comment = $('#txt_comment').val();
-					 	var regex = /\w+/;
+						var regex = /\w+/;
 						if (regex.test(comment)) {
 
-						$.ajax(
+							$.ajax(
 							{
 								url:'dashboard/addcomment',
 								data:{
@@ -297,13 +274,6 @@
 							$('#spn_commentmsg').text("Can't post empty comment");
 						}
 					});
-
-
-					//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-					
-
-				
-
 					var rowId;
 					$('.rowClass').click(function()
 					{
@@ -332,7 +302,7 @@
 										btn = '<td>'+
 											'<button type="button" id='+ value.id +' class="btn btn-primary btn-sm dlt">'+
 												'<span class="glyphicon glyphicon-trash"></span>'+
-											'</button>'+
+												'</button>'+
 											'</td>'
 									}
 									else
@@ -406,7 +376,6 @@
 					});
 
 					$('#addbook').click(function(){
-
 						jQuery.validator.setDefaults({
 							debug: true,
 							success: "valid"
@@ -452,34 +421,22 @@
 
 									},
 									success : function ( data ) {
+									$.ajax({
+											url: '/book',
+											type : 'POST',
 
+											}).done(function(data) {
 
+											$(".modal-backdrop").hide();
+											$('#content').html(data);
+											$('.addbookalert').removeClass('hidden');
+										});
 
-
-								 $.ajax({
-                                        url: '/book',
-                                        type : 'POST',
-
-                                                }).done(function(data) {
-
-                                                $(".modal-backdrop").hide();
-                                                $('#content').html(data);
-                                                $('.addbookalert').removeClass('hidden');
-                                        });
-	
-
-
-								
-								//		$('#sucess_message').html(data.message);
+										//		$('#sucess_message').html(data.message);
 										$('#book_insertion')[0].reset();
 										var validator = $( "#book_insertion" ).validate();
 										validator.resetForm();
 
-
-
-									
-				
-						
 									}
 								});
 							}

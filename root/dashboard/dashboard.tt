@@ -81,7 +81,7 @@
 							<input type="number" class="form-control" id="noofbooks" name="noofbooks" placeholder="Count" min=1>
 						</div>
 						<br/>
-						<label id= "message"></label>
+						<label style ="color:red" id= "message"></label>
 						<div class="modal-footer">
 							<button type="submit" class="btn btn-primary" id="configlib">UPDATE</button>
 							<button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
@@ -89,9 +89,7 @@
 					</form>
 				</div>
 			</div>
-
 		</div>
-
 	</div>
 
 	<div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="oneModalLabel" aria-hidden="true">
@@ -120,7 +118,7 @@
 						</div>
 						<br/>
 
-						<label id="passwordmessage"></label>
+						<label style ="color:red" id="passwordmessage"></label>
 
 						<div class="modal-footer">
 							<button type="submit" class="btn btn-primary" id="changepassword">Change Password</button>
@@ -130,7 +128,6 @@
 				</div>
 			</div>
 		</div>
-
 	</div>
 
 </body>
@@ -159,6 +156,12 @@
 		window.onload = DisableBackButton;
 		window.onpageshow = function(evt) { if (evt.persisted) DisableBackButton() }
 		window.onunload = function() { void (0) }
+
+		$( "#oldpassword" ).focus(function() {
+			$('#passwordmessage').html('');
+		});
+
+
 		$.ajax({
 			url:"dashboard/defaultsetting",
 			success:function(data){
@@ -306,16 +309,12 @@
 
 						}
 					});
-
-
-
 				}
 			});
 
 		});
 
 		$('#logoutbtn').click(function(){
-
 			$.ajax({
 				url:"login/logout",
 				success:function(result){
