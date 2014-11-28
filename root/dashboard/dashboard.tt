@@ -150,6 +150,11 @@
 	$(document).ready(function() 
 	{
 
+		$( "#oldpassword" ).focus(function() {
+			$('#passwordmessage').html('');
+		});
+
+
 		$.ajax({
 			url:"dashboard/defaultsetting",
 			success:function(data){

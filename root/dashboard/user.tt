@@ -52,7 +52,7 @@
 <table id="user_tabel" class="display" cellspacing="0" width="100%">
 	<thead>
 		<tr>
-			<th>Number</th>
+			<th>Sl No</th>
 			<th>Role</th>
 			<th>Employee Name</th>
 			<th>Email</th>

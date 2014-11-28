@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 
-<head>
+
+	<head>
+ 	<title>ExcelLibrary</title>
     <script type="text/javascript" src="../source/js/jquery.js"></script>
     <script type="text/javascript" src="../source/bootstrap/dist/js/bootstrap.js"></script>
     <script type="text/javascript" src="../source/js/jquery.validate.min.js"></script>
@@ -15,8 +17,6 @@
     <link rel="stylesheet" type="text/css" href="../source/css/login.css">
     <link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
     <link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/jquery.dataTables.css" />
-
-
 	<script>
 		$(document).ready(function() {
 				$( "input" ).focus(function() {
@@ -42,6 +42,11 @@
 
 				}
 			});
+
+			$( "input" ).focus(function() {
+				$('#resdata').html('');
+			});
+
 		});
 
 	</script>
@@ -49,39 +54,41 @@
 <body>
 
 	<div class="container">
-        <div class="row">
-            <div class="col-md-4 col-md-offset-4" style="margin-top: 100px;">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Login via Email</h3>
-                    </div>
-                    <div class="panel-body">
-                        <form accept-charset="UTF-8" role="form" id="loginform" action="/login" method="POST">
-                            <fieldset>
-                                <div class="form-group">
-                                    <input class="form-control" placeholder="yourmail@example.com" id="user_email" name="email" type="email">
-                                </div>
-                                <div class="form-group">
-                                    <input class="form-control" placeholder="Password" name="password" id="user_password" type="password" value="">
-                                </div>
-                                <hr/>
-                                <div class="checkbox">
-                                    <label>
-                                        <input name="remember" type="checkbox" value="Remember Me">Remember Me
-                                    </label>
-                                </div>
-                                <input class="btn btn-lg btn-primary btn-block" type="submit" id="btn_login" name="btn_submit" value="Login">
-                            </fieldset>
-                        </form>
-                        <hr/>
-                        [% IF failmessage %]
-                        <label style="color:red" id="resdata">Invalid Username and Password</label>
-                        [% END %]
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+		<div class="row">
+			<div class="col-md-4 col-md-offset-4" style="margin-top: 100px;">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">Login via Email</h3>
+					</div>
+					<div class="panel-body">
+						<form accept-charset="UTF-8" role="form" id="loginform" action="/login" method="POST">
+							<fieldset>
+								<div class="form-group">
+									<input class="form-control" placeholder="yourmail@example.com" id="user_email" name="email" type="email">
+								</div>
+								<div class="form-group">
+									<input class="form-control" placeholder="Password" name="password" id="user_password" type="password" value="">
+								</div>
+								<hr/>
+								<div class="checkbox">
+									<label>
+										<input name="remember" type="checkbox" value="Remember Me">Remember Me
+									</label>
+								</div>
+								<input class="btn btn-lg btn-primary btn-block" type="submit" id="btn_login" name="btn_submit" value="Login">
+							</fieldset>
+						</form>
+						<hr/>
+						[% IF failmessage %]
+						<label style="color:red" id="resdata">Invalid Username and Password</label>
+						[% END %]
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
 </body>
+
+
 </html>
