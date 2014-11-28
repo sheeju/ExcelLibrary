@@ -16,7 +16,7 @@
 						[% END %]
 						<li><a class = " glyphicon glyphicon-pencil btn_changepaswd" href="" tabindex="-1" data-toggle="modal" data-target="#passwordModal" > ChangePassword</a></li>
 						<li class="divider"></li>
-						<li><a class="glyphicon glyphicon-off" href="" id= "logoutbtn"> Logout</a></li>
+						<li><a class="glyphicon glyphicon-off" href="/login"  id= "logoutbtn"> Logout</a></li>
 					</ul>
 					</li>
 				</ul>
@@ -152,7 +152,13 @@
 <script>
 	$(document).ready(function() 
 	{
-
+		function DisableBackButton() {
+			window.history.forward()
+		}
+		DisableBackButton();
+		window.onload = DisableBackButton;
+		window.onpageshow = function(evt) { if (evt.persisted) DisableBackButton() }
+		window.onunload = function() { void (0) }
 		$.ajax({
 			url:"dashboard/defaultsetting",
 			success:function(data){

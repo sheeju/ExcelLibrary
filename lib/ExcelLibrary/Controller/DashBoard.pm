@@ -60,9 +60,18 @@ sub excellibrarysendmail
 sub dashboard : Path : Args(0)
 {
     my ($self, $c) = @_;
-    $c->stash->{username} = $c->user->Name;
-    $c->stash->{role}     = $c->user->Role;
-    $c->forward('View::TT');
+	if($c->user)
+	{
+    	$c->stash->{username} = $c->user->Name;
+    	$c->stash->{role}     = $c->user->Role;
+		$c->forward('View::TT');
+	}
+	else
+	{
+		$c->response->body('Page not found');
+	  	$c->response->status(404);	
+	}
+
 }
 
 sub request : Path('/request')
@@ -597,7 +606,7 @@ sub adduser : Local
 
     my $subject = 'Activate ExcelLibrary Account';
     my $message =
-		'Hai'
+		'Hai '
 	  . $empname 
 	  . ',<br> <p> We happy to inform that your account is created in ExcelLibrary. To activate your account click the bellow button.<p><a href="http://10.10.10.30:3000/login?token='
       . $token
@@ -606,7 +615,6 @@ sub adduser : Local
 
     excellibrarysendmail($contenttype, $subject, $message, $empemail);
 
-    #   $c->stash->{message} = "Employee added sucessfully";
     $c->forward('View::JSON');
 }
 

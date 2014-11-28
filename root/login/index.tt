@@ -4,10 +4,9 @@
 <head>
     <script type="text/javascript" src="../source/js/jquery.js"></script>
     <script type="text/javascript" src="../source/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="../source/js/jquery.validate.min.js"></script>
     <script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.min.js"></script>
     <script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
-    <script type="text/javascript" src="../source/js/jquery.validate.min.js"></script>
-    <script type="text/javascript" src="source/DataTable/media/js/jquery.dataTables.js"></script>
 
 
     <link rel="stylesheet" type="text/css" href="../source/bootstrap/dist/css/bootstrap.css">
@@ -17,7 +16,15 @@
 
 
     <script>
-        $(document).ready(function() {
+		$(document).ready(function() {
+			function DisableBackButton() {
+				window.history.forward()
+			}
+			DisableBackButton();
+			window.onload = DisableBackButton;
+			window.onpageshow = function(evt) { if (evt.persisted) DisableBackButton() }
+			window.onunload = function() { void (0) }
+
 			$( "input" ).focus(function() {
 			$('#resdata').hide();
 			}); 
