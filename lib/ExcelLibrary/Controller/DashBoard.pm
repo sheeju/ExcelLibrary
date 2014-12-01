@@ -456,10 +456,6 @@ sub getcomments : Local
 	$c->forward('View::JSON');
 }
 
-
-
-
-
 sub bookrequest : Local
 {
     my ($self, $c) = @_;
@@ -547,26 +543,44 @@ sub bookrequest : Local
 sub user : Path('/user')
 {
     my ($self, $c) = @_;
-
     my @user_rs = $c->model('Library::Employee')->search(
         {
             "Status" => {'!=', 'Disable'},
         }
     );
+
     my $count = 1;
     my %userdetail;
-    foreach my $userinfo (@user_rs) {
 
-        $userdetail{$userinfo->Id} = {
-            Count => $count++,
-            Id    => $userinfo->Id,
-            Name  => $userinfo->Name,
-            Role  => $userinfo->Role,
-            Email => $userinfo->Email,
+    foreach my $user (@user_rs) {
+        $userdetail{$user->Id} = {
+            count => $count++,
+            id    => $user->Id,
+            name  => $user->Name,
+            role  => $user->Role,
+            email => $user->Email,
+			bookinhand => 0 	
         };
-
     }
+	
+	my @transaction_rs = $c->model('Library::Transaction')->search(
+		{
+			"Status" => 'Issued',
+			"ReturnedDate" => {'=',undef}
+		},
+		{
+			columns =>	"EmployeeId",
+			group_by =>  "EmployeeId"
+		}
+	);
 
+	my $transaction;
+	foreach $transaction (@transaction_rs)
+	{
+		$userdetail{$transaction->EmployeeId}{bookinhand} = 1;		
+	}
+	my $id = $c->user->Id;
+	$userdetail{$id}{bookinhand} = 2;
     $c->stash->{userinfo} = \%userdetail;
     $c->stash->{template} = "dashboard/user.tt";
     $c->forward('View::TT');
