@@ -6,7 +6,6 @@
             <th>SI No</th>
             <th>Requested Date</th>
             <th>Employee Name</th>
-            <th>Book Id</th>
             <th>Book Name</th>
             <th>Response</th>
         </tr>
@@ -22,9 +21,6 @@
             </td>
             <td>
                 [% m.employeename %]
-            </td>
-            <td>
-                [% m.bookid %]
             </td>
             <td>
                 [% m.bookname %]
@@ -96,19 +92,12 @@
     </div>
 </div>
 
-<!--link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/dataTables.bootstrap.css" />
-<script type="text/javascript" src="../source/js/jquery.js"></script>
-<script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js"></script>
-<script type="text/javascript" src="source/DataTable/media/js/dataTables.bootstrap.js"></script-->
-
 <script>
     $(document).ready(function() {
         var req_id;
         $('#request_table').DataTable({
             "columnDefs": [{
-                "targets": 5,
+                "targets": 4,
                 "orderable": false
             }]
 
