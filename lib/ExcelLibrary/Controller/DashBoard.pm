@@ -619,7 +619,7 @@ sub adduser : Local
     my $message =
 		'Hai '
 	  . $empname 
-	  . ',<br> <p> We happy to inform that your account is created in ExcelLibrary. To activate your account click the bellow button.<p><a href="http://10.10.10.30:3000/login?token='
+	  . ',<br> <p> We are happy to inform that your account has been created in ExcelLibrary please activate your account click the bellow button.<p><a href="http://10.10.10.30:3000/login?token='
       . $token
       . '"> <button> Click me </button></a>';
     my $contenttype = 'text/html';
