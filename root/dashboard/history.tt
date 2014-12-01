@@ -55,6 +55,7 @@
 	</tbody>
 </table>
 [% ELSIF role == 'Employee' %]
+<br>
 <table id="historyTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
 	<thead>
 		<tr>
