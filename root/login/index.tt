@@ -7,16 +7,13 @@
     <script type="text/javascript" src="../source/js/jquery.js"></script>
     <script type="text/javascript" src="../source/bootstrap/dist/js/bootstrap.js"></script>
     <script type="text/javascript" src="../source/js/jquery.validate.min.js"></script>
-    <script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
     <script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.min.js"></script>
-    <script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js"></script>
 
 
     <link rel="stylesheet" type="text/css" href="../source/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../source/css/library.css">
     <link rel="stylesheet" type="text/css" href="../source/css/login.css">
     <link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
-    <link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/jquery.dataTables.css" />
 	<script>
 		$(document).ready(function() {
 

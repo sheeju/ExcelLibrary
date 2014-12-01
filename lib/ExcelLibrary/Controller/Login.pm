@@ -91,10 +91,7 @@ sub createpassword : Local
 sub logout : Local
 {
     my ($self, $c) = @_;
-	$c->log->info("~~~~~~~~~~~~~~~~~~~~~~hai~~~~~~~~~~~~~~~~~~~~~~~");
 	$c->logout();
-	$c->stash->{template} = "login/index.tt";
-	$c->forward('View::TT');
 
 }
 
