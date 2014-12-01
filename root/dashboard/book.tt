@@ -103,8 +103,9 @@
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
-					<label for="comment">Add Comment:</label>
-					<textarea class="form-control" rows="3" id="txt_comment"></textarea>
+					<div><label for="comment">Add Comment:</label></div>
+					<br>
+					<div><textarea class="form-control" rows="3" id="txt_comment"></textarea></div>
 					<br>
 					<div class="col-md-6"><span id="spn_commentmsg"> </span> </div>
 					<div class="col-md-6 text-right"><button type="button" id="btn_post" class="btn btn-primary">Post</button></div>
@@ -226,9 +227,9 @@
 								{
 
 									$('#div_comment').prepend('<div class="alert alert-info" role="alert">'
-										+ '<div class = "col-md-6">'+ value.employeename +'</div>'
-										+ '<div class = "col-md-6"><p class="text-right">'+ value.commentdate +'</p></div>'
-										+ '<div class = "col-md-12"><p class="txt-left">'+ value.comment + '</p></div>'
+										+ '<div class = "col-md-6">Commented By : '+ value.employeename +'</div>'
+										+ '<div class = "col-md-6"><p class="text-right"> Date : '+ value.commentdate +'</p></div>'
+										+ '<div class = "col-md-12 "><p class="txt-left">'+ value.comment + '</p></div>'
 										+'</div>');
 								});
 							}

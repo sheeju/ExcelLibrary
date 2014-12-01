@@ -1,3 +1,14 @@
+.lib-loginbody
+{
+	 background-image: url("../images/Librarylogin.jpg");
+	 background-repeat: no-repeat;
+	 background-position: center ;
+}
+.lib-loginimage
+{
+	height:70px; 
+	width:200px;
+}
 .lib-whitefont
 {
   font-size: 12px; 

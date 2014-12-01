@@ -195,7 +195,7 @@
 						emprole: updaterole
 					}
 					}).done(function(data) {
-
+					$(".modal-backdrop").hide();
 					$('#content').html(data);
 				});
 
