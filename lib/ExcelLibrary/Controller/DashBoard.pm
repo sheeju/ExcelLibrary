@@ -892,6 +892,9 @@ sub addcopies : Local
 	my $no_of_copies = 0;
 	$no_of_copies = $c->req->params->{Count};
 	my $bookid = $c->req->params->{bookId};
+    my $currentdate       = DateTime->now(time_zone => 'Asia/Kolkata');
+    my $updateddate       = $currentdate->ymd('-') . " " . $currentdate->hms(':');
+    my $loginId        = $c->user->Id;
 	$c->model('Library::BookCopy')->create(
 		{
 			BookId => $bookid,
@@ -900,6 +903,8 @@ sub addcopies : Local
 	);
 	my $copy_update = $c->model('Library::Book')->find({Id => $bookid});
 	$copy_update->NoOfCopies($no_of_copies);
+	$copy_update->UpdatedOn($updateddate);
+	$copy_update->UpdatedBy($loginId);
 	$copy_update->update;
 	$c->forward('View::JSON');
 }
