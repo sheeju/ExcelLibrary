@@ -13,7 +13,6 @@
 		<div class="col-lg-4 col-lg-offset-4">
 			<div id="div_searchby_copy_id" class="input-group">
 				<span class="input-group-addon">Book Copy ID</span>
-
 				<input type="text" id="txt_copy_id" class="form-control">
 				<span class="input-group-btn">
 					<button id="btn_checkby_copyid" class="btn btn-default" type="button">Check</button>
@@ -26,7 +25,6 @@
 					<button id="btn_checkby_employeeid" class="btn btn-default" type="button">Check</button>
 				</span>
 			</div>
-
 
 		</div>
 	</div>
