@@ -792,146 +792,105 @@ sub gettransactionbyemployeeid : Local
 
 sub returnbook : Local
 {
-    my ($self, $c) = @_;
+	my ($self, $c) = @_;
 
-    my $loginId = $c->user->Id;
-    my @bookcopy_id;
-    push(@bookcopy_id, $c->req->params->{'copy_id[]'});
-    my $comment      = $c->req->params->{comment};
-    my $current_date = DateTime->now(time_zone => 'Asia/Kolkata');
-    my $returneddate = $current_date->ymd('-') . " " . $current_date->hms(':');
+	my $loginId = $c->user->Id;
+	my @bookcopy_id;
+	push(@bookcopy_id, $c->req->params->{'copy_id[]'});
+	my $comment      = $c->req->params->{comment};
+	my $current_date = DateTime->now(time_zone => 'Asia/Kolkata');
+	my $returneddate = $current_date->ymd('-') . " " . $current_date->hms(':');
 
-    foreach my $copyid (@bookcopy_id) {
-        my $transaction_rs = $c->model('Library::Transaction')->search({"BookCopyId" => $copyid});
-        $transaction_rs->update(
-            {
-                "ReturnedDate" => $returneddate,
-                "RecivedBy"    => $loginId,
-                "Comment"      => $comment
-            }
-        );
-        my $bookcopy_rs = $c->model('Library::BookCopy')->search({"Id" => $copyid});
-        $bookcopy_rs->update({"Status" => 'Available'});
-    }
-    $c->stash->{result} = 1;
-    $c->forward('View::JSON');
+	foreach my $copyid (@bookcopy_id) {
+		my $transaction_rs = $c->model('Library::Transaction')->search({"BookCopyId" => $copyid});
+		$transaction_rs->update(
+			{
+				"ReturnedDate" => $returneddate,
+				"RecivedBy"    => $loginId,
+				"Comment"      => $comment
+			}
+		);
+		my $bookcopy_rs = $c->model('Library::BookCopy')->search({"Id" => $copyid});
+		$bookcopy_rs->update({"Status" => 'Available'});
+	}
+	$c->stash->{result} = 1;
+	$c->forward('View::JSON');
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by pavan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub history : Path('/history')
 {
-    my ($self, $c) = @_;
-    $c->stash->{role} = $c->user->Role;
-    my $userId = $c->user->Id;
-    if ($c->user->Role eq 'Admin') {
-        if (defined $c->req->params->{Selection}) {
-            my $selection = $c->req->params->{Selection};
-            my $count     = 1;
-            if ($selection eq 'transaction') {
-
-                my @alldata = $c->model('Library::Transaction')->search(
-                    {
-                        'me.Status' => {'!=', 'Requested'},
-                    },
-                    {
-                        join      => ['employee',      'book'],
-                        '+select' => ['employee.Name', 'book.Name'],
-                        '+as'     => ['EmployeeName',  'BookName']
-                    }
-                );
-                push(
-                    @{$c->stash->{history}},
-                    {
-                        Count       => $count++,
-                        EmpName     => $_->get_column('EmployeeName'),
-                        BookName    => $_->get_column('BookName'),
-                        Status      => $_->Status,
-                        RequestDate => $_->RequestDate,
-                        IssuedDate  => $_->IssuedDate,
-                    }
-                ) foreach @alldata;
-                $c->forward('View::JSON');
-            }
-            elsif ($selection eq "book") {
-
-                my $bookname = $c->req->params->{bookname};
-                my @alldata  = $c->model('Library::Transaction')->search(
-                    {
-                        'book.Name' => $bookname,
-                    },
-                    {
-                        join      => ['employee',      'book'],
-                        '+select' => ['employee.Name', 'book.Name'],
-                        '+as'     => ['EmployeeName',  'BookName']
-                    }
-                );
-                push(
-                    @{$c->stash->{history}},
-                    {
-                        Count        => $count++,
-                        EmployeeName => $_->get_column('EmployeeName'),
-                        CopyId       => $_->BookCopyId,
-                        RequestDate  => $_->RequestDate,
-                        IssuedDate   => $_->IssuedDate,
-                        ReturnedDate => $_->ReturnedDate,
-                    }
-                ) foreach @alldata;
-                $c->forward('View::JSON');
-            }
-            else {
-                $c->forward('View::TT');
-            }
-        }
-        else {
-            $c->forward('View::TT');
-        }
-
-    }
-    elsif ($c->user->Role eq 'Employee') {
-        my $count      = 1;
-        my @emphistory = $c->model('Library::Transaction')->search(
-            {
-                'me.EmployeeId' => $userId,
-            },
-            {
-                join      => ['book'],
-                '+select' => ['book.Name'],
-                '+as'     => ['BookName'],
-            }
-        );
-        push(
-            @{$c->stash->{emphistory}},
-            {
-                Count       => $count++,
-                BookName    => $_->get_column('BookName'),
-                RequestDate => $_->RequestDate,
-                IssueDate   => $_->IssuedDate,
-                ReturnDate  => $_->ExpectedReturnDate,
-                Status      => $_->Status,
-            }
-        ) foreach @emphistory;
-		
-		$c->forward('View::TT');
-    }
+	my ($self, $c) = @_;
+	$c->stash->{role} = $c->user->Role;
+	my $userId = $c->user->Id;
+	if ($c->user->Role eq 'Admin') {
+		my $count     = 1;
+		my @alldata = $c->model('Library::Transaction')->search(
+			{
+				'me.Status' => {'!=', 'Requested'},
+			},
+			{
+				join      => ['employee',      'book'],
+				'+select' => ['employee.Name', 'book.Name'],
+				'+as'     => ['EmployeeName',  'BookName']
+			}
+		);
+		push(
+			@{$c->stash->{history}},
+			{
+				Count       => $count++,
+				EmpName     => $_->get_column('EmployeeName'),
+				BookName    => $_->get_column('BookName'),
+				Status      => $_->Status,
+				RequestDate => $_->RequestDate,
+				IssuedDate  => $_->IssuedDate,
+				CopyId 		=> $_->BookCopyId,
+			}
+		) foreach @alldata;
+	}
+	elsif ($c->user->Role eq 'Employee') {
+		my $count      = 1;
+		my @emphistory = $c->model('Library::Transaction')->search(
+			{
+				'me.EmployeeId' => $userId,
+			},
+			{
+				join      => ['book'],
+				'+select' => ['book.Name'],
+				'+as'     => ['BookName'],
+			}
+		);
+		push(
+			@{$c->stash->{emphistory}},
+			{
+				Count       => $count++,
+				BookName    => $_->get_column('BookName'),
+				RequestDate => $_->RequestDate,
+				IssueDate   => $_->IssuedDate,
+				ReturnDate  => $_->ExpectedReturnDate,
+				Status      => $_->Status,
+			}
+		) foreach @emphistory;
+	}
 
 }
 
 sub addcopies : Local
 {
-    my ($self, $c) = @_;
-    my $no_of_copies = 0;
-    $no_of_copies = $c->req->params->{Count};
-    my $bookid = $c->req->params->{bookId};
-    $c->model('Library::BookCopy')->create(
-        {
-            BookId => $bookid,
-            Status => 'Available',
-        }
-    );
-    my $copy_update = $c->model('Library::Book')->find({Id => $bookid});
-    $copy_update->NoOfCopies($no_of_copies);
-    $copy_update->update;
-    $c->forward('View::JSON');
+	my ($self, $c) = @_;
+	my $no_of_copies = 0;
+	$no_of_copies = $c->req->params->{Count};
+	my $bookid = $c->req->params->{bookId};
+	$c->model('Library::BookCopy')->create(
+		{
+			BookId => $bookid,
+			Status => 'Available',
+		}
+	);
+	my $copy_update = $c->model('Library::Book')->find({Id => $bookid});
+	$copy_update->NoOfCopies($no_of_copies);
+	$copy_update->update;
+	$c->forward('View::JSON');
 }
 
 =encoding utf8
