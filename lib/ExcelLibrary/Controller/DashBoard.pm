@@ -117,7 +117,6 @@ sub request : Path('/request')
                 id            => $transaction->Id,
                 requesteddate => $transaction->RequestDate,
                 employeename  => $transaction->get_column('EmployeeName'),
-                bookid        => $transaction->BookId,
                 bookname      => $transaction->get_column('BookName'),
                 status        => $status
             }
@@ -538,12 +537,11 @@ sub bookrequest : Local
         }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~copy block written by skanda~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        $c->forward('View::JSON');
     }
     else {
         $c->stash->{deniedflag} = 1;
-        $c->forward('View::JSON');
     }
+	$c->forward('View::JSON');
 }
 
 sub user : Path('/user')
@@ -683,7 +681,6 @@ sub defaultsetting : Local
     $c->stash->{maxallowedbooks} = $maxallowbooks;
     $c->stash->{maxalloweddays}  = $maxallowdays;
 
-    # $c->stash->{template} = "dashboard/dashboard.tt";
     $c->forward('View::JSON');
 
 }
@@ -844,6 +841,7 @@ sub history : Path('/history')
 				Status      => $_->Status,
 				RequestDate => $_->RequestDate,
 				IssuedDate  => $_->IssuedDate,
+				ReturnDate  => $_->ReturnedDate,
 				CopyId 		=> $_->BookCopyId,
 			}
 		) foreach @alldata;
@@ -872,7 +870,6 @@ sub history : Path('/history')
 			}
 		) foreach @emphistory;
 	}
-
 }
 
 sub addcopies : Local
