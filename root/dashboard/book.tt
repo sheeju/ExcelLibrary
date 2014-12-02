@@ -127,7 +127,7 @@
 
 
 
-<table id="table" class="display" cellspacing="0" width="100%">
+<table id="table" class="display table table-striped table-bordered" cellspacing="0" width="100%">
 	<thead>
 		<tr>
 			<th>Sl No</th>
@@ -175,7 +175,7 @@
 			</td>
 			[% ELSE %]
 			<td>
-				<button type="button" id="[% messages.$msg.id %]" name='book_request' class="btn btn-sm btn-primary btn-circle book_req"><span class="glyphicon glyphicon-send"></button>
+				<button type="button" id="[% messages.$msg.id %]" name='book_request' class="btn btn-sm btn-primary btn-circle book_req"><span class="glyphicon glyphicon-book"></span></button>
 					<span id="lbl[%messages.$msg.id%]"  class="label label-info displaymessage hidden">Book Requested</span>
 				</td>
 				[% END %]

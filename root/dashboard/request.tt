@@ -1,12 +1,11 @@
 <br>
 <br>
-<table id="request_table" class="display" cellspacing="0" width="100%">
+<table id="request_table" class="display table table-striped table-bordered" cellspacing="0" width="100%">
     <thead>
         <tr>
             <th>SI No</th>
             <th>Requested Date</th>
             <th>Employee Name</th>
-            <th>Book Id</th>
             <th>Book Name</th>
             <th>Response</th>
         </tr>
@@ -22,9 +21,6 @@
             </td>
             <td>
                 [% m.employeename %]
-            </td>
-            <td>
-                [% m.bookid %]
             </td>
             <td>
                 [% m.bookname %]
@@ -103,7 +99,7 @@
         var req_id;
         $('#request_table').DataTable({
             "columnDefs": [{
-                "targets": 5,
+                "targets": 4,
                 "orderable": false
             }]
 

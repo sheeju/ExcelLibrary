@@ -49,163 +49,184 @@
 	</div>
 </div>
 
-<table id="user_tabel" class="display" cellspacing="0" width="100%">
+<table id="user_tabel" class="display table table-striped table-bordered" cellspacing="0" width="100%">
 	<thead>
 		<tr>
 			<th>Sl No</th>
 			<th>Role</th>
 			<th>Employee Name</th>
 			<th>Email</th>
+			<th>Created By</th>
 			<th>Edit</th>
 			<th>Delete</th>
 		</tr>
 	</thead>
 	<tbody>
 		[% FOREACH m =userinfo.keys %]
-		<tr>
-			<td>
-				[% userinfo.$m.Count%]
-			</td>
-			<td>
-				[% userinfo.$m.Role %]
-			</td>
-			<td>
-				[% userinfo.$m.Name %]
-			</td>
-			<td>
-				[% userinfo.$m.Email %]
-			</td>
-			<td>
-				<button type="button" id="[% userinfo.$m.Id %]" name="[% userinfo.$m.Role %]" class="btn btn-primary empupdate" data-toggle="modal" data-target="#editModal"><span class="glyphicon glyphicon-pencil"></span></button>
-			</td>
-			<td>
-				<button type="button" id="[% userinfo.$m.Id %]" name="[% userinfo.$m.Role %]" class="btn btn-primary deleteuser"><span class="glyphicon glyphicon-trash"></span></button>
-			</td>
-		</tr>
-		[% END %]
-	</tbody>
-</table>
+			[% IF userinfo.$m.bookinhand == 1 %]
+			<tr data-toggle="tooltip" data-placement="top" title="user curenly holding book(s), so can't delete or edit">
+			[% ELSIF userinfo.$m.bookinhand == 2 %]
+			<tr data-toggle="tooltip" data-placement="top" title="user can't edit his own details">
+			[% ELSE %]
+			<tr>
+			[% END %]
+				<td>
+					[% userinfo.$m.count%]
+				</td>
+				<td>
+					[% userinfo.$m.role %]
+				</td>
+				<td>
+					[% userinfo.$m.name %]
+				</td>
+				<td>
+					[% userinfo.$m.email %]
+				</td>
+				<td>
+					[% userinfo.$m.createdby %]
+				</td>
+				[% IF userinfo.$m.bookinhand %]
+				<td>
+					<button type="button" class="btn btn-primary empupdate disabled "><span class="glyphicon glyphicon-lock"></span></button>
+				</td>
+				<td>
+					<button type="button" class="btn btn-primary deleteuser disabled"><span class="glyphicon glyphicon-lock"></span></button>
+				</td>
 
-<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-				</button>
-				<h4 class="modal-title" id="myModalLabel">Change Role</h4>
-			</div>
-			<div class="modal-body">
-				<center>
-					<label>Role</label>
-					<select id="emprole" class="btn dropdown-toggle">
-						<option>Employee</option>
-						<option>Admin</option>
-					</select>
-				</center>
+				[% ELSE %]
+				<td>
+					<button type="button" id="[% userinfo.$m.id %]" name="[% userinfo.$m.role %]" class="btn btn-primary empupdate" data-toggle="modal" data-target="#editModal"><span class="glyphicon glyphicon-pencil"></span></button>
+				</td>
+				<td>
+					<button type="button" id="[% userinfo.$m.id %]" name="[% userinfo.$m.role %]" class="btn btn-primary deleteuser"><span class="glyphicon glyphicon-trash"></span></button>
+				</td>
+				[% END %]
+			</tr>
+			[% END %]
+		</tbody>
+	</table>
 
-				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" id="updaterole" data-dismiss="modal">Update</button>
+	<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">Change Role</h4>
+				</div>
+				<div class="modal-body">
+					<center>
+						<label>Role</label>
+						<select id="emprole" class="btn dropdown-toggle">
+							<option>Employee</option>
+							<option>Admin</option>
+						</select>
+					</center>
+
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" id="updaterole" data-dismiss="modal">Update</button>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
 
-<script>
-	$(document).ready(function() {
-		$('#user_tabel').DataTable({
-			"columnDefs": [{
-				"targets": [4, 5],
-				"orderable": false
-			}]
-		});
-		jQuery.validator.setDefaults({
-			debug: true,
-			success: "valid"
-		});
+	<script>
+		$(document).ready(function() {
+			$('#user_tabel').DataTable({
+				"columnDefs": [{
+					"targets": [4, 5],
+					"orderable": false
+				}]
+			});
+			jQuery.validator.setDefaults({
+				debug: true,
+				success: "valid"
+			});
 
-		$("#form_adduser").validate({
+			$("#form_adduser").validate({
 
-			rules: {
-				empname: {
-					required: true,
-					alphanumeric: true
-				},
-				empemial: {
-					required: true,
-					email: true
-				},
-			},
-			submitHandler: function(form) {
-				var url = "dashboard/adduser";
-				var name = $('#txt_empname').val();
-				var role = $('#cmb_role').val();
-				var email = $('#txt_empemail').val();
-				$.ajax({
-					type: "POST",
-					url: url,
-					data: {
-						name: name,
-						role: role,
-						email: email
+				rules: {
+					empname: {
+						required: true,
+						alphanumeric: true
 					},
-
-					}).done(function(data) {
+					empemial: {
+						required: true,
+						email: true
+					},
+				},
+				submitHandler: function(form) {
+					var url = "dashboard/adduser";
+					var name = $('#txt_empname').val();
+					var role = $('#cmb_role').val();
+					var email = $('#txt_empemail').val();
 					$.ajax({
-						url: '/user',
-						type: 'POST',
+						type: "POST",
+						url: url,
+						data: {
+							name: name,
+							role: role,
+							email: email
+						},
 
 						}).done(function(data) {
+						$.ajax({
+							url: '/user',
+							type: 'POST',
 
-						$(".modal-backdrop").hide();
-						$('#content').html(data);
-						$('.alert').removeClass('hidden');
+							}).done(function(data) {
+
+							$(".modal-backdrop").hide();
+							$('#content').html(data);
+							$('.alert').removeClass('hidden');
+						});
+						$('#form_adduser')[0].reset();
+						var validator = $("#form_adduser").validate();
+						validator.resetForm();
 					});
-					$('#form_adduser')[0].reset();
-					var validator = $("#form_adduser").validate();
-					validator.resetForm();
-				});
-			}
-		});
-
-		$('.deleteuser').click(function() {
-			user_id = $(this).attr('id');
-			$.ajax({
-				url: 'dashboard/deleteuser',
-				contentType: 'text/html',
-				data: {
-					userid: user_id
 				}
-				}).done(function(data) {
-				$('#content').html(data);
-
 			});
-		});
-		$('.empupdate').click(function() {
-			var empid = $(this).attr('id');
-			var emprole = $(this).attr('name');
-			$("#emprole").val(emprole);
-			$('#updaterole').click(function() {
-				updaterole = $("#emprole").val();
+
+			$('.deleteuser').click(function() {
+				user_id = $(this).attr('id');
 				$.ajax({
-					url: 'dashboard/updaterole',
+					url: 'dashboard/deleteuser',
 					contentType: 'text/html',
 					data: {
-						empid: empid,
-						emprole: updaterole
+						userid: user_id
 					}
 					}).done(function(data) {
-					$(".modal-backdrop").hide();
 					$('#content').html(data);
+
 				});
-
 			});
-		});
-		$(".close").click(function() {
-			$('.alert').addClass('hidden');
-		});
+			$('.empupdate').click(function() {
+				var empid = $(this).attr('id');
+				alert(empid);
+				var emprole = $(this).attr('name');
+				$("#emprole").val(emprole);
+				$('#updaterole').click(function() {
+					updaterole = $("#emprole").val();
+					$.ajax({
+						url: 'dashboard/updaterole',
+						contentType: 'text/html',
+						data: {
+							empid: empid,
+							emprole: updaterole
+						}
+						}).done(function(data) {
+						$(".modal-backdrop").hide();
+						$('#content').html(data);
+					});
+
+				});
+			});
+			$(".close").click(function() {
+				$('.alert').addClass('hidden');
+			});
 
 
-	});
-</script>
+		});
+	</script>
 
