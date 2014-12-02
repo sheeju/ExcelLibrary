@@ -102,13 +102,15 @@
 				<h4 class="modal-title" id="myModalLabel">Comment</h4>
 			</div>
 			<div class="modal-body">
+				 <form role="form" id="commentform" method="POST">
 				<div class="form-group">
 					<div><label for="comment">Add Comment:</label></div>
 					<br>
-					<div><textarea class="form-control" rows="3" id="txt_comment"></textarea></div>
+					<div><textarea class="form-control" rows="3" name="bookcomment" id="txt_comment"></textarea></div>
 					<br>
-					<div class="col-md-6"><span id="spn_commentmsg"> </span> </div>
-					<div class="col-md-6 text-right"><button type="button" id="btn_post" class="btn btn-primary">Post</button></div>
+
+					<div class=" text-right"><button type="submit" id="btn_post" class="btn btn-primary">Post</button></div>
+				</form>
 					<br>
 					<br>
 					<div class="col-md-12" style="height:250px; overflow-y:auto;" id="div_comment">
@@ -243,37 +245,37 @@
 							alert("error"+ err); 
 						});
 
-
 					}
 
 
 
 					$('#btn_post').click(function(){
-						var comment = $('#txt_comment').val();
-						var regex = /\w+/;
-						if (regex.test(comment)) {
-
-							$.ajax(
-							{
-								url:'dashboard/addcomment',
-								data:{
-									bookid:bookid,
-									comment:comment,
+						$("#commentform").validate({
+							rules: {
+								bookcomment: {
+									required:true,
 								}
-							}).done(function(responseText)
-							{
 
-								diplaycomment(bookid);
-								$('#txt_comment').val('');
-							}).fail(function(err) 
-							{ 
-								alert("error"+ err); 
-							});
-						}
-						else
-						{
-							$('#spn_commentmsg').text("Can't post empty comment");
-						}
+							},
+							submitHandler : function(form){
+								var comment = $('#txt_comment').val();
+
+								$.ajax({
+									url:'dashboard/addcomment',
+									data:{
+										bookid:bookid,
+										comment:comment,
+									}
+								}).done(function(responseText)
+								{
+
+									diplaycomment(bookid);
+									$('#txt_comment').val('');
+								});
+
+							}
+						});
+
 					});
 					var rowId;
 					$('.rowClass').click(function()

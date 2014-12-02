@@ -3,17 +3,20 @@
 	 background-image: url("../images/Librarylogin.jpg");
 	 background-repeat: no-repeat;
 	 background-position: center ;
+	 
 }
 .lib-loginimage
 {
 	height:70px; 
 	width:200px;
+	margin-left:50px;
 }
 .lib-whitefont
 {
   font-size: 12px; 
   line-height: 20px; 
   color: #fff;
+ margin-top:5px;
 }
 .lib-topbar
 {

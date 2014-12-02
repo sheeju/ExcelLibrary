@@ -84,24 +84,19 @@
                 </button>
                 <h4 class="modal-title" id="myModalLabel">Deny Comment</h4>
             </div>
-            <div id="div_model_cmb" class="modal-body">
-                <label for="txt_denyreason" class="col-sm-4 control-label">Deny Reason</label>
-                <input type="email" class="form-control" id="txt_denyreason">
+			<div id="div_model_cmb" class="modal-body">
+				<form  role="form" id= "denyform" method="POST">
+                <label  class="col-sm-4 control-label">Reason</label>
+				<textarea name ="txt_denyreason" class="form-control"  row ="3" id="txt_denyreason"></textarea>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
-                    <button type="button" id="btn_deny" class="btn btn-primary" data-dismiss="modal">Proceed</button>
-                </div>
+                    <button type="submit" id="btn_deny" class="btn btn-primary">Proceed</button>
+				</div>
+			</form>
             </div>
         </div>
     </div>
 </div>
-
-<!--link rel="stylesheet" type="text/css" href="source/bootstrap/dist/css/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/dataTables.bootstrap.css" />
-<script type="text/javascript" src="../source/js/jquery.js"></script>
-<script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js"></script>
-<script type="text/javascript" src="source/DataTable/media/js/dataTables.bootstrap.js"></script-->
 
 <script>
     $(document).ready(function() {
@@ -136,22 +131,37 @@
             req_id = $(this).attr('id');
         });
 
-        $('#btn_deny').click(function() {
-            var reason = $('#txt_denyreason').val();
-            $.ajax({
-                url: 'dashboard/managerequest',
-                contentType: 'text/html',
-                dataType: 'html',
-                data: {
-                    id: req_id,
-                    response: 'Denied',
-                    reason: reason
-                }
-            }).done(function(responseText) {
-                $("#content").html(responseText);
-            }).fail(function(err) {
-                alert("error" + err);
-            });
+		$('#btn_deny').click(function() {
+			var reason = $('#txt_denyreason').val();
+
+			$("#denyform").validate({
+				rules: {
+					txt_denyreason : {
+						required: true,
+					}
+				},
+				submitHandler: function(form) {
+
+					$.ajax({
+						url: 'dashboard/managerequest',
+						contentType: 'text/html',
+						data: {
+							id: req_id,
+							response: 'Denied',
+							reason: reason
+						}
+						}).done(function(responseText) {
+
+						$(".modal-backdrop").hide();
+						$("#content").html(responseText);
+					});
+
+
+				}
+			});
+
+
+
 
         });
 
