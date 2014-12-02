@@ -68,6 +68,7 @@ sub dashboard : Path : Args(0)
 	{
     	$c->stash->{username} = $c->user->Name;
     	$c->stash->{role}     = $c->user->Role;
+		$c->stash->{email}    = $c->user->Email;
 		$c->forward('View::TT');
 	}
 	else
@@ -589,11 +590,21 @@ sub user : Path('/user')
             "Status" => {'!=', 'Disable'},
         }
     );
-
+	
     my $count = 1;
     my %userdetail;
 
     foreach my $user (@user_rs) {
+		my $createdid = $user->CreatedBy;
+		my $createdby = $c->model('Library::Employee')->search(
+			{
+				"Id" => $createdid,
+			},
+			{
+				columns => "Name",
+			});
+		$c->log->info("-----------------------");
+		$c->log->info(Dumper $createdby);
         $userdetail{$user->Id} = {
             count => $count++,
             id    => $user->Id,
@@ -602,7 +613,7 @@ sub user : Path('/user')
             email => $user->Email,
 			bookinhand => 0,
 			createdby => $user->CreatedBy
-        };
+		};
     }
 
 	foreach my $user_id ( keys %userdetail ) {
@@ -742,7 +753,7 @@ sub defaultsetting : Local
     my $maxallowbooks = $configinfo->MaxAllowedBooks;
     $c->stash->{maxallowedbooks} = $maxallowbooks;
     $c->stash->{maxalloweddays}  = $maxallowdays;
-
+    # $c->stash->{template} = "dashboard/dashboard.tt";
     $c->forward('View::JSON');
 
 }
@@ -890,7 +901,8 @@ sub history : Path('/history')
 			{
 				join      => ['employee',      'book'],
 				'+select' => ['employee.Name', 'book.Name'],
-				'+as'     => ['EmployeeName',  'BookName']
+				'+as'     => ['EmployeeName',  'BookName'],
+				order_by  => { -desc => [qw/RequestDate/] },
 			}
 		);
 		push(
@@ -917,6 +929,7 @@ sub history : Path('/history')
 				join      => ['book'],
 				'+select' => ['book.Name'],
 				'+as'     => ['BookName'],
+				order_by  => { -desc => [qw/RequestDate/] },
 			}
 		);
 		push(

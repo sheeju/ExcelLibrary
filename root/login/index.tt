@@ -2,24 +2,17 @@
 <html>
 
 	<head>
-		<title>ExcelLibrary</title>
-		<script type="text/javascript" src="../source/js/jquery.js"></script>
-		<script type="text/javascript" src="../source/bootstrap/dist/js/bootstrap.js"></script>
-		<script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
-		<script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.min.js"></script>
+ 	<title>ExcelLibrary</title>
+    <script type="text/javascript" src="../source/js/jquery.js"></script>
+    <script type="text/javascript" src="../source/bootstrap/dist/js/bootstrap.js"></script>
+	<script type="text/javascript" src="../source/js/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.js"></script>
 
-		<link rel="stylesheet" type="text/css" href="../source/bootstrap/dist/css/bootstrap.css">
-		<link rel="stylesheet" type="text/css" href="../source/css/login.css">
-		<link rel="stylesheet" type="text/css" href="../source/css/library.css">
-		<script>
-
-			$(document).ready(function() {
-
-				jQuery.validator.setDefaults({
-					debug: true,
-					success: "valid"
-				});
-		
+    <link rel="stylesheet" type="text/css" href="../source/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../source/css/library.css">
+    <link rel="stylesheet" type="text/css" href="../source/jquery-validation/demo/site-demos.css">
+	<script>
+		$(document).ready(function() {
 				$("#loginform").validate({
 					rules: {
 						email: {
@@ -28,6 +21,7 @@
 						},
 						password: {
 							required: true,
+							minlength:6
 						}
 					},
 					submitHandler: function(form) {
@@ -56,9 +50,9 @@
 
 						</div>
 						<div class="panel-body">
-							<h3 class="panel-title">Login via Email</h3>
+							<h3 class="panel-title">Login</h3>
 							<br>
-							<form accept-charset="UTF-8" role="form" id="loginform" action="/login" method="POST">
+							<form  role="form" id="loginform" action="/login" method="POST">
 								<fieldset>
 									<div class="form-group">
 										<input class="form-control" placeholder="yourmail@example.com" id="user_email" name="email" type="email">
@@ -67,11 +61,9 @@
 										<input class="form-control" placeholder="Password" name="password" id="user_password" type="password" value="">
 									</div>
 									<hr/>
-									<div class="checkbox">
 										<label>
-											<input name="remember" type="checkbox" value="Remember Me">Remember Me
+											<a href="" id ="forgotpassword">Need help?</a>
 										</label>
-									</div>
 									<input class="btn btn-lg btn-primary btn-block" type="submit" id="btn_login" name="btn_submit" value="Login">
 								</fieldset>
 							</form>

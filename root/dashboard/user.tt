@@ -56,7 +56,7 @@
 			<th>Role</th>
 			<th>Employee Name</th>
 			<th>Email</th>
-			<th>Created by</th>
+			<th>Created By</th>
 			<th>Edit</th>
 			<th>Delete</th>
 		</tr>

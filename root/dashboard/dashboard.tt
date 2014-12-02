@@ -7,11 +7,15 @@
 		<div class="container container-fluid">
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav navbar-right">
-					<li class="lib-whitefont" >  <p><strong>Welcome [% username %]</strong> </p></li>
+					<li class="lib-whitefont" >  
+					<p> <strong>Welcome [% username %]</strong> </p>		
+					</li>
 					<li class="dropdown lib-settings">
 					<a href="#" class="dropdown-toggle  glyphicon glyphicon-cog lib-whitefont" data-toggle="dropdown"></a>
-					<ul class="dropdown-menu" role="menu">
-						[% IF role  == 'Admin' %]
+					<ul class="dropdown-menu" role="menu" style=" width: 310px;height:auto;">
+
+						<li><p  class ="glyphicon glyphicon-user" style="color:black; margin-left:20px"> [% role %]  [% email %]</p></li>
+							[% IF role  == 'Admin' %]
 						<li role="presentation"><a class="glyphicon glyphicon-wrench btn_setting" role="menuitem" tabindex="-1" href="" data-toggle="modal" data-target="#settingModal"> Settings</a></li>
 						[% END %]
 						<li><a class = " glyphicon glyphicon-pencil btn_changepaswd" href="" tabindex="-1" data-toggle="modal" data-target="#passwordModal" > ChangePassword</a></li>
@@ -110,7 +114,7 @@
 						<div class="form-group">
 							<label>New Password</label>
 							<input type="password" class="form-control" id="newpassword" name="newpassword">
-						</div>
+					</div>
 						<br/>
 						<div class="form-group">
 							<label>Confirm New Password</label>
@@ -142,7 +146,7 @@
 <script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js" type="text/javascript"></script>
 <script type="text/javascript" src="../source/bootstrap/dist/js/bootstrap.js" type="text/javascript"> </script>
 <script type="text/javascript" src="../source/DataTable/media/js/dataTables.bootstrap.js"></script>
-<script type="text/javascript" src="../source/jquery-validation/dist/jquery.validate.js"></script>
+<script type="text/javascript" src="../source/js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.min.js"></script>
 <script type="text/javascript" src="../source/DataTable/media/js/dataTables.bootstrap.js"></script>
 
@@ -213,12 +217,7 @@
 
 		$('#configlib').click(function(){
 
-			jQuery.validator.setDefaults({
-				debug: true,
-				success: "valid"
-			});
-
-
+	
 			$("#settingform").validate({
 				rules: {
 
@@ -259,10 +258,7 @@
 
 		$('#changepassword').click(function(){
 
-			jQuery.validator.setDefaults({
-				debug: true,
-				success: "valid"
-			});
+		
 
 
 			$("#passwordform").validate({
@@ -292,7 +288,7 @@
 							oldpassword :oldpassword,
 							newpassword :newpassword
 
-						},
+					},
 						success : function (data) {
 							if(data.validmessage)
 							{
