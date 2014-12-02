@@ -29,7 +29,7 @@
 				[% var.Count %]
 			</td>
 			<td>
-				[% var.EmployeeName %]
+				[% var.EmpName %]
 			</td>
 			<td>
 				[% var.BookName %]

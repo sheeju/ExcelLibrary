@@ -548,17 +548,28 @@ sub user : Path('/user')
             "Status" => {'!=', 'Disable'},
         }
     );
-
+	
     my $count = 1;
     my %userdetail;
 
     foreach my $user (@user_rs) {
+		my $createdid = $user->CreatedBy;
+		my $createdby = $c->model('Library::Employee')->search(
+			{
+				"Id" => $createdid,
+			},
+			{
+				columns => "Name",
+			});
+		$c->log->info("-----------------------");
+		$c->log->info(Dumper $createdby);
         $userdetail{$user->Id} = {
             count => $count++,
             id    => $user->Id,
             name  => $user->Name,
             role  => $user->Role,
             email => $user->Email,
+			createdby => $createdby,
 			bookinhand => 0 	
         };
     }
@@ -843,7 +854,8 @@ sub history : Path('/history')
 			{
 				join      => ['employee',      'book'],
 				'+select' => ['employee.Name', 'book.Name'],
-				'+as'     => ['EmployeeName',  'BookName']
+				'+as'     => ['EmployeeName',  'BookName'],
+				order_by  => { -desc => [qw/RequestDate/] },
 			}
 		);
 		push(
@@ -870,6 +882,7 @@ sub history : Path('/history')
 				join      => ['book'],
 				'+select' => ['book.Name'],
 				'+as'     => ['BookName'],
+				order_by  => { -desc => [qw/RequestDate/] },
 			}
 		);
 		push(
