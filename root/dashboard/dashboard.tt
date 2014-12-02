@@ -12,7 +12,7 @@
 					</li>
 					<li class="dropdown lib-settings">
 					<a href="#" class="dropdown-toggle  glyphicon glyphicon-cog lib-whitefont" data-toggle="dropdown"></a>
-					<ul class="dropdown-menu" role="menu" style=" width: 300px;height:130px;">
+					<ul class="dropdown-menu" role="menu" style=" width: 350px;height:130px;">
 
 						<li><p  class ="glyphicon glyphicon-user" style="color:black; margin-left:20px"> [% role %]  [% email %]</p></li>
 							[% IF role  == 'Admin' %]
