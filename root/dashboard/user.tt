@@ -49,7 +49,7 @@
 	</div>
 </div>
 
-<table id="user_tabel" class="display table table-striped table-bordered" cellspacing="0" width="100%">
+<table id="user_table" class="display table table-striped table-bordered" cellspacing="0" width="100%">
 	<thead>
 		<tr>
 			<th>SI No</th>
@@ -132,7 +132,7 @@
 
 	<script>
 		$(document).ready(function() {
-			$('#user_tabel').DataTable({
+			$('#user_table').DataTable({
 				"columnDefs": [{
 					"targets": [4, 5],
 					"orderable": false

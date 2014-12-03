@@ -38,11 +38,12 @@
 	 height: 60px;
 	 border-bottom: 3px solid #ef7f1b;
 }
-.lib-response-tooltip
+.lib-tooltip-div
 {
 	float:left;
 	width :auto;
-	margin : 5px;
+	margin-left : 5px;
+	margin-right: 5px;
 }
 .lib-footer
 {

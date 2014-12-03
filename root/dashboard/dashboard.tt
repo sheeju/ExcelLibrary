@@ -3,8 +3,8 @@
 	<title>ExcelLibrary</title>
 	<link rel="shortcut icon" href="../source/images/titleimage.ico" />
 </head>
-<body class="modal-open">
-	<div class="container-fluid" >
+<body>
+	<div class="container-fluid lib-dashboard-root" >
 		<div id="top" class="lib-topbar">
 			<div class="container">
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -57,9 +57,7 @@
 				</ul>   
 			</div>
 		</div>
-		<div class = "container">
-			<div id = "content" class="lib-content">
-			</div>
+		<div id = "content" class ="container lib-content">
 		</div>
 		<div id="bottom" class="navbar-static-bottom lib-footer">
 			<p class="text-center"> Copyright © Exceleron Software, All Rights Reserved. 2014</p>

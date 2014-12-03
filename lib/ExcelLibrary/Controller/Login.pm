@@ -107,9 +107,9 @@ sub validate : Local
 	my $token_rs;
 	my $usermail = $c->req->params->{email};
 	my $employee_rs = $c->model('Library::Employee')->search({ Email => $usermail, "Status" =>'Active'});
-	my $employeeinfo	=$employee_rs->next;
+	my $employeeinfo;
 
-	if($employee_rs->count == 1)
+	if($employeeinfo = $employee_rs->next)
 	{
 		my $newtoken = Session::Token->new(length => 20);
 		do
