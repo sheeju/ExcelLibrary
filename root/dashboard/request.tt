@@ -26,10 +26,19 @@
                 [% m.bookname %]
             </td>
             <td>
-                [% IF m.status == 'accept' %]
-                <input type="button" id="[% m.id %]" name="btn_issue" value="Issue" class="btn btn-primary book_issue" data-toggle="modal" data-target="#issueModal" />
-                [% ELSIF m.status == 'na' %]
-                <span class="label label-info">Book Not Available For Issue</span>
+                [% IF m.status == 'issue' %]
+
+                <button id="[% m.id %]" name="btn_issue" class="btn btn-primary btn-sm book_issue" data-toggle="modal" data-target="#issueModal">
+					<span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>
+                </button>
+                <button id="[% m.id %]" name="btn_reject" class="btn btn-danger btn-sm req_deny" data-toggle="modal" data-target="#denyModal">
+					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button>
+                [% ELSIF m.status == 'notavailable' %]
+                <span class="label label-info">Book Not Available</span>
+                <button id="[% m.id %]" name="btn_reject" class="btn btn-danger btn-sm req_deny" data-toggle="modal" data-target="#denyModal">
+					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button>
                 [% ELSE %]
                 <button id="[% m.id %]" name="btn_accept" class="btn btn-primary btn-sm req_allow">
                     <span class="glyphicon    glyphicon-ok" aria-hidden="true"></span>

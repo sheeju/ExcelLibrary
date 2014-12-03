@@ -52,7 +52,7 @@
 <table id="user_tabel" class="display table table-striped table-bordered" cellspacing="0" width="100%">
 	<thead>
 		<tr>
-			<th>Sl No</th>
+			<th>SI No</th>
 			<th>Role</th>
 			<th>Employee Name</th>
 			<th>Email</th>
@@ -64,9 +64,9 @@
 	<tbody>
 		[% FOREACH m =userinfo.keys %]
 			[% IF userinfo.$m.bookinhand == 1 %]
-			<tr data-toggle="tooltip" data-placement="top" title="user curenly holding book(s), so can't delete or edit">
+			<tr data-toggle="tooltip" data-placement="top" title="Employee currently holding book(s), so can't delete or edit">
 			[% ELSIF userinfo.$m.bookinhand == 2 %]
-			<tr data-toggle="tooltip" data-placement="top" title="user can't edit his own details">
+			<tr data-toggle="tooltip" data-placement="top" title="Admin can't edit his own details">
 			[% ELSE %]
 			<tr>
 			[% END %]
@@ -92,7 +92,6 @@
 				<td>
 					<button type="button" class="btn btn-primary deleteuser disabled"><span class="glyphicon glyphicon-lock"></span></button>
 				</td>
-
 				[% ELSE %]
 				<td>
 					<button type="button" id="[% userinfo.$m.id %]" name="[% userinfo.$m.role %]" class="btn btn-primary empupdate" data-toggle="modal" data-target="#editModal"><span class="glyphicon glyphicon-pencil"></span></button>
