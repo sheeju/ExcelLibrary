@@ -9,6 +9,9 @@ use Session::Token;
 use String::CamelCase qw(camelize);
 use JSON;
 use Digest::MD5 qw(md5_hex);
+#use Exporter;
+#our @ISA = qw(Exporter);
+#our @EXPORT_OK =qw(excellibrarysendmail);
 BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
