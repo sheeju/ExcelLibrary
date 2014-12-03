@@ -3,7 +3,6 @@ use Moose;
 use namespace::autoclean;
 use Data::Dumper;
 use JSON;
-#use ExcelLibrary::Controller::DashBoard qw(excellibrarysendmail);
 use Digest::MD5 qw(md5_hex);
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -93,8 +92,8 @@ sub createpassword : Local
 sub forgotpassword : Path( /forgotpassword )
 {
 
-	 my ($self, $c) = @_;
-	 $c->forward('View::TT'); 
+	my ($self, $c) = @_;
+	$c->forward('View::TT'); 
 
 }
 
@@ -129,17 +128,18 @@ sub validate : Local
 		. '"> <button> Click me </button></a>';
 		my $contenttype = 'text/html';
 
-		excellibrarysendmail($contenttype, $subject, $message, $usermail);
-		$c->stash->{responsemessage} =0;
-		$c->forward('View::JSON');
+		my @args = ($contenttype, $subject, $message, $usermail);
+		$c->forward('/dashboard/excellibrarysendmail', \@args);
+	$c->stash->{responsemessage} =0;
+	$c->forward('View::JSON');
 
-	}
-	else
-	{
-		$c->stash->{responsemessage} = 1;
-		$c->forward('View::JSON');
+}
+else
+{
+	$c->stash->{responsemessage} = 1;
+	$c->forward('View::JSON');
 
-	}	
+}	
 }	
 
 
