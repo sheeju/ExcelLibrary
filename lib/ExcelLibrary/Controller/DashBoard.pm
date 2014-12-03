@@ -9,9 +9,6 @@ use Session::Token;
 use String::CamelCase qw(camelize);
 use JSON;
 use Digest::MD5 qw(md5_hex);
-#use Exporter;
-#our @ISA = qw(Exporter);
-#our @EXPORT_OK =qw(excellibrarysendmail);
 BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
@@ -33,10 +30,25 @@ Catalyst Controller.
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 my $generator = Session::Token->new(length => 20);
-sub excellibrarysendmail
+sub excellibrarysendmail : Local
 {
-
-    my ($contenttype, $subject, $body, $to) = @_;
+	my $len = @_; 
+	my ($contenttype, $subject, $body, $to);
+	if($len != 4)
+	{
+		
+		my $self = shift(@_);
+		my $c = shift(@_);
+		$contenttype = shift(@_);
+		$subject     = shift(@_);
+		$body 		 = shift(@_);
+		$to			 = shift(@_);
+		#($contenttype, $subject, $body, $to) = @{@_};
+	}
+	else
+	{
+    	 ($contenttype, $subject, $body, $to) = @_;
+	}
     my $message = Email::MIME->create(
         header_str => [
             From    => 'ExcelLibrary@exceleron.com',
@@ -49,7 +61,6 @@ sub excellibrarysendmail
         },
     );
     $message->content_type_set($contenttype);
-
 	$message->body_str_set($body);
     sendmail($message);
 
