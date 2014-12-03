@@ -4,137 +4,137 @@
 	<link rel="shortcut icon" href="../source/images/titleimage.ico" />
 </head>
 <body class="modal-open">
-	<div id="top" class="lib-topbar">
-		<div class="container container-fluid">
-			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-				<ul class="nav navbar-nav navbar-right">
-					<li class="lib-whitefont" >  
-					<p> <strong>Welcome [% username %]</strong> </p>		
-					</li>
-					<li class="dropdown lib-settings">
-					<a href="#" class="dropdown-toggle  glyphicon glyphicon-cog lib-whitefont" data-toggle="dropdown"></a>
-					<ul class="dropdown-menu" role="menu" style=" width: 310px;height:auto;">
-
-						<li><p  class ="glyphicon glyphicon-user" style="color:black; margin-left:20px"> [% role %]  [% email %]</p></li>
+	<div class="container-fluid" >
+		<div id="top" class="lib-topbar">
+			<div class="container">
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="lib-whitefont" >  
+						<p> <strong>Welcome [% username %]</strong> </p>		
+						</li>
+						<li class="dropdown lib-settings">
+						<a href="#" class="dropdown-toggle  glyphicon glyphicon-cog lib-whitefont" data-toggle="dropdown"></a>
+						<ul class="dropdown-menu" role="menu" style=" width: 310px;height:auto;">
+							<li><p  class ="glyphicon glyphicon-user" style="color:black; margin-left:20px"> [% role %]  [% email %]</p></li>
 							[% IF role  == 'Admin' %]
-						<li role="presentation"><a class="glyphicon glyphicon-wrench btn_setting" role="menuitem" tabindex="-1" href="" data-toggle="modal" data-target="#settingModal"> Settings</a></li>
-						[% END %]
-						<li><a class = " glyphicon glyphicon-pencil btn_changepaswd" href="" tabindex="-1" data-toggle="modal" data-target="#passwordModal" > ChangePassword</a></li>
-						<li class="divider"></li>
-						<li><a class="glyphicon glyphicon-off" href="/login"  id= "logoutbtn"> Logout</a></li>
+							<li role="presentation"><a class="glyphicon glyphicon-wrench btn_setting" role="menuitem" tabindex="-1" href="" data-toggle="modal" data-target="#settingModal"> Settings</a></li>
+							[% END %]
+							<li><a class = " glyphicon glyphicon-pencil btn_changepaswd" href="" tabindex="-1" data-toggle="modal" data-target="#passwordModal" > ChangePassword</a></li>
+							<li class="divider"></li>
+							<li><a class="glyphicon glyphicon-off" href="/login"  id= "logoutbtn"> Logout</a></li>
+						</ul>
+						</li>
 					</ul>
-					</li>
-				</ul>
-			</div><!-- /.navbar-collapse -->
-		</div><!-- /.container-fluid -->
-	</div>
-
-	<div class="container">
-		<div class="col-sm-5">
-			<img src="../source/images/exceleron_logo_mi.jpg" style="height : 120px; width:230px; ">
+				</div>
+			</div>
 		</div>
-		<div class="col-sm-7">
-			<p class="text-right">
-			<img src="../source/images/LibraryLogo2.jpg" style="height : 120px; width:330px; ">
-			</p>
-		</div>
-	</div>
 
-	<div id="menu" class="lib-menubar">
 		<div class="container">
-			<ul class="nav nav-pills nav-justified" role="tablist">
-				<p> </p>
-				[% IF role == 'Admin' %]
-				<li role="presentation" id="request"  class="menu" ><a href="#"><span class="glyphicon glyphicon-home lib-whitefont"> Home</span></a></li>
-				[% END %]
-
-				<li role="presentation" id="book" class="menu"><a href="#"><span class="glyphicon glyphicon-book lib-whitefont"> Book</span></a></li>
-				<li role="presentation" id="history" class="menu"><a href="#"><span class="glyphicon glyphicon-list-alt lib-whitefont"> History</span></a></li>
-				[% IF role == 'Admin' %]
-				<li role="presentation" id="user" class="menu"><a href="#"><span class="glyphicon glyphicon-user lib-whitefont"> User</span></a></li>
-				<li role="presentation" id="bookreturn" class="menu"><a href="#"><span class="glyphicon glyphicon-import lib-whitefont"> Return</span></a></li>
-				[% END %]
-			</ul>   
-		</div>
-	</div>
-	<div class = "container">
-		<div id = "content" class="lib-content">
-		</div>
-	</div>
-	<div id="bottom" class="navbar-static-bottom lib-footer">
-		<p class="text-center"> Copyright © Exceleron Software, All Rights Reserved. 2014</p>
-	</div>
-
-	<div class="modal fade" id="settingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-					</button>
-					<h4 class="modal-title" id="myModalLabel">Settings </h4>
-				</div>
-				<div class="modal-body">
-					<form role="form" id="settingform" method="POST">
-
-						<div class="form-group">
-							<label>MaxAllowedDays</label>
-							<input type="number" class="form-control" id="noofdays" name="noofdays" placeholder="Count" min=1>
-						</div>
-						<br/>
-						<div class="form-group">
-							<label>MaxAllowedBooks</label>
-							<input type="number" class="form-control" id="noofbooks" name="noofbooks" placeholder="Count" min=1>
-						</div>
-						<br/>
-						<label style ="color:red" id= "message"></label>
-						<div class="modal-footer">
-							<button type="submit" class="btn btn-primary" id="configlib">UPDATE</button>
-							<button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
-						</div>
-					</form>
-				</div>
+			<div class="col-sm-5">
+				<img src="../source/images/exceleron_logo_mi.jpg" style="height : 120px; width:230px; ">
+			</div>
+			<div class="col-sm-7">
+				<p class="text-right">
+				<img src="../source/images/LibraryLogo2.jpg" style="height : 120px; width:330px; ">
+				</p>
 			</div>
 		</div>
-	</div>
 
-	<div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="oneModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-					</button>
-					<h4 class="modal-title" id="oneModalLabel">Change Password</h4>
-				</div>
-				<div class="modal-body">
-					<form role="form" id="passwordform" method="POST">
-						<div class="form-group">
-							<label >Current Password</label>
-							<input type="password" class="form-control" id="oldpassword" name="oldpassword">
-						</div>
-						<br/>
-						<div class="form-group">
-							<label>New Password</label>
-							<input type="password" class="form-control" id="newpassword" name="newpassword">
+		<div id="menu" class="lib-menubar">
+			<div class="container">
+				<ul class="nav nav-pills nav-justified" role="tablist">
+					<p> </p>
+					[% IF role == 'Admin' %]
+					<li role="presentation" id="request"  class="menu" ><a href="#"><span class="glyphicon glyphicon-home lib-whitefont"> Home</span></a></li>
+					[% END %]
+
+					<li role="presentation" id="book" class="menu"><a href="#"><span class="glyphicon glyphicon-book lib-whitefont"> Book</span></a></li>
+					<li role="presentation" id="history" class="menu"><a href="#"><span class="glyphicon glyphicon-list-alt lib-whitefont"> History</span></a></li>
+					[% IF role == 'Admin' %]
+					<li role="presentation" id="user" class="menu"><a href="#"><span class="glyphicon glyphicon-user lib-whitefont"> User</span></a></li>
+					<li role="presentation" id="bookreturn" class="menu"><a href="#"><span class="glyphicon glyphicon-import lib-whitefont"> Return</span></a></li>
+					[% END %]
+				</ul>   
+			</div>
+		</div>
+		<div class = "container">
+			<div id = "content" class="lib-content">
+			</div>
+		</div>
+		<div id="bottom" class="navbar-static-bottom lib-footer">
+			<p class="text-center"> Copyright © Exceleron Software, All Rights Reserved. 2014</p>
+		</div>
+
+		<div class="modal fade" id="settingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+						</button>
+						<h4 class="modal-title" id="myModalLabel">Settings </h4>
 					</div>
-						<br/>
-						<div class="form-group">
-							<label>Confirm New Password</label>
-							<input type="password" class="form-control" id="confirmpassword" name="confirmpassword">
-						</div>
-						<br/>
+					<div class="modal-body">
+						<form role="form" id="settingform" method="POST">
 
-						<label style ="color:red" id="passwordmessage"></label>
+							<div class="form-group">
+								<label>MaxAllowedDays</label>
+								<input type="number" class="form-control" id="noofdays" name="noofdays" placeholder="Count" min=1>
+							</div>
+							<br/>
+							<div class="form-group">
+								<label>MaxAllowedBooks</label>
+								<input type="number" class="form-control" id="noofbooks" name="noofbooks" placeholder="Count" min=1>
+							</div>
+							<br/>
+							<label style ="color:red" id= "message"></label>
+							<div class="modal-footer">
+								<button type="submit" class="btn btn-primary" id="configlib">UPDATE</button>
+								<button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
 
-						<div class="modal-footer">
-							<button type="submit" class="btn btn-primary" id="changepassword">Change Password</button>
-							<button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
-						</div>
-					</form>
+		<div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="oneModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+						</button>
+						<h4 class="modal-title" id="oneModalLabel">Change Password</h4>
+					</div>
+					<div class="modal-body">
+						<form role="form" id="passwordform" method="POST">
+							<div class="form-group">
+								<label >Current Password</label>
+								<input type="password" class="form-control" id="oldpassword" name="oldpassword">
+							</div>
+							<br/>
+							<div class="form-group">
+								<label>New Password</label>
+								<input type="password" class="form-control" id="newpassword" name="newpassword">
+							</div>
+							<br/>
+							<div class="form-group">
+								<label>Confirm New Password</label>
+								<input type="password" class="form-control" id="confirmpassword" name="confirmpassword">
+							</div>
+							<br/>
+
+							<label style ="color:red" id="passwordmessage"></label>
+
+							<div class="modal-footer">
+								<button type="submit" class="btn btn-primary" id="changepassword">Change Password</button>
+								<button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
+							</div>
+						</form>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-
 </body>
 
 <link rel="stylesheet" type="text/css" href="../source/bootstrap/dist/css/bootstrap.css" />

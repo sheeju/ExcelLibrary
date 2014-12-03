@@ -11,21 +11,13 @@
 		<br>
 		<br>
 		<div class="col-lg-4 col-lg-offset-4">
-			<div id="div_searchby_copy_id" class="input-group">
-				<span class="input-group-addon">Book Copy ID</span>
-				<input type="text" id="txt_copy_id" class="form-control">
+			<div id="div_bookreturn" class="input-group">
+				<span id="spn_txt" class="input-group-addon">Book Copy ID</span>
+				<input type="text" id="txt_id" class="form-control">
 				<span class="input-group-btn">
-					<button id="btn_checkby_copyid" class="btn btn-default" type="button">Check</button>
+					<button id="btn_check" class="btn btn-default" type="button">Check</button>
 				</span>
 			</div>
-			<div id="div_searchby_employee_id" class="input-group">
-				<span class="input-group-addon">Employee ID</span>
-				<input type="text" id="txt_employee_id" class="form-control">
-				<span class="input-group-btn">
-					<button id="btn_checkby_employeeid" class="btn btn-default" type="button">Check</button>
-				</span>
-			</div>
-
 		</div>
 	</div>
 	<br>
@@ -72,25 +64,44 @@
 
 		$('#detail_div').addClass("hidden");
 		$('#msg').addClass("hidden");
-		$('#div_searchby_employee_id').hide();
+
 		$('#cmb_searchby').change(function() {
-			$('#div_searchby_copy_id').toggle();
-			$('#div_searchby_employee_id').toggle();
 			$('#detail_div').addClass("hidden");
 			index = $('option:selected', $('#cmb_searchby')).index();
+			if(index == 1)
+			{
+				$('#spn_txt').text("Employee ID");
+			}
+			else
+			{
+				$('#spn_txt').text("Book Copy ID");
+			}
+		});
+			
+		$('#btn_check').click(function(){
+
+			if(index == 0)
+			{
+				gettransactionbycopyid();
+			}
+			else
+			{
+				gettransactionbyemployeeid();
+			}
 		});
 
-		$('#btn_checkby_copyid').click(function() {
-			var copy_id = $('#txt_copy_id').val();
+
+		function gettransactionbycopyid() {
+			alert("hai");
+			var copy_id = $('#txt_id').val();
 			var regex = /^[1-9]+$/;
 			if (regex.test(copy_id)) {
 				$.ajax({
 					url: 'dashboard/gettransactionbycopyid',
 					contentType: 'text/html',
 					dataType: 'json',
-					data: {
-						copy_id: copy_id
-					}
+					data: {	copy_id: copy_id}
+				
 					}).done(function(data) {
 					if (data.flag) {
 						$('#tbl_row_cpyadded').remove();
@@ -98,7 +109,7 @@
 						$('#detail_div').removeClass("hidden");
 						$('#tbl_detail_employeeid').addClass("hidden");
 						$('#tbl_detail_copyid').removeClass("hidden");
-
+						alert("hai");
 						$('#tbl_detail_copyid').append('<tr id="tbl_row_cpyadded"><td>' + data.id + '</td>' +
 							'<td>' + data.empname + '</td>' +
 							'<td>' + data.bookname + '</td>' +
@@ -113,17 +124,17 @@
 					}
 					}).fail(function(err) {
 					alert("error" + err);
-				});
+					});
 				} else {
 				$('#msg').removeClass("hidden");
 				$('#detail_div').addClass("hidden");
 				$('#msg').text('Invalid input enter book copy id');
 
 			}
-		});
+		};
 
-		$('#btn_checkby_employeeid').click(function() {
-			var emp_id = $('#txt_employee_id').val();
+		function gettransactionbyemployeeid () {
+			var emp_id = $('#txt_id').val();
 			var regex = /^[1-9]+$/;
 			if (regex.test(emp_id)) {
 				$.ajax({
@@ -165,7 +176,7 @@
 				$('#detail_div').addClass("hidden");
 				$('#msg').text('Invalid input enter employee id');
 			}
-		});
+		};
 
 
 		$('#btn_return').click(function() {
