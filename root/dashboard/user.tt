@@ -92,7 +92,6 @@
 				<td>
 					<button type="button" class="btn btn-primary deleteuser disabled"><span class="glyphicon glyphicon-lock"></span></button>
 				</td>
-
 				[% ELSE %]
 				<td>
 					<button type="button" id="[% userinfo.$m.id %]" name="[% userinfo.$m.role %]" class="btn btn-primary empupdate" data-toggle="modal" data-target="#editModal"><span class="glyphicon glyphicon-pencil"></span></button>

@@ -47,15 +47,6 @@ sub excellibrarysendmail
     );
     $message->content_type_set($contenttype);
 
-=pod	if ($contenttype eq 'text/html') {
-
-        $message->body_str_set($body . "<p>Regards,<br>ExcelLibrary</p>");
-    }
-    else {
-        $message->body_str_set($body . "n\nRegards,\nExcelLibrary");
-    }
-=cut
-
 	$message->body_str_set($body);
     sendmail($message);
 
@@ -85,7 +76,7 @@ sub request : Path('/request')
     my $transaction;
     my $status;
     $count = 1;
-    my @transaction_rs = $c->model('Library::Transaction')->search(
+    my $transaction_rs = $c->model('Library::Transaction')->search(
         {
 
             "me.Status" => 'Requested',
@@ -94,38 +85,56 @@ sub request : Path('/request')
         {
             join      => ['employee',      'book'],
             '+select' => ['employee.Name', 'book.Name'],
-            '+as'     => ['EmployeeName',  'BookName']
+            '+as'     => ['EmployeeName',  'BookName'],
+			order_by  => 'RequestDate'
         }
     );
     my $bookcopy_rs = $c->model('Library::BookCopy')->search({});
-    foreach $transaction (@transaction_rs) {
+    while($transaction = $transaction_rs->next) {
 
-        if (defined $transaction->UpdatedBy) {
-            my $book = $bookcopy_rs->search({"BookId" => $transaction->BookId, "Status" => "Available"});
+		if (defined $transaction->UpdatedBy) {
 
-            if ($book->next) {
-                $status = "accept";
-            }
-            else {
+			$status = "issue";
+		}
+		else {
+			my $book = $bookcopy_rs->search({"BookId" => $transaction->BookId, "Status" => "Available"});
+=pod
+			my $alredyresponed = $transaction_rs->search(
+				{
+					BookId    => $transaction->BookId,
+					UpdatedBy => {'!=',undef}
 
-                $status = "na";
-            }
-        }
-        else {
-            $status = "req";
-        }
-        push(
-            @{$c->stash->{messages}},
-            {
-                no            => $count++,
-                id            => $transaction->Id,
-                requesteddate => $transaction->RequestDate,
-                employeename  => $transaction->get_column('EmployeeName'),
-                bookname      => $transaction->get_column('BookName'),
-                status        => $status
-            }
-        );
-    }
+				}
+			); 						
+=cut
+			my $accepted = $c->model('Library::Transaction')->search(
+				{
+					BookId     => $transaction->BookId,
+					UpdatedBy  => {'!=',undef},
+					Status	   => 'Requested'
+				}
+			);	
+
+			if ( $accepted->count <= 0 and $book->next) {
+				$status = "available";
+			}
+			else {
+				$status = "notavailable";
+			}
+
+		}
+		push(
+			@{$c->stash->{messages}},
+			{
+				no            => $count++,
+				id            => $transaction->Id,
+				requesteddate => $transaction->RequestDate,
+				employeename  => $transaction->get_column('EmployeeName'),
+				bookname      => $transaction->get_column('BookName'),
+				status        => $status
+			}
+		);
+	}
 
     $c->stash->{template} = "dashboard/request.tt";
     $c->forward('View::TT');
@@ -140,7 +149,7 @@ sub managerequest : Local
 	my $denyreason 	   = $c->req->params->{reason};
     my $loginId        = $c->user->Id;
 
-#------------------------------------------Updating reponse for paritcular request ----------------------------------------
+#<---------Updating reponse for paritcular request------------->
     my $transaction_rs = $c->model('Library::Transaction')->search(
         {
             "me.Id" => $req_id
@@ -153,7 +162,7 @@ sub managerequest : Local
     );
     my $transaction = $transaction_rs->next;
 
-    if ($transaction->UpdatedBy eq '') {
+	# if ($transaction->UpdatedBy eq '') {
         if ($response eq 'Allow') {
             $transaction_rs->update({"UpdatedBy" => $loginId});
         }
@@ -166,9 +175,9 @@ sub managerequest : Local
                 }
             );
         }
-    }
+		# }
 	
-#------------------------------------------Sending response as a email to user----------------------------------------
+#<--------Sending response as a email to user--------------->
 	
 	my $subject     = "ExcelLibrary response for book request";
     my $contenttype = "text/plain";
@@ -180,7 +189,6 @@ sub managerequest : Local
     my $current_date = DateTime->now(time_zone => 'Asia/Kolkata');
 	my $collectdate  = $current_date->ymd('-') . " " . $current_date->hms(':');
 	my $email		 = $transaction->get_column("EmployeeEmail");
-
 	$transaction_rs = $c->model('Library::Transaction')->search(
 		{
 			"BookId" => $transaction->BookId,
@@ -191,12 +199,12 @@ sub managerequest : Local
 			order_by => { -asc => "ExpectedReturnDate" }
 		}
 	);
-
+=pod
    	if($transaction = $transaction_rs->next)
 	{
 		$collectdate = $transaction->ExpectedReturnDate;
 	}
-   	
+=cut
     if ($response eq 'Allow') {
 		$message = "Hello "
           . $employeename . "\,\n\nWe have recieve the request for \""
@@ -223,7 +231,22 @@ sub managerequest : Local
     excellibrarysendmail($contenttype, $subject, $message,$email);
     $c->detach('request');
 }
-
+sub getbookavailabledate
+{
+=pod
+I.  check that book ia Available
+II. give that date if Available 
+III.else
+	1.get no of copies.
+	2.get latest return date from bookcopies
+	3.check if that date is already given or not
+	4.give that date and exit if not given
+	5.else
+		1.if no copies more then 1
+		2.get the latest one form remaining.
+	6. call the statment 3 with this latest date 
+=cut
+}
 sub getbookcopies : Local
 {
     my ($self, $c) = @_;
@@ -591,21 +614,13 @@ sub user : Path('/user')
         }
     );
 	
+
+
     my $count = 1;
     my %userdetail;
-
-    foreach my $user (@user_rs) {
-		my $createdid = $user->CreatedBy;
-		my $createdby = $c->model('Library::Employee')->search(
-			{
-				"Id" => $createdid,
-			},
-			{
-				columns => "Name",
-			});
-		$c->log->info("-----------------------");
-		$c->log->info(Dumper $createdby);
-        $userdetail{$user->Id} = {
+	my $user;
+    foreach $user (@user_rs) {
+		$userdetail{$user->Id} = {
             count => $count++,
             id    => $user->Id,
             name  => $user->Name,
@@ -616,11 +631,28 @@ sub user : Path('/user')
 		};
     }
 
-	foreach my $user_id ( keys %userdetail ) {
-		my $created_by = $userdetail{$user_id}->{createdby};
-		$userdetail{$user_id}->{createdby} = $userdetail{$created_by}->{name};
+	foreach my $userid ( keys %userdetail ) {
+
+		my $createdby = $userdetail{$userid}->{createdby};
+		if(defined $userdetail{$createdby})
+		{
+			$userdetail{$userid}->{createdby} = $userdetail{$createdby}->{name};
+		}
+		else
+		{
+			my $user_rs = $c->model('Library::Employee')->search(
+				{
+					"Id" => $createdby,
+				},
+				{
+					columns => "Name"
+				}
+			);
+			$user = $user_rs->next;
+			$userdetail{$userid}->{createdby} = $user->Name;
+		}
 	}
-	
+
 	my @transaction_rs = $c->model('Library::Transaction')->search(
 		{
 			"Status" => 'Issued',
@@ -871,6 +903,7 @@ sub returnbook : Local
 	my $returneddate = $current_date->ymd('-') . " " . $current_date->hms(':');
 
 	foreach my $copyid (@bookcopy_id) {
+	
 		my $transaction_rs = $c->model('Library::Transaction')->search({"BookCopyId" => $copyid});
 		$transaction_rs->update(
 			{
@@ -879,6 +912,7 @@ sub returnbook : Local
 				"Comment"      => $comment
 			}
 		);
+
 		my $bookcopy_rs = $c->model('Library::BookCopy')->search({"Id" => $copyid});
 		$bookcopy_rs->update({"Status" => 'Available'});
 	}
