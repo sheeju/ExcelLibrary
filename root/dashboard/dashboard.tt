@@ -1,6 +1,7 @@
 <!Doctype html>
 <head>
 	<title>ExcelLibrary</title>
+	<link rel="shortcut icon" href="../source/images/titleimage.ico" />
 </head>
 <body class="modal-open">
 	<div id="top" class="lib-topbar">
