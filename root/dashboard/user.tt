@@ -64,9 +64,9 @@
 	<tbody>
 		[% FOREACH m =userinfo.keys %]
 			[% IF userinfo.$m.bookinhand == 1 %]
-			<tr data-toggle="tooltip" data-placement="top" title="user curenly holding book(s), so can't delete or edit">
+			<tr data-toggle="tooltip" data-placement="top" title="Employee currently holding book(s), so can't delete or edit">
 			[% ELSIF userinfo.$m.bookinhand == 2 %]
-			<tr data-toggle="tooltip" data-placement="top" title="user can't edit his own details">
+			<tr data-toggle="tooltip" data-placement="top" title="Admin can't edit his own details">
 			[% ELSE %]
 			<tr>
 			[% END %]

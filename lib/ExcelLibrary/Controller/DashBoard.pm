@@ -6,6 +6,7 @@ use Data::Dumper;
 use Email::MIME;
 use Email::Sender::Simple qw(sendmail);
 use Session::Token;
+use String::CamelCase qw(camelize);
 use JSON;
 use Digest::MD5 qw(md5_hex);
 BEGIN { extends 'Catalyst::Controller'; }
@@ -46,13 +47,16 @@ sub excellibrarysendmail
     );
     $message->content_type_set($contenttype);
 
-	if ($contenttype eq 'text/html') {
+=pod	if ($contenttype eq 'text/html') {
+
         $message->body_str_set($body . "<p>Regards,<br>ExcelLibrary</p>");
     }
     else {
-        $message->body_str_set($body . "\n\nRegards,\nExcelLibrary");
+        $message->body_str_set($body . "n\nRegards,\nExcelLibrary");
     }
+=cut
 
+	$message->body_str_set($body);
     sendmail($message);
 
 }
@@ -71,7 +75,6 @@ sub dashboard : Path : Args(0)
 		$c->response->body('Page not found');
 	  	$c->response->status(404);	
 	}
-
 }
 
 sub request : Path('/request')
@@ -130,11 +133,13 @@ sub request : Path('/request')
 
 sub managerequest : Local
 {
-    my ($self, $c) = @_;
+    my ($self, $c) 	   = @_;
     my $req_id         = $c->req->params->{id};
     my $response       = $c->req->params->{response};
 	my $denyreason 	   = $c->req->params->{reason};
     my $loginId        = $c->user->Id;
+
+#------------------------------------------Updating reponse for paritcular request ----------------------------------------
     my $transaction_rs = $c->model('Library::Transaction')->search(
         {
             "me.Id" => $req_id
@@ -149,11 +154,9 @@ sub managerequest : Local
 
     if ($transaction->UpdatedBy eq '') {
         if ($response eq 'Allow') {
-            $response = 'Accepted';
             $transaction_rs->update({"UpdatedBy" => $loginId});
         }
         else {
-            $response = 'Denied';
             $transaction_rs->update(
                 {
                     "Status"    => 'Denied',
@@ -163,24 +166,60 @@ sub managerequest : Local
             );
         }
     }
-
-    my $subject     = "ExcelLibrary response for book request";
+	
+#------------------------------------------Sending response as a email to user----------------------------------------
+	
+	my $subject     = "ExcelLibrary response for book request";
     my $contenttype = "text/plain";
     my $message;
-	$message = "Hai "
-          . $transaction->get_column("EmployeeName")
-          . ",\n\nYour request for \""
-          . $transaction->get_column("BookName")
-          . "\" book is "
-		  . $response . ".";
 
-    if ($response eq 'Accepted') {
-          $message = $message . "you can collect the book.\n";
+	my $employeename = $transaction->get_column("EmployeeName");
+	my $bookname 	 = $transaction->get_column("BookName");
+	my $requestdate  = $transaction->RequestDate;
+    my $current_date = DateTime->now(time_zone => 'Asia/Kolkata');
+	my $collectdate  = $current_date->ymd('-') . " " . $current_date->hms(':');
+	my $email		 = $transaction->get_column("EmployeeEmail");
+
+	$transaction_rs = $c->model('Library::Transaction')->search(
+		{
+			"BookId" => $transaction->BookId,
+			"Status" => 'Issued',
+			"ReturnedDate" => {'=',undef}
+		},
+		{
+			order_by => { -asc => "ExpectedReturnDate" }
+		}
+	);
+
+   	if($transaction = $transaction_rs->next)
+	{
+		$collectdate = $transaction->ExpectedReturnDate;
+	}
+   	
+    if ($response eq 'Allow') {
+		$message = "Hello "
+          . $employeename . "\,\n\nWe have recieve the request for \""
+          . $bookname
+          . "\" book on "
+		  . $requestdate
+		  . "\. Please come and collect the book on "
+		  . $collectdate
+		  . "\.";
     }
     else {
-        $message = $message .  "\nReason : " . $denyreason . ".\n" ;
+		$message = "Hello "
+          . $employeename . "\,\n\nSorry to inform you, Your request for \""
+          . $bookname
+          . "\" book on "
+		  . $requestdate
+		  . "is denied because of following Reason"
+		  . "\n Reason : "
+		  . $denyreason
+		  . "\.";
     }
-    excellibrarysendmail($contenttype, $subject, $message, $transaction->get_column("EmployeeEmail"));
+
+	$message = $message ."\n\nRegards,\nAdmin,\nExcelLibrary.";
+    excellibrarysendmail($contenttype, $subject, $message,$email);
     $c->detach('request');
 }
 
@@ -522,16 +561,18 @@ sub bookrequest : Local
         foreach $employee (@employee_rs) {
 
             my $subject = "Book Request";
-            my $message = "Hai "
+            my $message = "Hello "
               . $employee->Name
               . "\n\n\t"
               . $transaction->get_column('EmployeeName')
               . " Request the \""
               . $book->Name
-              . "\"  book.";
+              . "\" book on "
+			  . $transaction->RequestDate
+			  . "\.\n\n Regards,\nExcelLibrary. ";
             my $contenttype = "text/plain";
             excellibrarysendmail($contenttype, $subject, $message, $employee->Email);
-        }
+       }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~copy block written by skanda~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     }
@@ -570,10 +611,15 @@ sub user : Path('/user')
             name  => $user->Name,
             role  => $user->Role,
             email => $user->Email,
-			createdby => $createdby,
-			bookinhand => 0 	
-        };
+			bookinhand => 0,
+			createdby => $user->CreatedBy
+		};
     }
+
+	foreach my $user_id ( keys %userdetail ) {
+		my $created_by = $userdetail{$user_id}->{createdby};
+		$userdetail{$user_id}->{createdby} = $userdetail{$created_by}->{name};
+	}
 	
 	my @transaction_rs = $c->model('Library::Transaction')->search(
 		{
@@ -603,6 +649,7 @@ sub adduser : Local
 {
     my ($self, $c) = @_;
     my $empname     = $c->req->params->{name};
+	$empname        = camelize($empname);
     my $emprole     = $c->req->params->{role};
     my $empemail    = $c->req->params->{email};
     my $userid      = $c->user->Id;
@@ -629,11 +676,11 @@ sub adduser : Local
 
     my $subject = 'Activate ExcelLibrary Account';
     my $message =
-		'Hai '
+		'Hello '
 	  . $empname 
-	  . ',<br> <p> We happy to inform that your account is created in ExcelLibrary. To activate your account click the bellow button.<p><a href="http://10.10.10.30:3000/login?token='
+	  . ',<br> <p> We are happy to inform that your account has been created in ExcelLibrary. Please <a href="http://10.10.10.30:3000/login?token='
       . $token
-      . '"> <button> Click me </button></a>';
+      . '"> <button> Click me </button></a> make it as activate. <p>Regards,<br>Admin,<br>ExcelLibrary.</p> ';
     my $contenttype = 'text/html';
 
     excellibrarysendmail($contenttype, $subject, $message, $empemail);
@@ -779,7 +826,7 @@ sub gettransactionbycopyid : Local
 
 sub gettransactionbyemployeeid : Local
 {
-    my ($self, $c) = @_;
+    my ($self, $c)     = @_;
     my $employeeid     = $c->req->params->{emp_id};
     my @transaction_rs = $c->model('Library::Transaction')->search(
         {
@@ -808,7 +855,6 @@ sub gettransactionbyemployeeid : Local
 			}
 		);
 	}
-
     
 	$c->forward('View::JSON');
 }
