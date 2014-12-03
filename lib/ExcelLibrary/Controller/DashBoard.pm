@@ -59,7 +59,6 @@ sub dashboard : Path : Args(0)
 	{
     	$c->stash->{username} = $c->user->Name;
     	$c->stash->{role}     = $c->user->Role;
-		$c->stash->{email}    = $c->user->Email;
 		$c->forward('View::TT');
 	}
 	else
@@ -510,6 +509,7 @@ sub getcomments : Local
 	while($comment = $comment_rs->next)
 	{
 		push(@{$c->stash->{comments}},{
+				commentid => $comment->Id,
 				employeename => $comment->get_column('EmployeeName'),
 				comment => $comment->Comment,
 				commentdate=> $comment->CommentedDate
@@ -785,7 +785,7 @@ sub defaultsetting : Local
     my $maxallowbooks = $configinfo->MaxAllowedBooks;
     $c->stash->{maxallowedbooks} = $maxallowbooks;
     $c->stash->{maxalloweddays}  = $maxallowdays;
-    # $c->stash->{template} = "dashboard/dashboard.tt";
+
     $c->forward('View::JSON');
 
 }
@@ -1003,6 +1003,18 @@ sub addcopies : Local
 	$c->forward('View::JSON');
 }
 
+sub deletecomment : Local
+{
+	my($self,$c)=@_;
+	my $commentid=$c->req->params->{commentid};
+	my $rowselect = $c->model('Library::Comment')->find(
+		{
+			Id => $commentid,
+		});
+	$rowselect->delete;
+	$c->forward('View::JSON');
+
+}
 =encoding utf8
 
 =head1 AUTHOR
