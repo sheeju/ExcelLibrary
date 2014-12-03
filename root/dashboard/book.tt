@@ -102,15 +102,13 @@
 				<h4 class="modal-title" id="myModalLabel">Comment</h4>
 			</div>
 			<div class="modal-body">
-				 <form role="form" id="commentform" method="POST">
 				<div class="form-group">
 					<div><label for="comment">Add Comment:</label></div>
 					<br>
-					<div><textarea class="form-control" rows="3" name="bookcomment" id="txt_comment"></textarea></div>
+					<div><textarea class="form-control" rows="3" id="txt_comment"></textarea></div>
 					<br>
-
-					<div class=" text-right"><button type="submit" id="btn_post" class="btn btn-primary">Post</button></div>
-				</form>
+					<div class="col-md-6"><span id="spn_commentmsg"> </span> </div>
+					<div class="col-md-6 text-right"><button type="button" id="btn_post" class="btn btn-primary">Post</button></div>
 					<br>
 					<br>
 					<div class="col-md-12" style="height:250px; overflow-y:auto;" id="div_comment">
@@ -208,10 +206,10 @@
 
 					$('#table').delegate('.btn_comment', 'click', function() {
 						bookid = $(this).attr('id');
-						diplaycomment(bookid);
+						displaycomment(bookid);
 					});
 
-					function diplaycomment(bookid)
+					function displaycomment(bookid)
 					{
 						$.ajax(
 						{
@@ -227,12 +225,30 @@
 							{
 								$.each(data.comments, function(index, value)
 								{
-
 									$('#div_comment').prepend('<div class="alert alert-info" role="alert">'
 										+ '<div class = "col-md-6">Commented By : '+ value.employeename +'</div>'
-										+ '<div class = "col-md-6"><p class="text-right"> Date : '+ value.commentdate +'</p></div>'
+										+ '<div class = "col-md-6"><p class=""> Date : '+ value.commentdate +'</p></div>'
+										+	'<button type="button" id='+ value.commentid +' class="btn btn-primary btn-sm btndltcomment">'
+											+	'<span class="glyphicon glyphicon-trash"></span>'
+											+	'</button>'
 										+ '<div class = "col-md-12 "><p class="txt-left">'+ value.comment + '</p></div>'
 										+'</div>');
+								});
+								$('.btndltcomment').click(function()
+								{
+									var commentid = $(this).attr('id');
+									$.ajax(
+									{
+										url:'dashboard/deletecomment',
+										data:
+										{
+											commentid:commentid,
+										}
+									}).done(function(data)
+									{
+										displaycomment(bookid);
+
+									});
 								});
 							}
 							else
@@ -244,38 +260,34 @@
 						{ 
 							alert("error"+ err); 
 						});
-
 					}
 
 
-
 					$('#btn_post').click(function(){
-						$("#commentform").validate({
-							rules: {
-								bookcomment: {
-									required:true,
+						var comment = $('#txt_comment').val();
+						var regex = /\w+/;
+						if (regex.test(comment)) {
+
+							$.ajax(
+							{
+								url:'dashboard/addcomment',
+								data:{
+									bookid:bookid,
+									comment:comment,
 								}
-
-							},
-							submitHandler : function(form){
-								var comment = $('#txt_comment').val();
-
-								$.ajax({
-									url:'dashboard/addcomment',
-									data:{
-										bookid:bookid,
-										comment:comment,
-									}
-								}).done(function(responseText)
-								{
-
-									diplaycomment(bookid);
-									$('#txt_comment').val('');
-								});
-
-							}
-						});
-
+							}).done(function(responseText)
+							{
+								diplaycomment(bookid);
+								$('#txt_comment').val('');
+							}).fail(function(err) 
+							{ 
+								alert("error"+ err); 
+							});
+						}
+						else
+						{
+							$('#spn_commentmsg').text("Can't post empty comment");
+						}
 					});
 					var rowId;
 					$('.rowClass').click(function()
@@ -435,7 +447,6 @@
 											$('.addbookalert').removeClass('hidden');
 										});
 
-										//		$('#sucess_message').html(data.message);
 										$('#book_insertion')[0].reset();
 										var validator = $( "#book_insertion" ).validate();
 										validator.resetForm();
