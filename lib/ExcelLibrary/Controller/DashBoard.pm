@@ -62,6 +62,8 @@ sub dashboard : Path : Args(0)
 	{
     	$c->stash->{username} = $c->user->Name;
     	$c->stash->{role}     = $c->user->Role;
+		$c->stash->{email}     = $c->user->Email;
+
 		$c->forward('View::TT');
 	}
 	else
