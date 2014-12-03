@@ -88,6 +88,61 @@ sub createpassword : Local
     $c->forward('View::JSON');
 }
 
+
+sub forgotpassword : Path( /forgotpassword )
+{
+
+	my ($self, $c) = @_;
+	$c->forward('View::TT'); 
+
+}
+
+
+sub validate : Local
+{
+
+	my ($self,$c) = @_;
+	my $token;
+	my $token_rs;
+	my $usermail = $c->req->params->{email};
+	my $employee_rs = $c->model('Library::Employee')->search({ Email => $usermail, "Status" =>'Active'});
+	my $employeeinfo	=$employee_rs->next;
+
+	if($employee_rs->count == 1)
+	{
+		my $newtoken = Session::Token->new(length => 20);
+		do
+		{
+			$token = $newtoken->get;
+			$token_rs = $c->model('Library::Employee')->search({"Token" => $token });
+		}while($token_rs->count > 0);
+		$employee_rs->update({"Token" =>$token,"Status" =>'InActive'});
+
+
+		my $subject = 'Reset Your Password';
+		my $message =
+		'Hai '
+		. $employeeinfo->get_column('Name')
+		. ',<br> <p> We got a request to reset your Exceleron Library password. To activate your account click the bellow button.<p><a href="http://10.10.10.46:3000/login?token='
+		. $token
+		. '"> <button> Click me </button></a>';
+		my $contenttype = 'text/html';
+
+		my @args = ($contenttype, $subject, $message, $usermail);
+		$c->forward('/dashboard/excellibrarysendmail', \@args);
+	$c->stash->{responsemessage} =0;
+	$c->forward('View::JSON');
+
+}
+else
+{
+	$c->stash->{responsemessage} = 1;
+	$c->forward('View::JSON');
+
+}	
+}	
+
+
 sub logout : Local
 {
     my ($self, $c) = @_;

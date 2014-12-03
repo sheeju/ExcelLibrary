@@ -30,10 +30,25 @@ Catalyst Controller.
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 my $generator = Session::Token->new(length => 20);
-sub excellibrarysendmail
+sub excellibrarysendmail : Local
 {
-
-    my ($contenttype, $subject, $body, $to) = @_;
+	my $len = @_; 
+	my ($contenttype, $subject, $body, $to);
+	if($len != 4)
+	{
+		
+		my $self = shift(@_);
+		my $c = shift(@_);
+		$contenttype = shift(@_);
+		$subject     = shift(@_);
+		$body 		 = shift(@_);
+		$to			 = shift(@_);
+		#($contenttype, $subject, $body, $to) = @{@_};
+	}
+	else
+	{
+    	 ($contenttype, $subject, $body, $to) = @_;
+	}
     my $message = Email::MIME->create(
         header_str => [
             From    => 'ExcelLibrary@exceleron.com',
@@ -46,7 +61,6 @@ sub excellibrarysendmail
         },
     );
     $message->content_type_set($contenttype);
-
 	$message->body_str_set($body);
     sendmail($message);
 
@@ -59,6 +73,8 @@ sub dashboard : Path : Args(0)
 	{
     	$c->stash->{username} = $c->user->Name;
     	$c->stash->{role}     = $c->user->Role;
+		$c->stash->{email}     = $c->user->Email;
+
 		$c->forward('View::TT');
 	}
 	else

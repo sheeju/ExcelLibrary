@@ -18,6 +18,12 @@
   color: #fff;
  margin-top:5px;
 }
+.lib-dashboard-root
+{
+	overflow:auto;
+	width : 100%;
+	height : 100%;
+}
 .lib-topbar
 {
 	 margin: 0px auto;
@@ -31,6 +37,12 @@
 	 background: #1f3d63;
 	 height: 60px;
 	 border-bottom: 3px solid #ef7f1b;
+}
+.lib-response-tooltip
+{
+	float:left;
+	width :auto;
+	margin : 5px;
 }
 .lib-footer
 {
