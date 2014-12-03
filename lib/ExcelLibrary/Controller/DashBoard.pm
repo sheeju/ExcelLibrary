@@ -8,6 +8,9 @@ use Email::Sender::Simple qw(sendmail);
 use Session::Token;
 use JSON;
 use Digest::MD5 qw(md5_hex);
+#use Exporter;
+#our @ISA = qw(Exporter);
+#our @EXPORT_OK =qw(excellibrarysendmail);
 BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
@@ -562,8 +565,6 @@ sub user : Path('/user')
 			{
 				columns => "Name",
 			});
-		$c->log->info("-----------------------");
-		$c->log->info(Dumper $createdby);
         $userdetail{$user->Id} = {
             count => $count++,
             id    => $user->Id,
