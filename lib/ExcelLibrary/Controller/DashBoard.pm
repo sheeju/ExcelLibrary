@@ -198,12 +198,6 @@ sub managerequest : Local
 			order_by => { -asc => "ExpectedReturnDate" }
 		}
 	);
-=pod
-   	if($transaction = $transaction_rs->next)
-	{
-		$collectdate = $transaction->ExpectedReturnDate;
-	}
-=cut
     if ($response eq 'Allow') {
 		$message = "Hello "
           . $employeename . "\,\n\nWe have recieve the request for \""
@@ -220,8 +214,8 @@ sub managerequest : Local
           . $bookname
           . "\" book on "
 		  . $requestdate
-		  . "is denied because of following Reason"
-		  . "\n Reason : "
+		  . " is denied because of following Reason."
+		  . "\nReason : "
 		  . $denyreason
 		  . "\.";
     }
@@ -230,22 +224,7 @@ sub managerequest : Local
     excellibrarysendmail($contenttype, $subject, $message,$email);
     $c->detach('request');
 }
-sub getbookavailabledate
-{
-=pod
-I.  check that book ia Available
-II. give that date if Available 
-III.else
-	1.get no of copies.
-	2.get latest return date from bookcopies
-	3.check if that date is already given or not
-	4.give that date and exit if not given
-	5.else
-		1.if no copies more then 1
-		2.get the latest one form remaining.
-	6. call the statment 3 with this latest date 
-=cut
-}
+
 sub getbookcopies : Local
 {
     my ($self, $c) = @_;
@@ -1017,9 +996,9 @@ sub deletecomment : Local
 }
 =encoding utf8
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-venkatesan,,,
+venkatesan,Skanda,Pavan,
 
 =head1 LICENSE
 
