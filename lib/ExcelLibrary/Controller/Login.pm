@@ -106,7 +106,7 @@ sub validate : Local
 	my $token;
 	my $token_rs;
 	my $usermail = $c->req->params->{email};
-	my $employee_rs = $c->model('Library::Employee')->search({ Email => $usermail});
+	my $employee_rs = $c->model('Library::Employee')->search({ Email => $usermail, "Status" =>'Active'});
 	my $employeeinfo	=$employee_rs->next;
 
 	if($employee_rs->count == 1)
