@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $("#loginform").validate({
+    $("#passwordchangeform").validate({
         rules: {
             email: {
                 required: true,
