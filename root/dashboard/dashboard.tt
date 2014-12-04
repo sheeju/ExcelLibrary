@@ -137,7 +137,8 @@
 
 <link rel="stylesheet" type="text/css" href="../source/bootstrap/dist/css/bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/jquery.dataTables.css"/>
-<link rel="stylesheet" type="text/css" href="source/DataTable/media/css/dataTables.bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/dataTables.bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="../source/yadcf-master/jquery.dataTables.yadcf.css" />
 <link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
 <link rel="stylesheet" href="../source/css/library.css">
 
@@ -148,6 +149,7 @@
 <script type="text/javascript" src="../source/js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.min.js"></script>
 <script type="text/javascript" src="../source/DataTable/media/js/dataTables.bootstrap.js"></script>
+<script type="text/javascript" src="../source/yadcf-master/lab/jquery.dataTables.yadcf.js"></script>
 
 <script>
 	$(document).ready(function() 
