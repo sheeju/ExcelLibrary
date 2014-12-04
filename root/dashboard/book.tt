@@ -1,8 +1,4 @@
 <br>
-<div class="alert alert-success  addbookalert hidden">
-	<a href="#" class="close">&times;</a>
-	<strong>Success!</strong> Book Added Successfully.
-</div>
 <div class="alert alert-danger maxbook hidden">
 	<a href="#" class="close">&times;</a>
 	<strong>Warning!</strong> Each Employee has maximum 2 Books.
@@ -406,7 +402,7 @@
 					});
 
 
-					$("#book_insertion").validate({
+				$("#book_insertion").validate({
 						rules: {
 							bookName: {
 								required:true,
@@ -445,18 +441,8 @@
 
 								},
 								success : function ( data ) {
-									$.ajax({
-										url: '/book',
-										type : 'POST',
+									$('#sucess_message').html(data.message);	
 
-										}).done(function(data) {
-
-										$(".modal-backdrop").hide();
-										$('#content').html(data);
-										$('.addbookalert').removeClass('hidden');
-									});
-
-									//		$('#sucess_message').html(data.message);
 									$('#book_insertion')[0].reset();
 									var validator = $( "#book_insertion" ).validate();
 									validator.resetForm();
@@ -464,6 +450,17 @@
 								}
 							});
 						}
+					});
+					$('#myModal').on('hide.bs.modal', function() {
+						$.ajax({
+							url: '/book',
+							type: 'POST',
+
+							}).done(function(data) {
+							$(".modal-backdrop").hide();
+							$('#content').html(data);
+							$('.addbookalert').removeClass('hidden');
+						});
 					});
 				});
 

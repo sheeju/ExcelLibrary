@@ -452,7 +452,8 @@ sub addbook : Local
 
         }
     );
- #   $c->stash->{message} = "Book added sucessfully";
+    $c->stash->{message} = "Book added sucessfully";
+	$c->log->info(Dumper $c->stash->{message});
 #    $c->forward('book');
 	 $c->forward('View::JSON');
 }
@@ -711,7 +712,7 @@ sub adduser : Local
     my $contenttype = 'text/html';
 
     excellibrarysendmail($contenttype, $subject, $message, $empemail);
-
+	$c->stash->{message} = 'Employee Added Successfully';
     $c->forward('View::JSON');
 }
 
