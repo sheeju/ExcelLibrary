@@ -142,7 +142,7 @@
 
 	<tbody class="details">
 		[% FOREACH msg IN messages.keys %]
-		<tr id="[% messages.$msg.count %]" class="rowClass">
+		<tr id="row[% messages.$msg.id %]" class="rowClass">
 			<td>
 				[% messages.$msg.count %]
 			</td>
@@ -191,7 +191,7 @@
 		<script>
 			$(document).ready(function() {
 				var oTable=$('#table').dataTable({
-					"columnDefs": [ { "targets": [5,6], "orderable": false } ]	
+					"columnDefs": [ { "targets": [5,6], "orderable": false } ],	
 				});
 
 				var bookid;
@@ -263,9 +263,6 @@
 					});
 
 				}
-
-
-
 				$('#btn_post').click(function(){
 					$("#commentform").validate({
 						rules: {
@@ -294,11 +291,14 @@
 					});
 
 				});
+
+				
 				var rowId;
-				$('.rowClass').click(function()
-				{
+				$('#table').delegate('.rowClass', 'click', function() {
 					rowId = $(this).attr('id');
 				});
+
+
 				function getbookcopy(bookid){
 					$('#detail_body').html('');
 					var detail_body;
@@ -365,14 +365,11 @@
 								$(id).remove();
 								count = count-1;
 								$('#Count_id').val(count);	
-								alert(rowId);
-								rowId = rowId -1;
 								if(count < 1)
 								{
-									var row = buttonclicked.closest("tr").get(0);
 									var page_number = oTable.fnPagingInfo().iPage;
-									oTable.fnDeleteRow(oTable.fnGetPosition(row), function(){oTable.fnPageChange(page_number);}, false);
-									//oTable.fnDeleteRow(rowId);
+									oTable.fnDeleteRow('#' + rowId,function(){oTable.fnPageChange(page_number);},false);
+
 								}
 							}).fail(function(err) 
 							{ 

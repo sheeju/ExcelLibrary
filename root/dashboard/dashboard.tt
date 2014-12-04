@@ -148,8 +148,8 @@
 <script type="text/javascript" src="../source/DataTable/media/js/dataTables.bootstrap.js"></script>
 <script type="text/javascript" src="../source/js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.js"></script>
-<script type="text/javascript" src="../source/DataTable/media/js/dataTables.bootstrap.js"></script>
 <script type="text/javascript" src="../source/yadcf-master/lab/jquery.dataTables.yadcf.js"></script>
+<script type="text/javascript" src="../source/DataTable/media/js/fnPagingInfo.js"></script>
 
 <script>
 	$(document).ready(function() 
