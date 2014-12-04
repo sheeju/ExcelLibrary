@@ -500,7 +500,7 @@ sub getcomments : Local
 	my $comment;
 
 	$c->stash->{flag} = 1 if($comment_rs->count > 0);
-
+	$c->stash->{role} = $c->user->Role;
 	while($comment = $comment_rs->next)
 	{
 		push(@{$c->stash->{comments}},{
@@ -644,7 +644,7 @@ sub user : Path('/user')
 				}
 			);
 			$user = $user_rs->next;
-			$userdetail{$userid}->{createdby} = $user->Name;
+			$userdetail{$userid}->{createdby} =$user->Name;
 		}
 	}
 
@@ -973,6 +973,7 @@ sub history : Path('/history')
 			}
 		) foreach @emphistory;
 	}
+	$c->forward('View::TT');
 }
 
 sub addcopies : Local

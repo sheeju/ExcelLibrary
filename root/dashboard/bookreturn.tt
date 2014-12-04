@@ -1,6 +1,7 @@
 <br>
 <br>
-<form name="book_return">
+<form id="book_return"  role="form" >
+	
 	<div class="row ">
 		<center>
 			<select id="cmb_searchby" class="btn btn-toggle">
@@ -13,11 +14,16 @@
 		<div class="col-lg-4 col-lg-offset-4">
 			<div id="div_bookreturn" class="input-group">
 				<span id="spn_txt" class="input-group-addon">Book Copy ID</span>
-				<input type="text" id="txt_id" class="form-control">
+				<input type="text" id="txt_id" name="text_id" class="form-control">
 				<span class="input-group-btn">
-					<button id="btn_check" class="btn btn-default" type="button">Check</button>
+					<button type="submit" id="btn_check" class="btn btn-default" type="button">Check</button>
 				</span>
 			</div>
+			<br/>
+
+			<div id="nameError"> <div>
+
+
 		</div>
 	</div>
 	<br>
@@ -64,7 +70,6 @@
 
 		$('#detail_div').addClass("hidden");
 		$('#msg').addClass("hidden");
-
 		$('#cmb_searchby').change(function() {
 			$('#detail_div').addClass("hidden");
 			index = $('option:selected', $('#cmb_searchby')).index();
@@ -92,7 +97,6 @@
 
 
 		function gettransactionbycopyid() {
-			alert("hai");
 			var copy_id = $('#txt_id').val();
 			var regex = /^[1-9]+$/;
 			if (regex.test(copy_id)) {
@@ -109,7 +113,6 @@
 						$('#detail_div').removeClass("hidden");
 						$('#tbl_detail_employeeid').addClass("hidden");
 						$('#tbl_detail_copyid').removeClass("hidden");
-						alert("hai");
 						$('#tbl_detail_copyid').append('<tr id="tbl_row_cpyadded"><td>' + data.id + '</td>' +
 							'<td>' + data.empname + '</td>' +
 							'<td>' + data.bookname + '</td>' +
@@ -128,7 +131,7 @@
 				} else {
 				$('#msg').removeClass("hidden");
 				$('#detail_div').addClass("hidden");
-				$('#msg').text('Invalid input enter book copy id');
+			$('#msg').text('Invalid input enter book copy id');
 
 			}
 		};
@@ -217,5 +220,30 @@
 				$('#msg').text('Select the book want to return');
 			}
 		});
+
+		$.validator.setDefaults({
+			errorPlacement: function(error, element) {
+				error.appendTo('#nameError');
+			}
+		});
+
+		$("#book_return").validate({
+			rules: {
+				text_id: {
+					required:true,
+					number :true,
+					digits :true
+
+				}
+
+			},
+			submitHandler: function(form) {
+
+//				$('#text_id').val('');
+			}
+
+		});
+
+
 	});
 </script>

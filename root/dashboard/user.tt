@@ -33,7 +33,7 @@
 					<br/>
 					<div class="form-group">
 						<label>Email</label>
-						<input type="email" class="form-control" id="txt_empemail" name="empemial" placeholder="email">
+						<input type="email" class="form-control" id="txt_empemail" name="empmail" placeholder="email">
 					</div>
 					<br/>
 					<label id="sucess_message">
@@ -49,7 +49,7 @@
 	</div>
 </div>
 
-<table id="user_tabel" class="display table table-striped table-bordered" cellspacing="0" width="100%">
+<table id="user_table" class="display table table-striped table-bordered" cellspacing="0" width="100%">
 	<thead>
 		<tr>
 			<th>SI No</th>
@@ -132,17 +132,12 @@
 
 	<script>
 		$(document).ready(function() {
-			$('#user_tabel').DataTable({
+			$('#user_table').DataTable({
 				"columnDefs": [{
 					"targets": [4, 5],
 					"orderable": false
 				}]
 			});
-			jQuery.validator.setDefaults({
-				debug: true,
-				success: "valid"
-			});
-
 			$("#form_adduser").validate({
 
 				rules: {
@@ -150,7 +145,7 @@
 						required: true,
 						alphanumeric: true
 					},
-					empemial: {
+					empmail: {
 						required: true,
 						email: true
 					},

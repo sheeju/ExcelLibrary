@@ -27,21 +27,21 @@
             </td>
             <td>
                 [% IF m.status == 'issue' %]
-				<div class ="lib-response-tooltip" data-toggle="tooltip" data-placement="top" title="Issue">
+				<div class ="lib-tooltip-div" data-toggle="tooltip" data-placement="top" title="Issue">
 					<button id="[% m.id %]" name="btn_issue" class="btn btn-primary btn-sm book_issue" data-toggle="modal" data-target="#issueModal ">
 						<span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>
 					</button>
 				</div>
 				[% ELSIF m.status == 'notavailable' %]
-                <span class="label label-info">Book Not Available</span>
+				<div class="lib-tooltip-div"><span class="label label-info">Book Not Available</span></div>
 				[% ELSE %]
-				<div class ="lib-response-tooltip" data-toggle="tooltip" data-placement="top" title="Accept">
+				<div class ="lib-tooltip-div" data-toggle="tooltip" data-placement="top" title="Accept">
 					<button id="[% m.id %]" name="btn_accept" class="btn btn-primary btn-sm req_allow">
 						<span class="glyphicon    glyphicon-ok" aria-hidden="true"></span>
 					</button>
 				</div>
 				[% END %]
-				<div class="lib-response-tooltip" data-toggle="tooltip" data-placement="top" title="deny">
+				<div class="lib-tooltip-div" data-toggle="tooltip" data-placement="top" title="deny">
 					<button id="[% m.id %]" name="btn_reject" class="btn btn-danger btn-sm req_deny" data-toggle="modal" data-target="#denyModal">
 						<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 					</button>
