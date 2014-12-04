@@ -20,12 +20,12 @@
 				<form role="form" id="book_insertion" method="POST">
 					<div class="form-group">
 						<label >Book Name</label>
-						<input type="Name" class="form-control" id="bookName" name="bookName" placeholder="Name">
+						<input type="text" class="form-control" id="bookname" name="bookname" placeholder="Name">
 					</div>
 					<br/>
 					<div class="form-group">
 						<label>Book Type</label>
-						<input type="text" class="form-control" id="bookType" name="bookType" placeholder="Type">
+						<input type="text" class="form-control" id="booktype" name="booktype" placeholder="Type">
 					</div>
 					<br/>
 					<div class="form-group">
@@ -35,7 +35,7 @@
 					<br/>
 					<div class="form-group">
 						<label>No Of Copies</label>
-						<input type="number" class="form-control" id="noOfCopies" name="noOfCopies" placeholder="Count" min=1 value=1>
+						<input type="number" class="form-control" id="noofcopies" name="noofcopies" placeholder="Count" min=1 value=1>
 					</div>
 
 					<label id="sucess_message"></label>
@@ -396,19 +396,13 @@
 				});
 
 				$('#addbook').click(function(){
-					jQuery.validator.setDefaults({
-						debug: true,
-						success: "valid"
-					});
-
-
-				$("#book_insertion").validate({
+						$("#book_insertion").validate({
 						rules: {
-							bookName: {
+							bookname: {
 								required:true,
 								alphanumeric:true
 							},
-							bookType: {
+							booktype: {
 								required :true,
 								lettersonly:true
 
@@ -418,18 +412,24 @@
 								lettersonly:true
 
 							},
-							noOfCopies : {
-								required:true,
+							noofcopies : {
+
 								number :true,
-								digits: true
+								digits: true,
+								required:true
 							}
 						},
+
+
+
+
+
 						submitHandler : function(form){
 							var url = "/dashboard/addbook";
-							var name = $('#bookName').val();
+							var name = $('#bookname').val();
 							var author = $('#author').val();
-							var type = $('#bookType').val();
-							var noOfCopies = $('#noOfCopies').val();
+							var type = $('#booktype').val();
+							var noOfCopies = $('#noofcopies').val();
 							$.ajax({
 								type :"POST",
 								url  : url,
@@ -442,7 +442,6 @@
 								},
 								success : function ( data ) {
 									$('#sucess_message').html(data.message);	
-
 									$('#book_insertion')[0].reset();
 									var validator = $( "#book_insertion" ).validate();
 									validator.resetForm();

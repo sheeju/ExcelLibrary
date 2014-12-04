@@ -166,6 +166,13 @@
 					});
 				}
 			});
+
+
+			$( "input" ).focus(function() {
+				$('#sucess_message').html('');
+			});
+
+
 			$('#myModal').on('hide.bs.modal', function() {
 				$.ajax({
 					url: '/user',
@@ -175,7 +182,6 @@
 
 					$(".modal-backdrop").hide();
 					$('#content').html(data);
-					$('.alert').removeClass('hidden');
 				});
 			});
 
@@ -194,7 +200,6 @@
 			});
 			$('.empupdate').click(function() {
 				var empid = $(this).attr('id');
-				alert(empid);
 				var emprole = $(this).attr('name');
 				$("#emprole").val(emprole);
 				$('#updaterole').click(function() {
@@ -212,9 +217,6 @@
 					});
 
 				});
-			});
-			$(".close").click(function() {
-				$('.alert').addClass('hidden');
 			});
 
 
