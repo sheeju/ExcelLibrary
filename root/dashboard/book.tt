@@ -1,183 +1,189 @@
 <br>
 <div class="alert alert-danger maxbook hidden">
-	<a href="#" class="close">&times;</a>
-	<strong>Warning!</strong> Each Employee has maximum 2 Books.
+    <a href="#" class="close">&times;</a>
+    <strong>Warning!</strong> Each Employee has maximum 2 Books.
 </div>
 [% IF role == 'Admin' %]
 <button type="button" style="margin:5px 5px" class="btn btn-outline btn-primary pull-right" data-toggle="modal" data-target="#myModal">
-	Add New Book
+    Add New Book
 </button>
 [% END %]
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-				</button>
-				<h4 class="modal-title" id="myModalLabel">Add Book</h4>
-			</div>
-			<div class="modal-body">
-				<form role="form" id="book_insertion" method="POST">
-					<div class="form-group">
-						<label >Book Name</label>
-						<input type="text" class="form-control" id="bookname" name="bookname" placeholder="Name">
-					</div>
-					<br/>
-					<div class="form-group">
-						<label>Book Type</label>
-						<input type="text" class="form-control" id="booktype" name="booktype" placeholder="Type">
-					</div>
-					<br/>
-					<div class="form-group">
-						<label>Author</label>
-						<input type="text" class="form-control" id="author" name="author" placeholder="Author">
-					</div>
-					<br/>
-					<div class="form-group">
-						<label>No Of Copies</label>
-						<input type="number" class="form-control" id="noofcopies" name="noofcopies" placeholder="Count" min=1 value=1>
-					</div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Add Book</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" id="book_insertion" method="POST">
+                    <div class="form-group">
+                        <label>Book Name</label>
+                        <input type="text" class="form-control" id="bookname" name="bookname" placeholder="Name">
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                        <label>Book Type</label>
+                        <input type="text" class="form-control" id="booktype" name="booktype" placeholder="Type">
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                        <label>Author</label>
+                        <input type="text" class="form-control" id="author" name="author" placeholder="Author">
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                        <label>No Of Copies</label>
+                        <input type="number" class="form-control" id="noofcopies" name="noofcopies" placeholder="Count" min=1 value=1>
+                    </div>
 
-					<label id="sucess_message"></label>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-primary" id="addbook">ADD</button>
-						<button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
+                    <label id="sucess_message"></label>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="addbook">ADD</button>
+                        <button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="modal fade bs-example-modal-lg" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-				</button>
-				<h4 class="modal-title" id="myModalLabel">Book Details</h4>
-			</div>
-			<div class="modal-body">
-				<br/>
-				<div class="form-group pull-right">
-					<div class="col-lg-5 pull-right">
-						<div class="input-group">
-							<span class="input-group-addon">No Of Copies</span>
-							<input type="text" id="Count_id" class="form-control" disabled>
-							<span class="input-group-btn">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Book Details</h4>
+            </div>
+            <div class="modal-body">
+                <br/>
+                <div class="form-group pull-right">
+                    <div class="col-lg-5 pull-right">
+                        <div class="input-group">
+                            <span class="input-group-addon">No Of Copies</span>
+                            <input type="text" id="Count_id" class="form-control" disabled>
+                            <span class="input-group-btn">
 								<button class="btn btn-primary addCopies" type="button"><b>+</b></button>
 							</span>
-						</div>
-					</div>
-				</div>
-				<table class="table table-hover table-bordered table-stripped table-condensed info table-responsive" cellspacing="0" width="100%">
-					<thead>
-						<tr>
-							<th>Sl No</th>
-							<th>Copy ID</th>
-							<th>Status</th>
-							<th>Employee Name</th>
-							<th>Issued Date</th>
-							<th>Return Date</th>
-							<th>Delete</th>
-						</tr>
-					</thead>
-					<tbody id="details_table">
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-hover table-bordered table-stripped table-condensed info table-responsive" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Sl No</th>
+                            <th>Copy ID</th>
+                            <th>Status</th>
+                            <th>Employee Name</th>
+                            <th>Issued Date</th>
+                            <th>Return Date</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody id="details_table">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="modal fade" id="commentmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-				</button>
-				<h4 class="modal-title" id="myModalLabel">Comment</h4>
-			</div>
-			<div class="modal-body">
-				<form role="form" id="commentform" method="POST">
-					<div class="form-group">
-						<div><label for="comment">Add Comment:</label></div>
-						<br>
-						<div><textarea class="form-control" rows="3" name="bookcomment" id="txt_comment"></textarea></div>
-						<br>
-						<div class=" text-right"><button type="submit" id="btn_post" class="btn btn-primary">Post</button></div>
-					</form>
-					<br>
-					<br>
-					<div class="col-md-12" style="height:250px; overflow-y:auto;" id="div_comment">
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
-				</div>
-			</form>
-		</div>
-	</div>
-</div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Comment</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" id="commentform" method="POST">
+                    <div class="form-group">
+                        <div>
+                            <label for="comment">Add Comment:</label>
+                        </div>
+                        <br>
+                        <div>
+                            <textarea class="form-control" rows="3" name="bookcomment" id="txt_comment"></textarea>
+                        </div>
+                        <br>
+                        <div class=" text-right">
+                            <button type="submit" id="btn_post" class="btn btn-primary">Post</button>
+                        </div>
+                </form>
+                <br>
+                <br>
+                <div class="col-md-12" style="height:250px; overflow-y:auto;" id="div_comment">
+                </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 
 
 <table id="table" class="display table table-striped table-bordered" cellspacing="0" width="100%">
-	<thead>
-		<tr>
-			<th>Sl No</th>
-			<th>Book Name</th>
-			<th>Book Type</th>
-			<th>Book Author</th>
-			<th>Book Status</th>
-			[% IF role == 'Employee' %]
-			<th>Book Request</th>
-			[% END %]
-			[% IF role == 'Admin' %]
-			<th>View Details</th>
-			[% END %]
-			<th>Comment</th>
-		</tr>
-	</thead>
+    <thead>
+        <tr>
+            <th>Sl No</th>
+            <th>Book Name</th>
+            <th>Book Type</th>
+            <th>Book Author</th>
+            <th>Book Status</th>
+            [% IF role == 'Employee' %]
+            <th>Book Request</th>
+            [% END %]
+            [% IF role == 'Admin' %]
+            <th>View Details</th>
+            [% END %]
+            <th>Comment</th>
+        </tr>
+    </thead>
 
-	<tbody class="details">
-		[% FOREACH msg IN messages.keys %]
-		<tr id="row[% messages.$msg.id %]" class="rowClass">
-			<td>
-				[% messages.$msg.count %]
-			</td>
-			<td>
-				[% messages.$msg.name %]
-			</td>
-			<td>
-				[% messages.$msg.type %]
-			</td>
-			<td>
-				[% messages.$msg.author %]
-			</td>
-			<td>
-				[% messages.$msg.status %]
-			</td>
-			[% IF role == 'Employee' %]
-
-			[% IF messages.$msg.element == 'requested' %]
-			<td>
-				<span id="lbl[%messages.$msg.id%]"  class="label label-info">Book Requested</span>
-			</td>
-			[% ELSIF messages.$msg.element == 'issued'%]
-			<td>
-				<span id="lbl[%messages.$msg.id%]"  class="label label-info">Book Issued</span>
-			</td>
-			[% ELSE %]
-			<td>
-				<button type="button" id="[% messages.$msg.id %]" name='book_request' class="btn btn-sm btn-primary btn-circle book_req"><span class="glyphicon glyphicon-book"></span></button>
-				<span id="lbl[%messages.$msg.id%]"  class="label label-info displaymessage hidden">Book Requested</span>
-			</td>
-			[% END %]
-			[% END %]
-			[% IF role == 'Admin' %]
-			<td>
-				<button type="submit" id="[% messages.$msg.id %]" name='txt_details' data-toggle="modal" data-target=".bs-example-modal-lg" class="btn btn-primary btn-sm viewdetails"><span class="glyphicon glyphicon-eye-open"></button>
+    <tbody class="details">
+        [% FOREACH msg IN messages.keys %]
+        <tr id="row[% messages.$msg.id %]" class="rowClass">
+            <td>
+                [% messages.$msg.count %]
+            </td>
+            <td>
+                [% messages.$msg.name %]
+            </td>
+            <td>
+                [% messages.$msg.type %]
+            </td>
+            <td>
+                [% messages.$msg.author %]
+            </td>
+            <td>
+                [% messages.$msg.status %]
+            </td>
+            [% IF role == 'Employee' %]
+            [% IF messages.$msg.element == 'requested' %]
+            <td>
+                <span id="lbl[%messages.$msg.id%]" class="label label-info">Book Requested</span>
+            </td>
+            [% ELSIF messages.$msg.element == 'issued'%]
+            <td>
+                <span id="lbl[%messages.$msg.id%]" class="label label-info">Book Issued</span>
+            </td>
+            [% ELSE %]
+            <td>
+                <button type="button" id="[% messages.$msg.id %]" name='book_request' class="btn btn-sm btn-primary btn-circle book_req"><span class="glyphicon glyphicon-book"></span>
+                </button>
+                <span id="lbl[%messages.$msg.id%]" class="label label-info displaymessage hidden">Book Requested</span>
+            </td>
+            [% END %]
+            [% END %]
+            [% IF role == 'Admin' %]
+            <td>
+                <button type="submit" id="[% messages.$msg.id %]" name='txt_details' data-toggle="modal" data-target=".bs-example-modal-lg" class="btn btn-primary btn-sm viewdetails"><span class="glyphicon glyphicon-eye-open"></button>
 				</td>
 				[% END %]
 				<td>
@@ -188,314 +194,4 @@
 			</tbody>
 		</table>
 
-		<script>
-			$(document).ready(function() {
-				var oTable=$('#table').dataTable({
-					"columnDefs": [ { "targets": [5,6], "orderable": false } ],	
-				});
-
-				var bookid;
-				var count = 1;
-				$('#table').delegate('.viewdetails', 'click', function() {
-					bookid = $(this).attr('id');
-					getbookcopy(bookid);
-				});
-
-				$('#table').delegate('.btn_comment', 'click', function() {
-					bookid = $(this).attr('id');
-					displaycomment(bookid);
-				});
-
-				function displaycomment(bookid)
-				{
-					$.ajax(
-					{
-						url:'dashboard/getcomments',
-						data:{
-							bookid:bookid,
-						}
-					}).done(function(data)
-					{
-
-						$('#div_comment').empty();
-						if(data.flag)
-						{
-							$.each(data.comments, function(index, value)
-							{
-								var header ='<div class="panel panel-primary"><div class="panel-heading">';
-								if(data.role == 'Admin')
-								{
-									header = header	+'<button type="button" id="'+value.commentid+'" class="close btndltcomment"> &times;</button> <br>';
-								}
-								var elements = header	+ '<span>Commented By : '+ value.employeename +'</span>'
-								+ '<span class="text-right pull-right"> Date : '+ value.commentdate +'</span>'
-								+ '</div>'
-								+ '<div class = "panel-body">'	
-								+ '<div class = "col-md-12 "><p class="txt-left">'+ value.comment + ' </p></div>'
-								+ '</div>'
-								+'</div>';
-								$('#div_comment').prepend(elements);
-							});
-							$('.btndltcomment').click(function()
-							{
-								var commentid = $(this).attr('id');
-								$.ajax(
-								{
-									url:'dashboard/deletecomment',
-									data:
-									{
-										commentid:commentid,
-									}
-								}).done(function(data)
-								{
-									displaycomment(bookid);
-								});
-							});
-						}
-						else
-						{
-							$('#div_comment').append('<div class = "alert alert-info" role="alert" ><p class="txt-center"> No Previous Comments </p></div>');
-						}
-
-					}).fail(function(err) 
-					{ 
-						alert("error"+ err); 
-					});
-
-				}
-				$('#btn_post').click(function(){
-					$("#commentform").validate({
-						rules: {
-							bookcomment: {
-								required:true,
-							}
-
-						},
-						submitHandler : function(form){
-							var comment = $('#txt_comment').val();
-
-							$.ajax({
-								url:'dashboard/addcomment',
-								data:{
-									bookid:bookid,
-									comment:comment,
-								}
-							}).done(function(responseText)
-							{
-
-								displaycomment(bookid);
-								$('#txt_comment').val('');
-							});
-
-						}
-					});
-
-				});
-
-				
-				var rowId;
-				$('#table').delegate('.rowClass', 'click', function() {
-					rowId = $(this).attr('id');
-				});
-
-
-				function getbookcopy(bookid){
-					$('#detail_body').html('');
-					var detail_body;
-					count = 1;
-					$.ajax( 
-					{
-						url:'dashboard/copydetails',
-						contentType:'text/html', 
-						data:{
-							Id:bookid,
-						},
-					}).done(function(data)
-					{
-						var btn;
-						$.each(data, function(index1, value1)
-						{
-							$.each(value1, function(index,value)
-							{
-								if(value.button == 'delete')
-								{
-									btn = '<td>'+
-										'<button type="button" id='+ value.id +' class="btn btn-primary btn-sm dlt">'+
-											'<span class="glyphicon glyphicon-trash"></span>'+
-											'</button>'+
-										'</td>'
-								}
-								else
-								{	
-									btn = '<td>'+
-										'<button type="button" id='+ value.id +' class="btn btn-primary btn-sm disabled">'+
-											'<span class="glyphicon glyphicon-lock"></span>'+
-											'</button>'+
-										'</td>'
-								}
-								detail_body +='<tr class="bookcopy '+ value.id+'">'+
-									'<td>'+ count +'</td>'+
-									'<td>'+ value.id +'</td>'+
-									'<td>'+ value.status +'</td>'+
-									'<td>'+ value.empname +'</td>'+
-									'<td>'+ value.issueddate +'</td>'+
-									'<td>'+ value.returndate +'</td>'+ btn +
-									'</tr>';
-								count++;
-							});
-						});
-						$('#details_table').html(detail_body);
-						count = count - 1;
-						$('#Count_id').val(count);
-
-						$('.dlt').click(function()
-						{
-							var buttonclicked = $(this);
-							var id = $(this).attr('id');
-							$.ajax( 
-							{
-								url:'dashboard/deletecopy',
-								contentType:'text/html', 
-								data:{
-									CopyId:id,
-								}
-							}).done(function (data)
-							{
-								id= '.'+id;
-								$(id).remove();
-								count = count-1;
-								$('#Count_id').val(count);	
-								if(count < 1)
-								{
-									var page_number = oTable.fnPagingInfo().iPage;
-									oTable.fnDeleteRow('#' + rowId,function(){oTable.fnPageChange(page_number);},false);
-
-								}
-							}).fail(function(err) 
-							{ 
-								alert("error"+ err); 
-							});
-						});
-					});
-				}
-
-
-				$('.addCopies').click(function()
-				{
-					count = count + 1;
-					$('#Count_id').val(count);
-					$.ajax(
-					{
-						url:'dashboard/addcopies',
-						data:{
-							bookId:bookid,
-							Count:count,
-						}
-					}).done(function(responseText)
-					{
-						getbookcopy(bookid);
-					});
-
-				});
-
-				$('#addbook').click(function(){
-						$("#book_insertion").validate({
-						rules: {
-							bookname: {
-								required:true,
-								alphanumeric:true
-							},
-							booktype: {
-								required :true,
-								lettersonly:true
-
-							},
-							author: {
-								required :true,
-								lettersonly:true
-
-							},
-							noofcopies : {
-
-								number :true,
-								digits: true,
-								required:true
-							}
-						},
-
-
-
-
-
-						submitHandler : function(form){
-							var url = "/dashboard/addbook";
-							var name = $('#bookname').val();
-							var author = $('#author').val();
-							var type = $('#booktype').val();
-							var noOfCopies = $('#noofcopies').val();
-							$.ajax({
-								type :"POST",
-								url  : url,
-								data :{
-									name:name,
-									author:author,
-									type:type,
-									count:noOfCopies,
-
-								},
-								success : function ( data ) {
-									$('#sucess_message').html(data.message);	
-									$('#book_insertion')[0].reset();
-									var validator = $( "#book_insertion" ).validate();
-									validator.resetForm();
-
-								}
-							});
-						}
-					});
-					$('#myModal').on('hide.bs.modal', function() {
-						$.ajax({
-							url: '/book',
-							type: 'POST',
-
-							}).done(function(data) {
-							$(".modal-backdrop").hide();
-							$('#content').html(data);
-							$('.addbookalert').removeClass('hidden');
-						});
-					});
-				});
-
-				$( "input" ).focus(function() {
-					$('#sucess_message').html('');
-				});
-
-				$(".close").click(function(){
-					$('.alert').addClass('hidden');
-				});
-
-				$('.book_req').click(function(){
-					var bookid=$(this).attr('id');
-					$.ajax({    
-						url:"/dashboard/bookrequest",
-						data :{
-							bookId :bookid,
-						},
-						success:function(data){
-							if(data.deniedflag)
-							{
-								$('.maxbook').removeClass('hidden');
-
-							}
-							else
-							{
-								id = '#'+bookid;
-								var msg = '#lbl'+ bookid;
-								$(id).addClass('hidden');
-								$(msg).removeClass('hidden');
-							}   
-						}
-					});
-				});
-			});
-		</script>
+<script type="text/javascript" src="../source/js/dashboard/book.js"></script>
