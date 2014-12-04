@@ -1,142 +1,158 @@
 <!Doctype html>
+
 <head>
-	<title>ExcelLibrary</title>
-	<link rel="shortcut icon" href="../source/images/titleimage.ico" />
+    <title>ExcelLibrary</title>
+    <link rel="shortcut icon" href="../source/images/titleimage.ico" />
 </head>
+
 <body>
-	<div class="container-fluid lib-dashboard-root" >
-		<div id="top" class="lib-topbar">
-			<div class="container">
-				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-					<ul class="nav navbar-nav navbar-right">
-						<li class="lib-whitefont" >  
-						<p> <strong>Welcome [% username %]</strong> </p>		
-						</li>
-						<li class="dropdown lib-settings">
-						<a href="#" class="dropdown-toggle  glyphicon glyphicon-cog lib-whitefont" data-toggle="dropdown"></a>
-						<ul class="dropdown-menu" role="menu" style=" width: 310px;height:auto;">
-							<li><p  class ="glyphicon glyphicon-user" style="color:black; margin-left:20px"> [% role %]  [% email %]</p></li>
-							[% IF role  == 'Admin' %]
-							<li role="presentation"><a class="glyphicon glyphicon-wrench btn_setting" role="menuitem" tabindex="-1" href="" data-toggle="modal" data-target="#settingModal"> Settings</a></li>
-							[% END %]
-							<li><a class = " glyphicon glyphicon-pencil btn_changepaswd" href="" tabindex="-1" data-toggle="modal" data-target="#passwordModal" > ChangePassword</a></li>
-							<li class="divider"></li>
-							<li><a class="glyphicon glyphicon-off" href="/login"  id= "logoutbtn"> Logout</a></li>
-						</ul>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</div>
+    <div class="container-fluid lib-dashboard-root">
+        <div id="top" class="lib-topbar">
+            <div class="container">
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="lib-whitefont">
+                            <p> <strong>Welcome [% username %]</strong> 
+                            </p>
+                        </li>
+                        <li class="dropdown lib-settings">
+                            <a href="#" class="dropdown-toggle  glyphicon glyphicon-cog lib-whitefont" data-toggle="dropdown"></a>
+                            <ul class="dropdown-menu" role="menu" style=" width: 310px;height:auto;">
+                                <li>
+                                    <p class="glyphicon glyphicon-user" style="color:black; margin-left:20px">
+                                        [% role %]
+                                        [% email %]
+                                    </p>
+                                </li>
+                                [% IF role == 'Admin' %]
+                                <li role="presentation"><a class="glyphicon glyphicon-wrench btn_setting" role="menuitem" tabindex="-1" href="" data-toggle="modal" data-target="#settingModal"> Settings</a>
+                                </li>
+                                [% END %]
+                                <li><a class=" glyphicon glyphicon-pencil btn_changepaswd" href="" tabindex="-1" data-toggle="modal" data-target="#passwordModal"> ChangePassword</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li><a class="glyphicon glyphicon-off" href="/login" id="logoutbtn"> Logout</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-		<div class="container">
-			<div class="col-sm-5">
-				<img src="../source/images/exceleron_logo_mi.jpg" style="height : 120px; width:230px; ">
-			</div>
-			<div class="col-sm-7">
-				<p class="text-right">
-				<img src="../source/images/LibraryLogo2.jpg" style="height : 120px; width:330px; ">
-				</p>
-			</div>
-		</div>
+        <div class="container">
+            <div class="col-sm-5">
+                <img src="../source/images/exceleron_logo_mi.jpg" style="height : 120px; width:230px; ">
+            </div>
+            <div class="col-sm-7">
+                <p class="text-right">
+                    <img src="../source/images/LibraryLogo2.jpg" style="height : 120px; width:330px; ">
+                </p>
+            </div>
+        </div>
 
-		<div id="menu" class="lib-menubar">
-			<div class="container">
-				<ul class="nav nav-pills nav-justified" role="tablist">
-					<p> </p>
-					[% IF role == 'Admin' %]
-					<li role="presentation" id="request"  class="menu" ><a href="#"><span class="glyphicon glyphicon-home lib-whitefont"> Home</span></a></li>
-					[% END %]
+        <div id="menu" class="lib-menubar">
+            <div class="container">
+                <ul class="nav nav-pills nav-justified" role="tablist">
+                    <p></p>
+                    [% IF role == 'Admin' %]
+                    <li role="presentation" id="request" class="menu"><a href="#"><span class="glyphicon glyphicon-home lib-whitefont"> Home</span></a>
+                    </li>
+                    [% END %]
 
-					<li role="presentation" id="book" class="menu"><a href="#"><span class="glyphicon glyphicon-book lib-whitefont"> Book</span></a></li>
-					<li role="presentation" id="history" class="menu"><a href="#"><span class="glyphicon glyphicon-list-alt lib-whitefont"> History</span></a></li>
-					[% IF role == 'Admin' %]
-					<li role="presentation" id="user" class="menu"><a href="#"><span class="glyphicon glyphicon-user lib-whitefont"> User</span></a></li>
-					<li role="presentation" id="bookreturn" class="menu"><a href="#"><span class="glyphicon glyphicon-import lib-whitefont"> Return</span></a></li>
-					[% END %]
-				</ul>   
-			</div>
-		</div>
-		<div id = "content" class ="container lib-content">
-		</div>
-		<div id="bottom" class="navbar-static-bottom lib-footer">
-			<p class="text-center"> Copyright © Exceleron Software, All Rights Reserved. 2014</p>
-		</div>
+                    <li role="presentation" id="book" class="menu"><a href="#"><span class="glyphicon glyphicon-book lib-whitefont"> Book</span></a>
+                    </li>
+                    <li role="presentation" id="history" class="menu"><a href="#"><span class="glyphicon glyphicon-list-alt lib-whitefont"> History</span></a>
+                    </li>
+                    [% IF role == 'Admin' %]
+                    <li role="presentation" id="user" class="menu"><a href="#"><span class="glyphicon glyphicon-user lib-whitefont"> User</span></a>
+                    </li>
+                    <li role="presentation" id="bookreturn" class="menu"><a href="#"><span class="glyphicon glyphicon-import lib-whitefont"> Return</span></a>
+                    </li>
+                    [% END %]
+                </ul>
+            </div>
+        </div>
+        <div id="content" class="container lib-content">
+        </div>
+        <div id="bottom" class="navbar-static-bottom lib-footer">
+            <p class="text-center">Copyright © Exceleron Software, All Rights Reserved. 2014</p>
+        </div>
 
-		<div class="modal fade" id="settingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-						</button>
-						<h4 class="modal-title" id="myModalLabel">Settings </h4>
-					</div>
-					<div class="modal-body">
-						<form role="form" id="settingform" method="POST">
+        <div class="modal fade" id="settingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel">Settings </h4>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form" id="settingform" method="POST">
 
-							<div class="form-group">
-								<label>MaxAllowedDays</label>
-								<input type="number" class="form-control" id="noofdays" name="noofdays" placeholder="Count" min=1>
-							</div>
-							<br/>
-							<div class="form-group">
-								<label>MaxAllowedBooks</label>
-								<input type="number" class="form-control" id="noofbooks" name="noofbooks" placeholder="Count" min=1>
-							</div>
-							<br/>
-							<label style ="color:red" id= "message"></label>
-							<div class="modal-footer">
-								<button type="submit" class="btn btn-primary" id="configlib">UPDATE</button>
-								<button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
+                            <div class="form-group">
+                                <label>MaxAllowedDays</label>
+                                <input type="number" class="form-control" id="noofdays" name="noofdays" placeholder="Count" min=1>
+                            </div>
+                            <br/>
+                            <div class="form-group">
+                                <label>MaxAllowedBooks</label>
+                                <input type="number" class="form-control" id="noofbooks" name="noofbooks" placeholder="Count" min=1>
+                            </div>
+                            <br/>
+                            <label style="color:red" id="message"></label>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary" id="configlib">UPDATE</button>
+                                <button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-		<div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="oneModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-						</button>
-						<h4 class="modal-title" id="oneModalLabel">Change Password</h4>
-					</div>
-					<div class="modal-body">
-						<form role="form" id="passwordform" method="POST">
-							<div class="form-group">
-								<label >Current Password</label>
-								<input type="password" class="form-control" id="oldpassword" name="oldpassword">
-							</div>
-							<br/>
-							<div class="form-group">
-								<label>New Password</label>
-								<input type="password" class="form-control" id="newpassword" name="newpassword">
-							</div>
-							<br/>
-							<div class="form-group">
-								<label>Confirm New Password</label>
-								<input type="password" class="form-control" id="confirmpassword" name="confirmpassword">
-							</div>
-							<br/>
+        <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="oneModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                        </button>
+                        <h4 class="modal-title" id="oneModalLabel">Change Password</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form" id="passwordform" method="POST">
+                            <div class="form-group">
+                                <label>Current Password</label>
+                                <input type="password" class="form-control" id="oldpassword" name="oldpassword">
+                            </div>
+                            <br/>
+                            <div class="form-group">
+                                <label>New Password</label>
+                                <input type="password" class="form-control" id="newpassword" name="newpassword">
+                            </div>
+                            <br/>
+                            <div class="form-group">
+                                <label>Confirm New Password</label>
+                                <input type="password" class="form-control" id="confirmpassword" name="confirmpassword">
+                            </div>
+                            <br/>
 
-							<label style ="color:red" id="passwordmessage"></label>
+                            <label style="color:red" id="passwordmessage"></label>
 
-							<div class="modal-footer">
-								<button type="submit" class="btn btn-primary" id="changepassword">Change Password</button>
-								<button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary" id="changepassword">Change Password</button>
+                                <button type="button" class="btn btn-default" class="close" data-dismiss="modal">CLOSE</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 <link rel="stylesheet" type="text/css" href="../source/bootstrap/dist/css/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/jquery.dataTables.css"/>
+<link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/jquery.dataTables.css" />
 <link rel="stylesheet" type="text/css" href="../source/DataTable/media/css/dataTables.bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="../source/yadcf-master/jquery.dataTables.yadcf.css" />
 <link rel="stylesheet" href="../source/jquery-validation/demo/site-demos.css">
@@ -144,182 +160,11 @@
 
 <script type="text/javascript" src="../source/js/jquery.js" type="text/javascript"></script>
 <script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js" type="text/javascript"></script>
-<script type="text/javascript" src="../source/bootstrap/dist/js/bootstrap.js" type="text/javascript"> </script>
+<script type="text/javascript" src="../source/bootstrap/dist/js/bootstrap.js" type="text/javascript">
+</script>
 <script type="text/javascript" src="../source/DataTable/media/js/dataTables.bootstrap.js"></script>
 <script type="text/javascript" src="../source/js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.js"></script>
 <script type="text/javascript" src="../source/DataTable/media/js/dataTables.bootstrap.js"></script>
 <script type="text/javascript" src="../source/yadcf-master/lab/jquery.dataTables.yadcf.js"></script>
-
-<script>
-	$(document).ready(function() 
-	{
-		function DisableBackButton() {
-			window.history.forward()
-		}
-		DisableBackButton();
-		window.onload = DisableBackButton;
-		window.onpageshow = function(evt) { if (evt.persisted) DisableBackButton() }
-		window.onunload = function() { void (0) }
-
-		$( "#oldpassword" ).focus(function() {
-			$('#passwordmessage').html('');
-		});
-
-
-		$.ajax({
-			url:"dashboard/defaultsetting",
-			success:function(data){
-				$('#noofdays').val(data.maxalloweddays);
-				$('#noofbooks').val(data.maxallowedbooks);
-			}
-		});
-
-		var curent;
-		var element;
-		if($('#request').length)
-		{
-			$('#request').addClass("active");
-			curent = '#request';
-			element = '/request';
-		}
-		else
-		{
-			$('#book').addClass("active");
-			curent = '#book';
-			element = '/book';
-
-		}
-		loadpage(element);
-		function loadpage(element)
-		{
-			$.ajax( 
-			{ 
-				url:element, 
-				contentType:'text/html', 
-				dataType:'html',
-			}).done(function(responseText)  
-			{ 
-				$("#content").html(responseText); 
-			}).fail(function(err)  
-			{  
-				alert("error" + err);  
-			});
-		}
-		$('.menu').click(function(){
-			var id = $(this).attr('id');
-			var path = "/"+id;
-			id='#'+id;
-			$(curent).removeClass("active");
-			$(id).addClass("active");
-			curent = id;
-			loadpage(path);
-		});
-
-		$('#configlib').click(function(){
-
-	
-			$("#settingform").validate({
-				rules: {
-
-					noofbooks : {
-						required:true,
-						number :true,
-						digits: true
-					},
-					noofdays : {
-						required:true,
-						number :true,
-						digits :true
-					}
-				},
-				submitHandler : function(form){
-					var url = "/dashboard/dashboardConfig";
-					var duration = $('#noofdays').val();
-					var bookcount = $('#noofbooks').val();
-
-					$.ajax({
-						type :"POST",
-						url  : url,
-						data :{
-							noofbooks:bookcount,
-							noofdays :duration
-
-						},
-						success : function ( data ) {
-							$('#message').html(data.updatemessage);
-							var validator = $( "#settingform" ).validate();
-							validator.resetForm();
-						}
-					});
-				}
-			});
-
-		});
-
-		$('#changepassword').click(function(){
-
-		
-
-
-			$("#passwordform").validate({
-				rules: {
-
-					oldpassword  : {
-						required:true,
-					},
-					newpassword : {
-						required:true,
-					},
-					confirmpassword :{
-						required:true,
-						equalTo: "#newpassword"	
-					}
-				},
-				submitHandler : function(form){
-					var url = "/dashboard/changepassword";
-					var oldpassword = $('#oldpassword').val();
-					var newpassword = $('#newpassword').val();
-					var confirmpassword =$('#confirmpassword').val();
-
-					$.ajax({
-						type :"POST",
-						url  : url,
-						data :{
-							oldpassword :oldpassword,
-							newpassword :newpassword
-
-					},
-						success : function (data) {
-							if(data.validmessage)
-							{
-								$('#passwordmessage').html("Password Change Sucessfully");
-								$('#passwordform')[0].reset();
-								var validator = $( "#passwordform").validate();
-								validator.resetForm();
-							}
-							else
-							{
-								$('#passwordmessage').html(data.invalidmessage);
-								$('#oldpassword').val('');
-							}
-
-						}
-					});
-				}
-			});
-
-		});
-
-		$('#logoutbtn').click(function(){
-			$.ajax({
-				url:"login/logout",
-				success:function(result){
-				}
-			});
-
-		});
-	});
-</script>
-
-
+<script type="text/javascript" src="../source/js/dashboard/dashboard.js"></script>
