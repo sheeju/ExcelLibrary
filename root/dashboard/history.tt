@@ -1,5 +1,4 @@
 <script type="text/javascript" src="../source/js/dashboard/history.js"></script>
-
 [% IF role == 'Admin' %]
 <br>
 <table id="historyTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
