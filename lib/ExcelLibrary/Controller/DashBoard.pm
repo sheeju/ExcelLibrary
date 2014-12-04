@@ -644,7 +644,7 @@ sub user : Path('/user')
 				}
 			);
 			$user = $user_rs->next;
-			$userdetail{$userid}->{createdby} = $user->Name;
+			$userdetail{$userid}->{createdby} =$user->Name;
 		}
 	}
 
