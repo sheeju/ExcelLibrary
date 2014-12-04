@@ -1,13 +1,29 @@
 $(document).ready(function() {
-    var table = $('#historyTable').dataTable().yadcf([{
-        column_number: 1
-    }, {
-        column_number: 2
-    }, {
-        column_number: 7
-    }]);
+	var table = $('#historyTable').dataTable();
+	var numberofcolumn =table.fnGetData(0).length;
+	if(numberofcolumn == 8)
+	{
 
-    $.ajax({
-        url: '/history',
-    });
+		table.yadcf([{
+
+			column_number: 1
+		}, {
+			column_number: 2
+		}, {
+			column_number: 7
+		}]);
+	}
+	else
+	{
+		table.yadcf([{
+
+			column_number: 1
+		}, {
+			column_number: 2
+		}, {
+			column_number: 5
+		}]);
+
+	}
+
 });
