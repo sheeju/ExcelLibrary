@@ -130,8 +130,8 @@ sub validate : Local
 
 		my @args = ($contenttype, $subject, $message, $usermail);
 		$c->forward('/dashboard/excellibrarysendmail', \@args);
-	$c->stash->{responsemessage} =0;
-	$c->forward('View::JSON');
+		$c->stash->{responsemessage} =0;
+		$c->forward('View::JSON');
 
 }
 else

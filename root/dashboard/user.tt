@@ -1,7 +1,7 @@
 <br>
 <div class="alert alert-success hidden">
 	<a href="#" class="close">&times;</a>
-	<strong>Success:  </strong> Employee Added to Library.
+	<strong>Success:  </strong> Employee(s) Added to Library.
 </div>
 
 
@@ -33,7 +33,7 @@
 					<br/>
 					<div class="form-group">
 						<label>Email</label>
-						<input type="email" class="form-control" id="txt_empemail" name="empemial" placeholder="email">
+						<input type="email" class="form-control" id="txt_empemail" name="empmail" placeholder="email">
 					</div>
 					<br/>
 					<label id="sucess_message">
@@ -138,11 +138,6 @@
 					"orderable": false
 				}]
 			});
-			jQuery.validator.setDefaults({
-				debug: true,
-				success: "valid"
-			});
-
 			$("#form_adduser").validate({
 
 				rules: {
@@ -150,7 +145,7 @@
 						required: true,
 						alphanumeric: true
 					},
-					empemial: {
+					empmail: {
 						required: true,
 						email: true
 					},
@@ -170,21 +165,22 @@
 						},
 
 						}).done(function(data) {
-						$.ajax({
-							url: '/user',
-							type: 'POST',
-
-							}).done(function(data) {
-
-							$(".modal-backdrop").hide();
-							$('#content').html(data);
-							$('.alert').removeClass('hidden');
-						});
-						$('#form_adduser')[0].reset();
+											$('#form_adduser')[0].reset();
 						var validator = $("#form_adduser").validate();
 						validator.resetForm();
 					});
 				}
+			});
+			$('#myModal').on('hide.bs.modal', function() {
+				$.ajax({
+							url: '/user',
+							type: 'POST',
+
+							}).done(function(data) {
+							$(".modal-backdrop").hide();
+							$('#content').html(data);
+							$('.alert').removeClass('hidden');
+						});
 			});
 
 			$('.deleteuser').click(function() {
