@@ -146,7 +146,7 @@
 
 	<tbody class="details">
 		[% FOREACH msg IN messages.keys %]
-		<tr id="row[% messages.$msg.id %]" class="rowClass">
+		<tr id="[% messages.$msg.count %]" class="rowClass">
 			<td>
 				[% messages.$msg.count %]
 			</td>
@@ -354,6 +354,7 @@
 
 						$('.dlt').click(function()
 						{
+							var buttonclicked = $(this);
 							var id = $(this).attr('id');
 							$.ajax( 
 							{
@@ -367,10 +368,15 @@
 								id= '.'+id;
 								$(id).remove();
 								count = count-1;
-								$('#Count_id').val(count);
+								$('#Count_id').val(count);	
+								alert(rowId);
+								rowId = rowId -1;
 								if(count < 1)
 								{
-									oTable.fnDeleteRow('#'+rowId);
+									var row = buttonclicked.closest("tr").get(0);
+									var page_number = oTable.fnPagingInfo().iPage;
+									oTable.fnDeleteRow(oTable.fnGetPosition(row), function(){oTable.fnPageChange(page_number);}, false);
+									//oTable.fnDeleteRow(rowId);
 								}
 							}).fail(function(err) 
 							{ 
