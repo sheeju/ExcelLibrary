@@ -106,9 +106,9 @@ sub validate : Local
 	my $token_rs;
 	my $usermail = $c->req->params->{email};
 	my $employee_rs = $c->model('Library::Employee')->search({ Email => $usermail, "Status" =>'Active'});
-	my $employeeinfo	=$employee_rs->next;
+	my $employeeinfo;
 
-	if($employee_rs->count == 1)
+	if($employeeinfo = $employee_rs->next)
 	{
 		my $newtoken = Session::Token->new(length => 20);
 		do
@@ -123,7 +123,7 @@ sub validate : Local
 		my $message =
 		'Hai '
 		. $employeeinfo->get_column('Name')
-		. ',<br> <p> We got a request to reset your Exceleron Library password. To activate your account click the bellow button.<p><a href="http://10.10.10.46:3000/login?token='
+		. ',<br> <p> We got a request to reset your Exceleron Library password. To activate your account click the bellow button.<p><a href="http://10.10.10.30:3000/login?token='
 		. $token
 		. '"> <button> Click me </button></a>';
 		my $contenttype = 'text/html';
