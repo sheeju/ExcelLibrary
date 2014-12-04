@@ -60,8 +60,6 @@ $(document).ready(function() {
     });
 
     $('#configlib').click(function() {
-
-
         $("#settingform").validate({
             rules: {
 
@@ -101,10 +99,6 @@ $(document).ready(function() {
     });
 
     $('#changepassword').click(function() {
-
-
-
-
         $("#passwordform").validate({
             rules: {
 
@@ -113,9 +107,11 @@ $(document).ready(function() {
                 },
                 newpassword: {
                     required: true,
+					minlength: 6
                 },
                 confirmpassword: {
                     required: true,
+					minlength: 6
                     equalTo: "#newpassword"
                 }
             },
@@ -151,11 +147,11 @@ $(document).ready(function() {
 
     });
 
-    $('#logoutbtn').click(function() {
-        $.ajax({
-            url: "login/logout",
-            success: function(result) {}
-        });
+	$('#logoutbtn').click(function() {
+		$.ajax({
+			url: "login/logout",
+			success: function(result) {}
+		});
 
     });
 });

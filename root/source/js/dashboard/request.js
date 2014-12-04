@@ -54,13 +54,8 @@ $(document).ready(function() {
                     $(".modal-backdrop").hide();
                     $("#content").html(responseText);
                 });
-
-
             }
         });
-
-
-
 
     });
 
