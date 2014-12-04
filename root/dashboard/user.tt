@@ -1,8 +1,8 @@
 <br>
-<!--div class="alert alert-success hidden">
+<div class="alert alert-success hidden">
 	<a href="#" class="close">&times;</a>
-	<strong>Success:  </strong> Employee Added to Library.
-</div-->
+	<strong>Success:  </strong> Employee(s) Added to Library.
+</div>
 
 
 <button type="button" style="margin:5px 5px" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
@@ -170,23 +170,23 @@
 						},
 
 						}).done(function(data) {
-						$.ajax({
-							url: '/user',
-							type: 'POST',
-
-							}).done(function(data) {
-						//	$('#content').html(data);
-							$('.alert').removeClass('hidden');
-						});
-						$('#form_adduser')[0].reset();
+											$('#form_adduser')[0].reset();
 						var validator = $("#form_adduser").validate();
 						validator.resetForm();
 					});
 				}
 			});
-			$('#myModal').on('hide', function() {
-				    alert("hi");
-				});
+			$('#myModal').on('hide.bs.modal', function() {
+				$.ajax({
+							url: '/user',
+							type: 'POST',
+
+							}).done(function(data) {
+							$(".modal-backdrop").hide();
+							$('#content').html(data);
+							$('.alert').removeClass('hidden');
+						});
+			});
 
 			$('.deleteuser').click(function() {
 				user_id = $(this).attr('id');
