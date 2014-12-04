@@ -134,7 +134,7 @@
 		$(document).ready(function() {
 			$('#user_table').DataTable({
 				"columnDefs": [{
-					"targets": [4, 5],
+					"targets": [5,6],
 					"orderable": false
 				}]
 			});
@@ -143,7 +143,7 @@
 				rules: {
 					empname: {
 						required: true,
-						alphanumeric: true
+						lettersonly: true
 					},
 					empmail: {
 						required: true,
