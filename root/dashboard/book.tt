@@ -410,7 +410,7 @@
 							},
 							bookType: {
 								required :true,
-								alphanumeric:true
+								lettersonly:true
 
 							},
 							author: {
