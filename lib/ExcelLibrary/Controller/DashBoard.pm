@@ -30,25 +30,25 @@ Catalyst Controller.
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 my $generator = Session::Token->new(length => 20);
+
 sub excellibrarysendmail : Local
 {
-	my $len = @_; 
-	my ($contenttype, $subject, $body, $to);
-	if($len != 4)
-	{
-		
-		my $self = shift(@_);
-		my $c = shift(@_);
-		$contenttype = shift(@_);
-		$subject     = shift(@_);
-		$body 		 = shift(@_);
-		$to			 = shift(@_);
-		#($contenttype, $subject, $body, $to) = @{@_};
-	}
-	else
-	{
-    	 ($contenttype, $subject, $body, $to) = @_;
-	}
+    my $len = @_;
+    my ($contenttype, $subject, $body, $to);
+    if ($len != 4) {
+
+        my $self = shift(@_);
+        my $c    = shift(@_);
+        $contenttype = shift(@_);
+        $subject     = shift(@_);
+        $body        = shift(@_);
+        $to          = shift(@_);
+
+        #($contenttype, $subject, $body, $to) = @{@_};
+    }
+    else {
+        ($contenttype, $subject, $body, $to) = @_;
+    }
     my $message = Email::MIME->create(
         header_str => [
             From    => 'ExcelLibrary@exceleron.com',
@@ -61,7 +61,7 @@ sub excellibrarysendmail : Local
         },
     );
     $message->content_type_set($contenttype);
-	$message->body_str_set($body);
+    $message->body_str_set($body);
     sendmail($message);
 
 }
@@ -69,19 +69,17 @@ sub excellibrarysendmail : Local
 sub dashboard : Path : Args(0)
 {
     my ($self, $c) = @_;
-	if($c->user)
-	{
-    	$c->stash->{username} = $c->user->Name;
-    	$c->stash->{role}     = $c->user->Role;
-		$c->stash->{email}     = $c->user->Email;
+    if ($c->user) {
+        $c->stash->{username} = $c->user->Name;
+        $c->stash->{role}     = $c->user->Role;
+        $c->stash->{email}    = $c->user->Email;
 
-		$c->forward('View::TT');
-	}
-	else
-	{
-		$c->response->body('Page not found');
-	  	$c->response->status(404);	
-	}
+        $c->forward('View::TT');
+    }
+    else {
+        $c->response->body('Page not found');
+        $c->response->status(404);
+    }
 }
 
 sub request : Path('/request')
@@ -94,25 +92,26 @@ sub request : Path('/request')
     my $transaction_rs = $c->model('Library::Transaction')->search(
         {
 
-            "me.Status" => 'Requested',
-			"employee.Status" => 'Active'
+            "me.Status"       => 'Requested',
+            "employee.Status" => 'Active'
         },
         {
             join      => ['employee',      'book'],
             '+select' => ['employee.Name', 'book.Name'],
             '+as'     => ['EmployeeName',  'BookName'],
-			order_by  => 'RequestDate'
+            order_by  => 'RequestDate'
         }
     );
     my $bookcopy_rs = $c->model('Library::BookCopy')->search({});
-    while($transaction = $transaction_rs->next) {
+    while ($transaction = $transaction_rs->next) {
 
-		if (defined $transaction->UpdatedBy) {
+        if (defined $transaction->UpdatedBy) {
 
-			$status = "issue";
-		}
-		else {
-			my $book = $bookcopy_rs->search({"BookId" => $transaction->BookId, "Status" => "Available"});
+            $status = "issue";
+        }
+        else {
+            my $book = $bookcopy_rs->search({"BookId" => $transaction->BookId, "Status" => "Available"});
+
 =pod
 			my $alredyresponed = $transaction_rs->search(
 				{
@@ -122,34 +121,35 @@ sub request : Path('/request')
 				}
 			); 						
 =cut
-			my $accepted = $c->model('Library::Transaction')->search(
-				{
-					BookId     => $transaction->BookId,
-					UpdatedBy  => {'!=',undef},
-					Status	   => 'Requested'
-				}
-			);	
 
-			if ( $accepted->count <= 0 and $book->next) {
-				$status = "available";
-			}
-			else {
-				$status = "notavailable";
-			}
+            my $accepted = $c->model('Library::Transaction')->search(
+                {
+                    BookId    => $transaction->BookId,
+                    UpdatedBy => {'!=', undef},
+                    Status    => 'Requested'
+                }
+            );
 
-		}
-		push(
-			@{$c->stash->{messages}},
-			{
-				no            => $count++,
-				id            => $transaction->Id,
-				requesteddate => $transaction->RequestDate,
-				employeename  => $transaction->get_column('EmployeeName'),
-				bookname      => $transaction->get_column('BookName'),
-				status        => $status
-			}
-		);
-	}
+            if ($accepted->count <= 0 and $book->next) {
+                $status = "available";
+            }
+            else {
+                $status = "notavailable";
+            }
+
+        }
+        push(
+            @{$c->stash->{messages}},
+            {
+                no            => $count++,
+                id            => $transaction->Id,
+                requesteddate => $transaction->RequestDate,
+                employeename  => $transaction->get_column('EmployeeName'),
+                bookname      => $transaction->get_column('BookName'),
+                status        => $status
+            }
+        );
+    }
 
     $c->stash->{template} = "dashboard/request.tt";
     $c->forward('View::TT');
@@ -158,13 +158,13 @@ sub request : Path('/request')
 
 sub managerequest : Local
 {
-    my ($self, $c) 	   = @_;
-    my $req_id         = $c->req->params->{id};
-    my $response       = $c->req->params->{response};
-	my $denyreason 	   = $c->req->params->{reason};
-    my $loginId        = $c->user->Id;
+    my ($self, $c) = @_;
+    my $req_id     = $c->req->params->{id};
+    my $response   = $c->req->params->{response};
+    my $denyreason = $c->req->params->{reason};
+    my $loginId    = $c->user->Id;
 
-#<---------Updating reponse for paritcular request------------->
+    #<---------Updating reponse for paritcular request------------->
     my $transaction_rs = $c->model('Library::Transaction')->search(
         {
             "me.Id" => $req_id
@@ -177,67 +177,71 @@ sub managerequest : Local
     );
     my $transaction = $transaction_rs->next;
 
-	# if ($transaction->UpdatedBy eq '') {
-        if ($response eq 'Allow') {
-            $transaction_rs->update({"UpdatedBy" => $loginId});
-        }
-        else {
-            $transaction_rs->update(
-                {
-                    "Status"    => 'Denied',
-                    "UpdatedBy" => $loginId,
-					"Comment"   => $denyreason
-                }
-            );
-        }
-		# }
-	
-#<--------Sending response as a email to user--------------->
-	
-	my $subject     = "ExcelLibrary response for book request";
+    # if ($transaction->UpdatedBy eq '') {
+    if ($response eq 'Allow') {
+        $transaction_rs->update({"UpdatedBy" => $loginId});
+    }
+    else {
+        $transaction_rs->update(
+            {
+                "Status"    => 'Denied',
+                "UpdatedBy" => $loginId,
+                "Comment"   => $denyreason
+            }
+        );
+    }
+
+    # }
+
+    #<--------Sending response as a email to user--------------->
+
+    my $subject     = "ExcelLibrary response for book request";
     my $contenttype = "text/plain";
     my $message;
 
-	my $employeename = $transaction->get_column("EmployeeName");
-	my $bookname 	 = $transaction->get_column("BookName");
-	my $requestdate  = $transaction->RequestDate;
+    my $employeename = $transaction->get_column("EmployeeName");
+    my $bookname     = $transaction->get_column("BookName");
+    my $requestdate  = $transaction->RequestDate;
     my $current_date = DateTime->now(time_zone => 'Asia/Kolkata');
-	my $collectdate  = $current_date->ymd('-') . " " . $current_date->hms(':');
-	my $email		 = $transaction->get_column("EmployeeEmail");
-	$transaction_rs = $c->model('Library::Transaction')->search(
-		{
-			"BookId" => $transaction->BookId,
-			"Status" => 'Issued',
-			"ReturnedDate" => {'=',undef}
-		},
-		{
-			order_by => { -asc => "ExpectedReturnDate" }
-		}
-	);
+    my $collectdate  = $current_date->ymd('-') . " " . $current_date->hms(':');
+    my $email        = $transaction->get_column("EmployeeEmail");
+    $transaction_rs = $c->model('Library::Transaction')->search(
+        {
+            "BookId"       => $transaction->BookId,
+            "Status"       => 'Issued',
+            "ReturnedDate" => {'=', undef}
+        },
+        {
+            order_by => {-asc => "ExpectedReturnDate"}
+        }
+    );
+
     if ($response eq 'Allow') {
-		$message = "Hello "
-          . $employeename . "\,\n\nWe have recieve the request for \""
+        $message =
+            "Hello "
+          . $employeename
+          . "\,\n\nWe have recieve the request for \""
           . $bookname
           . "\" book on "
-		  . $requestdate
-		  . "\. Please come and collect the book on "
-		  . $collectdate
-		  . "\.";
+          . $requestdate
+          . "\. Please come and collect the book on "
+          . $collectdate . "\.";
     }
     else {
-		$message = "Hello "
-          . $employeename . "\,\n\nSorry to inform you, Your request for \""
+        $message =
+            "Hello "
+          . $employeename
+          . "\,\n\nSorry to inform you, Your request for \""
           . $bookname
           . "\" book on "
-		  . $requestdate
-		  . " is denied because of following Reason."
-		  . "\nReason : "
-		  . $denyreason
-		  . "\.";
+          . $requestdate
+          . " is denied because of following Reason."
+          . "\nReason : "
+          . $denyreason . "\.";
     }
 
-	$message = $message ."\n\nRegards,\nAdmin,\nExcelLibrary.";
-    excellibrarysendmail($contenttype, $subject, $message,$email);
+    $message = $message . "\n\nRegards,\nAdmin,\nExcelLibrary.";
+    excellibrarysendmail($contenttype, $subject, $message, $email);
     $c->detach('request');
 }
 
@@ -453,9 +457,10 @@ sub addbook : Local
         }
     );
     $c->stash->{message} = "Book added sucessfully";
-	$c->log->info(Dumper $c->stash->{message});
-#    $c->forward('book');
-	 $c->forward('View::JSON');
+    $c->log->info(Dumper $c->stash->{message});
+
+    #    $c->forward('book');
+    $c->forward('View::JSON');
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -463,56 +468,57 @@ sub addcomment : Local
 {
 
     my ($self, $c) = @_;
-	my $bookid = $c->req->params->{'bookid'};
-	my $comment = $c->req->params->{'comment'};
-	my $employeeid = $c->user->Id;
+    my $bookid      = $c->req->params->{'bookid'};
+    my $comment     = $c->req->params->{'comment'};
+    my $employeeid  = $c->user->Id;
     my $currentdate = DateTime->now(time_zone => 'Asia/Kolkata');
-    my $commentdate  = $currentdate->ymd('-') . " " . $currentdate->hms(':');
+    my $commentdate = $currentdate->ymd('-') . " " . $currentdate->hms(':');
 
-	my $comment_rs = $c->model('Library::Comment')->create(
-		{
-			"Comment" => $comment,
-			"BookId" => $bookid,
-			"EmployeeId" => $employeeid,
-			"CommentedDate" => $commentdate
-		}
-	);
-	$c->stash->{message} = "comment added sucessfully";	
-	$c->forward('View::JSON');
+    my $comment_rs = $c->model('Library::Comment')->create(
+        {
+            "Comment"       => $comment,
+            "BookId"        => $bookid,
+            "EmployeeId"    => $employeeid,
+            "CommentedDate" => $commentdate
+        }
+    );
+    $c->stash->{message} = "comment added sucessfully";
+    $c->forward('View::JSON');
 }
 
 sub getcomments : Local
 {
     my ($self, $c) = @_;
-	my $bookid = $c->req->params->{'bookid'};
+    my $bookid = $c->req->params->{'bookid'};
 
-	my $comment_rs = $c->model('Library::Comment')->search(
-											{
-												"BookId" => $bookid 
-											},
-											{
-												join      => 'employee',
-												'+select' => 'employee.Name',
-												'+as'     => 'EmployeeName'
-											}
+    my $comment_rs = $c->model('Library::Comment')->search(
+        {
+            "BookId" => $bookid
+        },
+        {
+            join      => 'employee',
+            '+select' => 'employee.Name',
+            '+as'     => 'EmployeeName'
+        }
 
+    );
+    my $comment;
 
-										);
-	my $comment;
-
-	$c->stash->{flag} = 1 if($comment_rs->count > 0);
-	$c->stash->{role} = $c->user->Role;
-	while($comment = $comment_rs->next)
-	{
-		push(@{$c->stash->{comments}},{
-				commentid => $comment->Id,
-				employeename => $comment->get_column('EmployeeName'),
-				comment => $comment->Comment,
-				commentdate=> $comment->CommentedDate
-			});	
-		$c->log->info($comment->Id ." ".$comment->Comment);
-	}
-	$c->forward('View::JSON');
+    $c->stash->{flag} = 1 if ($comment_rs->count > 0);
+    $c->stash->{role} = $c->user->Role;
+    while ($comment = $comment_rs->next) {
+        push(
+            @{$c->stash->{comments}},
+            {
+                commentid    => $comment->Id,
+                employeename => $comment->get_column('EmployeeName'),
+                comment      => $comment->Comment,
+                commentdate  => $comment->CommentedDate
+            }
+        );
+        $c->log->info($comment->Id . " " . $comment->Comment);
+    }
+    $c->forward('View::JSON');
 }
 
 sub bookrequest : Local
@@ -580,25 +586,26 @@ sub bookrequest : Local
         foreach $employee (@employee_rs) {
 
             my $subject = "Book Request";
-            my $message = "Hello "
+            my $message =
+                "Hello "
               . $employee->Name
               . "\n\n\t"
               . $transaction->get_column('EmployeeName')
               . " Request the \""
               . $book->Name
               . "\" book on "
-			  . $transaction->RequestDate
-			  . "\.\n\n Regards,\nExcelLibrary. ";
+              . $transaction->RequestDate
+              . "\.\n\n Regards,\nExcelLibrary. ";
             my $contenttype = "text/plain";
             excellibrarysendmail($contenttype, $subject, $message, $employee->Email);
-       }
+        }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~copy block written by skanda~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     }
     else {
         $c->stash->{deniedflag} = 1;
     }
-	$c->forward('View::JSON');
+    $c->forward('View::JSON');
 }
 
 sub user : Path('/user')
@@ -609,66 +616,61 @@ sub user : Path('/user')
             "Status" => {'!=', 'Disable'},
         }
     );
-	
-
 
     my $count = 1;
     my %userdetail;
-	my $user;
+    my $user;
     foreach $user (@user_rs) {
-		$userdetail{$user->Id} = {
-            count => $count++,
-            id    => $user->Id,
-            name  => $user->Name,
-            role  => $user->Role,
-            email => $user->Email,
-			bookinhand => 0,
-			createdby => $user->CreatedBy
-		};
+        $userdetail{$user->Id} = {
+            count      => $count++,
+            id         => $user->Id,
+            name       => $user->Name,
+            role       => $user->Role,
+            email      => $user->Email,
+            bookinhand => 0,
+            createdby  => $user->CreatedBy
+        };
     }
 
-	foreach my $userid ( keys %userdetail ) {
+    foreach my $userid (keys %userdetail) {
 
-		my $createdby = $userdetail{$userid}->{createdby};
-		if(defined $userdetail{$createdby})
-		{
-			$userdetail{$userid}->{createdby} = $userdetail{$createdby}->{name};
-		}
-		else
-		{
-			my $user_rs = $c->model('Library::Employee')->search(
-				{
-					"Id" => $createdby,
-				},
-				{
-					columns => "Name"
-				}
-			);
-			$user = $user_rs->next;
-			$userdetail{$userid}->{createdby} =$user->Name;
-		}
-	}
+        my $createdby = $userdetail{$userid}->{createdby};
+        if (defined $userdetail{$createdby}) {
+            $userdetail{$userid}->{createdby} = $userdetail{$createdby}->{name};
+        }
+        else {
+            my $user_rs = $c->model('Library::Employee')->search(
+                {
+                    "Id" => $createdby,
+                },
+                {
+                    columns => "Name"
+                }
+            );
+            $user = $user_rs->next;
+            $userdetail{$userid}->{createdby} = $user->Name;
+        }
+    }
 
-	my @transaction_rs = $c->model('Library::Transaction')->search(
-		{
-			"Status" => 'Issued',
-			"ReturnedDate" => {'=',undef}
-		},
-		{
-			columns =>	"EmployeeId",
-			group_by =>  "EmployeeId"
-		}
-	);
+    my @transaction_rs = $c->model('Library::Transaction')->search(
+        {
+            "Status"       => 'Issued',
+            "ReturnedDate" => {'=', undef}
+        },
+        {
+            columns  => "EmployeeId",
+            group_by => "EmployeeId"
+        }
+    );
 
-	my $transaction;
-	foreach $transaction (@transaction_rs)
-	{
-		$userdetail{$transaction->EmployeeId}{bookinhand} = 1;		
-	}
-	my $id = $c->user->Id;
-	$userdetail{$id}{bookinhand} = 2;
-    $c->stash->{userinfo} = \%userdetail;
-    $c->stash->{template} = "dashboard/user.tt";
+    my $transaction;
+    foreach $transaction (@transaction_rs) {
+        $userdetail{$transaction->EmployeeId}{bookinhand} = 1;
+    }
+    my $id = $c->user->Id;
+    $userdetail{$id}{bookinhand} = 2;
+    $c->stash->{userinfo}        = \%userdetail;
+    $c->stash->{template}        = "dashboard/user.tt";
     $c->forward('View::TT');
 }
 
@@ -676,20 +678,19 @@ sub user : Path('/user')
 sub adduser : Local
 {
     my ($self, $c) = @_;
-    my $empname     = $c->req->params->{name};
-	$empname        = camelize($empname);
+    my $empname = $c->req->params->{name};
+    $empname = camelize($empname);
     my $emprole     = $c->req->params->{role};
     my $empemail    = $c->req->params->{email};
     my $userid      = $c->user->Id;
     my $currentdate = DateTime->now(time_zone => 'Asia/Kolkata');
     my $createdon   = $currentdate->ymd('-') . " " . $currentdate->hms(':');
-	my $token;
-	my $employee_rs;
-	do
-	{
-		$token = $generator->get;
-		$employee_rs = $c->model('Library::Employee')->search({"Token" => $token });
-	}while($employee_rs->count > 0);
+    my $token;
+    my $employee_rs;
+    do {
+        $token = $generator->get;
+        $employee_rs = $c->model('Library::Employee')->search({"Token" => $token});
+    } while ($employee_rs->count > 0);
 
     $employee_rs = $c->model('Library::Employee')->create(
         {
@@ -704,15 +705,15 @@ sub adduser : Local
 
     my $subject = 'Activate ExcelLibrary Account';
     my $message =
-		'Hello '
-	  . $empname 
-	  . ',<br> <p> We are happy to inform that your account has been created in ExcelLibrary. Please <a href="http://10.10.10.30:3000/login?token='
+        'Hello '
+      . $empname
+      . ',<br> <p> We are happy to inform that your account has been created in ExcelLibrary. Please <a href="http://10.10.10.30:3000/login?token='
       . $token
       . '"> <button> Click me </button></a> make it as activate. <p>Regards,<br>Admin,<br>ExcelLibrary.</p> ';
     my $contenttype = 'text/html';
 
     excellibrarysendmail($contenttype, $subject, $message, $empemail);
-	$c->stash->{message} = 'Employee Added Successfully';
+    $c->stash->{message} = 'Employee Added Successfully';
     $c->forward('View::JSON');
 }
 
@@ -854,7 +855,7 @@ sub gettransactionbycopyid : Local
 
 sub gettransactionbyemployeeid : Local
 {
-    my ($self, $c)     = @_;
+    my ($self, $c) = @_;
     my $employeeid     = $c->req->params->{emp_id};
     my @transaction_rs = $c->model('Library::Transaction')->search(
         {
@@ -869,149 +870,151 @@ sub gettransactionbyemployeeid : Local
         }
     );
 
-	my $transaction;
-	foreach $transaction (@transaction_rs) {
-		$c->stash->{flag} = 1;
-		$c->stash->{employeename} = $transaction->get_column('EmployeeName'); 
-		push(
-			@{$c->stash->{booktaken}},
-			{
-				bookname      => $transaction->get_column('BookName'),
-				bookcopyid    => $transaction->BookCopyId,
-				issuedate     => $transaction->IssuedDate,
-				expreturndate => $transaction->ExpectedReturnDate
-			}
-		);
-	}
-    
-	$c->forward('View::JSON');
+    my $transaction;
+    foreach $transaction (@transaction_rs) {
+        $c->stash->{flag}         = 1;
+        $c->stash->{employeename} = $transaction->get_column('EmployeeName');
+        push(
+            @{$c->stash->{booktaken}},
+            {
+                bookname      => $transaction->get_column('BookName'),
+                bookcopyid    => $transaction->BookCopyId,
+                issuedate     => $transaction->IssuedDate,
+                expreturndate => $transaction->ExpectedReturnDate
+            }
+        );
+    }
+
+    $c->forward('View::JSON');
 }
 
 sub returnbook : Local
 {
-	my ($self, $c) = @_;
+    my ($self, $c) = @_;
 
-	my $loginId = $c->user->Id;
-	my @bookcopy_id;
-	push(@bookcopy_id, $c->req->params->{'copy_id[]'});
-	my $comment      = $c->req->params->{comment};
-	my $current_date = DateTime->now(time_zone => 'Asia/Kolkata');
-	my $returneddate = $current_date->ymd('-') . " " . $current_date->hms(':');
+    my $loginId = $c->user->Id;
+    my @bookcopy_id;
+    push(@bookcopy_id, $c->req->params->{'copy_id[]'});
+    my $comment      = $c->req->params->{comment};
+    my $current_date = DateTime->now(time_zone => 'Asia/Kolkata');
+    my $returneddate = $current_date->ymd('-') . " " . $current_date->hms(':');
 
-	foreach my $copyid (@bookcopy_id) {
-	
-		my $transaction_rs = $c->model('Library::Transaction')->search({"BookCopyId" => $copyid});
-		$transaction_rs->update(
-			{
-				"ReturnedDate" => $returneddate,
-				"RecivedBy"    => $loginId,
-				"Comment"      => $comment
-			}
-		);
+    foreach my $copyid (@bookcopy_id) {
 
-		my $bookcopy_rs = $c->model('Library::BookCopy')->search({"Id" => $copyid});
-		$bookcopy_rs->update({"Status" => 'Available'});
-	}
-	$c->stash->{result} = 1;
-	$c->forward('View::JSON');
+        my $transaction_rs = $c->model('Library::Transaction')->search({"BookCopyId" => $copyid});
+        $transaction_rs->update(
+            {
+                "ReturnedDate" => $returneddate,
+                "RecivedBy"    => $loginId,
+                "Comment"      => $comment
+            }
+        );
+
+        my $bookcopy_rs = $c->model('Library::BookCopy')->search({"Id" => $copyid});
+        $bookcopy_rs->update({"Status" => 'Available'});
+    }
+    $c->stash->{result} = 1;
+    $c->forward('View::JSON');
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by pavan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sub history : Path('/history')
 {
-	my ($self, $c) = @_;
-	$c->stash->{role} = $c->user->Role;
-	my $userId = $c->user->Id;
-	if ($c->user->Role eq 'Admin') {
-		my $count     = 1;
-		my @alldata = $c->model('Library::Transaction')->search(
-			{
-				'me.Status' => {'!=', 'Requested'},
-			},
-			{
-				join      => ['employee',      'book'],
-				'+select' => ['employee.Name', 'book.Name'],
-				'+as'     => ['EmployeeName',  'BookName'],
-				order_by  => { -desc => [qw/RequestDate/] },
-			}
-		);
-		push(
-			@{$c->stash->{history}},
-			{
-				Count       => $count++,
-				EmpName     => $_->get_column('EmployeeName'),
-				BookName    => $_->get_column('BookName'),
-				Status      => $_->Status,
-				RequestDate => $_->RequestDate,
-				IssuedDate  => $_->IssuedDate,
-				ReturnDate  => $_->ReturnedDate,
-				CopyId 		=> $_->BookCopyId,
-			}
-		) foreach @alldata;
-	}
-	elsif ($c->user->Role eq 'Employee') {
-		my $count      = 1;
-		my @emphistory = $c->model('Library::Transaction')->search(
-			{
-				'me.EmployeeId' => $userId,
-			},
-			{
-				join      => ['book'],
-				'+select' => ['book.Name'],
-				'+as'     => ['BookName'],
-				order_by  => { -desc => [qw/RequestDate/] },
-			}
-		);
-		push(
-			@{$c->stash->{emphistory}},
-			{
-				Count       => $count++,
-				BookName    => $_->get_column('BookName'),
-				RequestDate => $_->RequestDate,
-				IssueDate   => $_->IssuedDate,
-				ReturnDate  => $_->ExpectedReturnDate,
-				Status      => $_->Status,
-			}
-		) foreach @emphistory;
-	}
-	$c->forward('View::TT');
+    my ($self, $c) = @_;
+    $c->stash->{role} = $c->user->Role;
+    my $userId = $c->user->Id;
+    if ($c->user->Role eq 'Admin') {
+        my $count   = 1;
+        my @alldata = $c->model('Library::Transaction')->search(
+            {
+                'me.Status' => {'!=', 'Requested'},
+            },
+            {
+                join      => ['employee',      'book'],
+                '+select' => ['employee.Name', 'book.Name'],
+                '+as'     => ['EmployeeName',  'BookName'],
+                order_by => {-desc => [qw/RequestDate/]},
+            }
+        );
+        push(
+            @{$c->stash->{history}},
+            {
+                Count       => $count++,
+                EmpName     => $_->get_column('EmployeeName'),
+                BookName    => $_->get_column('BookName'),
+                Status      => $_->Status,
+                RequestDate => $_->RequestDate,
+                IssuedDate  => $_->IssuedDate,
+                ReturnDate  => $_->ReturnedDate,
+                CopyId      => $_->BookCopyId,
+            }
+        ) foreach @alldata;
+    }
+    elsif ($c->user->Role eq 'Employee') {
+        my $count      = 1;
+        my @emphistory = $c->model('Library::Transaction')->search(
+            {
+                'me.EmployeeId' => $userId,
+            },
+            {
+                join      => ['book'],
+                '+select' => ['book.Name'],
+                '+as'     => ['BookName'],
+                order_by  => {-desc => [qw/RequestDate/]},
+            }
+        );
+        push(
+            @{$c->stash->{emphistory}},
+            {
+                Count       => $count++,
+                BookName    => $_->get_column('BookName'),
+                RequestDate => $_->RequestDate,
+                IssueDate   => $_->IssuedDate,
+                ReturnDate  => $_->ExpectedReturnDate,
+                Status      => $_->Status,
+            }
+        ) foreach @emphistory;
+    }
+    $c->forward('View::TT');
 }
 
 sub addcopies : Local
 {
-	my ($self, $c) = @_;
-	my $no_of_copies = 0;
-	$no_of_copies = $c->req->params->{Count};
-	my $bookid = $c->req->params->{bookId};
-    my $currentdate       = DateTime->now(time_zone => 'Asia/Kolkata');
-    my $updateddate       = $currentdate->ymd('-') . " " . $currentdate->hms(':');
-    my $loginId        = $c->user->Id;
-	$c->model('Library::BookCopy')->create(
-		{
-			BookId => $bookid,
-			Status => 'Available',
-		}
-	);
-	my $copy_update = $c->model('Library::Book')->find({Id => $bookid});
-	$copy_update->NoOfCopies($no_of_copies);
-	$copy_update->UpdatedOn($updateddate);
-	$copy_update->UpdatedBy($loginId);
-	$copy_update->update;
-	$c->forward('View::JSON');
+    my ($self, $c) = @_;
+    my $no_of_copies = 0;
+    $no_of_copies = $c->req->params->{Count};
+    my $bookid      = $c->req->params->{bookId};
+    my $currentdate = DateTime->now(time_zone => 'Asia/Kolkata');
+    my $updateddate = $currentdate->ymd('-') . " " . $currentdate->hms(':');
+    my $loginId     = $c->user->Id;
+    $c->model('Library::BookCopy')->create(
+        {
+            BookId => $bookid,
+            Status => 'Available',
+        }
+    );
+    my $copy_update = $c->model('Library::Book')->find({Id => $bookid});
+    $copy_update->NoOfCopies($no_of_copies);
+    $copy_update->UpdatedOn($updateddate);
+    $copy_update->UpdatedBy($loginId);
+    $copy_update->update;
+    $c->forward('View::JSON');
 }
 
 sub deletecomment : Local
 {
-	my($self,$c)=@_;
-	my $commentid=$c->req->params->{commentid};
-	my $rowselect = $c->model('Library::Comment')->find(
-		{
-			Id => $commentid,
-		});
-	$rowselect->delete;
-	$c->forward('View::JSON');
+    my ($self, $c) = @_;
+    my $commentid = $c->req->params->{commentid};
+    my $rowselect = $c->model('Library::Comment')->find(
+        {
+            Id => $commentid,
+        }
+    );
+    $rowselect->delete;
+    $c->forward('View::JSON');
 
 }
+
 =encoding utf8
 
 =head1 AUTHORS
