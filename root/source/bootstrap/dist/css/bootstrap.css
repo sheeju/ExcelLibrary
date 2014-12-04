@@ -3813,8 +3813,8 @@ textarea.input-group-sm > .input-group-btn > .btn {
 
 .nav > li > a:hover,
 .nav > li > a:focus {
-  text-decoration: none;
-  background-color: #eeeeee;
+  /*text-decoration: none;
+  /*background-color: #eeeeee;*/
 }
 
 .nav > li.disabled > a {
@@ -4466,8 +4466,8 @@ textarea.input-group-sm > .input-group-btn > .btn {
   }
   .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
   .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
-    color: #333333;
-    background-color: transparent;
+   /* color: #333333;
+    background-color: transparent;*/
   }
   .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
   .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
