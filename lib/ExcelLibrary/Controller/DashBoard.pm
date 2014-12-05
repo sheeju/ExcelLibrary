@@ -143,7 +143,6 @@ sub request : Path('/request')
             }
         );
     }
-	$c->log->info(Dumper $c->stash->{messages});
     $c->stash->{template} = "dashboard/request.tt";
     $c->forward('View::TT');
 
