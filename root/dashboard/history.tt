@@ -55,7 +55,8 @@
             <th>Book Name</th>
             <th>Request Date</th>
             <th>Issue Date</th>
-            <th>Expected Return Date</th>
+			<th>Expected Return Date</th>
+			<th>Returned Date</th>
             <th>Response</th>
         </tr>
     </thead>
@@ -75,7 +76,10 @@
                 [% var.IssueDate %]
             </td>
             <td>
-                [% var.ReturnDate %]
+                [% var.ExpectedReturnDate %]
+            </td>
+            <td>
+                [% var.ReturnedDate %]
             </td>
             <td>
                 [% var.Status %]
