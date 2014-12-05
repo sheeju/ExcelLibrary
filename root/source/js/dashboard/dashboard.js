@@ -146,6 +146,10 @@ $(document).ready(function() {
                         } else {
                             $('#passwordmessage').html(data.invalidmessage);
                             $('#oldpassword').val('');
+
+							var validator = $("#passwordform").validate();
+							validator.resetForm();
+
                         }
 
                     }
