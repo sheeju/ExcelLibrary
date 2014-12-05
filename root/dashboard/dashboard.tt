@@ -1,5 +1,4 @@
 <!Doctype html>
-
 <head>
     <title>ExcelLibrary</title>
     <link rel="shortcut icon" href="../source/images/titleimage.ico" />
@@ -160,8 +159,7 @@
 
 <script type="text/javascript" src="../source/js/jquery.js" type="text/javascript"></script>
 <script type="text/javascript" src="../source/DataTable/media/js/jquery.dataTables.js" type="text/javascript"></script>
-<script type="text/javascript" src="../source/bootstrap/dist/js/bootstrap.js" type="text/javascript">
-</script>
+<script type="text/javascript" src="../source/bootstrap/dist/js/bootstrap.js" type="text/javascript"></script>
 <script type="text/javascript" src="../source/DataTable/media/js/dataTables.bootstrap.js"></script>
 <script type="text/javascript" src="../source/js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.js"></script>

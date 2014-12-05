@@ -57,6 +57,10 @@ $(document).ready(function() {
             }
         });
 
+
+
+
+
     });
 
     $('#request_table').delegate('.book_issue', 'click', function() {
@@ -106,5 +110,14 @@ $(document).ready(function() {
         });
 
     });
+
+
+	$('#denyModal').on('hide.bs.modal', function() {
+		$(".modal-backdrop").hide();
+		$('#txt_denyreason').text('');
+		var validator = $("#denyform").validate();
+		validator.resetForm();
+	});
+
 
 });
