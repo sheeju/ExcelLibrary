@@ -74,7 +74,7 @@ $.validator.addMethod("accept", function(value, element, param) {
 }, $.validator.format("Please enter a value with a valid mimetype."));
 
 $.validator.addMethod("alphanumeric", function(value, element) {
-	return this.optional(element) || /^[a-z][a-z0-9 ]+$/i.test(value);
+	return this.optional(element) || /^[a-z][a-z0-9 ]*$/i.test(value);
 }, "Letters, numbers, and spaces only please");
 
 /*
@@ -501,7 +501,7 @@ $.validator.addMethod("ipv6", function(value, element) {
 }, "Please enter a valid IP v6 address.");
 
 $.validator.addMethod("lettersonly", function(value, element) {
-	return this.optional(element) || /^[a-z][a-z ]+$/i.test(value);
+	return this.optional(element) || /^[a-z][a-z ]*$/i.test(value);
 }, "Letters only please");
 
 $.validator.addMethod("letterswithbasicpunc", function(value, element) {

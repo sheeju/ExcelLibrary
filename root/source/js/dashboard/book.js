@@ -201,6 +201,7 @@ $(document).ready(function() {
 	                    required: true
 	                }
 	            },
+				
 	            submitHandler: function(form) {
 	                var url = "/dashboard/addbook";
 	                var name = $('#bookname').val();

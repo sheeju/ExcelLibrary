@@ -98,6 +98,15 @@ $(document).ready(function() {
 
     });
 
+
+
+
+	$('#passwordModal').on('hide.bs.modal', function() {
+		var validator = $("#passwordform").validate();
+		validator.resetForm();
+	});
+
+
     $('#changepassword').click(function() {
         $("#passwordform").validate({
             rules: {
@@ -145,6 +154,7 @@ $(document).ready(function() {
         });
 
     });
+
 
 	$('#logoutbtn').click(function() {
 		$.ajax({
