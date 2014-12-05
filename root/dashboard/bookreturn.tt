@@ -19,14 +19,12 @@
 					<button type="submit" id="btn_check" class="btn btn-default" type="button">Check</button>
 				</span>
             </div>
+
             <br/>
 
             <div id="nameError">
-                <div>
-
-
-                </div>
             </div>
+		</div>
             <br>
             <br>
             <div class="row">
@@ -61,6 +59,8 @@
                     <br>
                     <br>
                     <button id="btn_return" class="btn btn-primary" type="button">Return</button>
+					<br/>
+					<br/>
                 </center>
             </div>
 
