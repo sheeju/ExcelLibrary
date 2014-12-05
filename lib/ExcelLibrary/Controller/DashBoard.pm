@@ -44,7 +44,6 @@ sub excellibrarysendmail : Local
         $body        = shift(@_);
         $to          = shift(@_);
 
-        #($contenttype, $subject, $body, $to) = @{@_};
     }
     else {
         ($contenttype, $subject, $body, $to) = @_;
@@ -112,25 +111,19 @@ sub request : Path('/request')
         else {
             my $book = $bookcopy_rs->search({"BookId" => $transaction->BookId, "Status" => "Available"});
 
-=pod
-			my $alredyresponed = $transaction_rs->search(
-				{
-					BookId    => $transaction->BookId,
-					UpdatedBy => {'!=',undef}
-
-				}
-			); 						
-=cut
-
             my $accepted = $c->model('Library::Transaction')->search(
                 {
                     BookId    => $transaction->BookId,
                     UpdatedBy => {'!=', undef},
                     Status    => 'Requested'
+
                 }
             );
+			
+			my $acceptedcount = $accepted->count - 1 ;
+			my $bookcount = $book->count;
 
-            if ($accepted->count <= 0 and $book->next) {
+            if ($bookcount > 0 and $acceptedcount < $bookcount) {
                 $status = "available";
             }
             else {
@@ -150,7 +143,7 @@ sub request : Path('/request')
             }
         );
     }
-
+	$c->log->info(Dumper $c->stash->{messages});
     $c->stash->{template} = "dashboard/request.tt";
     $c->forward('View::TT');
 
@@ -177,7 +170,6 @@ sub managerequest : Local
     );
     my $transaction = $transaction_rs->next;
 
-    # if ($transaction->UpdatedBy eq '') {
     if ($response eq 'Allow') {
         $transaction_rs->update({"UpdatedBy" => $loginId});
     }
@@ -190,8 +182,6 @@ sub managerequest : Local
             }
         );
     }
-
-    # }
 
     #<--------Sending response as a email to user--------------->
 

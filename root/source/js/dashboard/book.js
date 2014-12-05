@@ -152,7 +152,7 @@ $(document).ready(function() {
 	                        oTable.fnDeleteRow('#' + rowId, function() {
 	                            oTable.fnPageChange(page_number);
 	                        }, false);
-
+							 $('#detailsModal').modal('hide');
 	                    }
 	                }).fail(function(err) {
 	                    alert("error" + err);
@@ -248,27 +248,26 @@ $(document).ready(function() {
 	        $('.alert').addClass('hidden');
 	    });
 
-	    $('.book_req').click(function() {
-	        var bookid = $(this).attr('id');
-	        $.ajax({
-	            url: "/dashboard/bookrequest",
-	            data: {
-	                bookId: bookid,
-	            },
-	            success: function(data) {
-	                if (data.deniedflag) {
-	                    $('.maxbook').removeClass('hidden');
+		$('#table').delegate('.book_req', 'click', function() {
+			var bookid = $(this).attr('id');
+			$.ajax({
+				url: "/dashboard/bookrequest",
+				data: {
+					bookId: bookid,
+				},
+				success: function(data) {
+					if (data.deniedflag) {
+						$('.maxbook').removeClass('hidden');
 
-	                } else {
-	                    id = '#' + bookid;
-	                    var msg = '#lbl' + bookid;
-	                    $(id).addClass('hidden');
-	                    $(msg).removeClass('hidden');
-	                }
-	            }
-	        });
-	    });
-
+					} else {
+						id = '#' + bookid;
+						var msg = '#lbl' + bookid;
+						$(id).addClass('hidden');
+						$(msg).removeClass('hidden');
+					}
+				}
+			});
+		});
 
 		$('#commentmodal').on('hide.bs.modal', function() {
 			$(".modal-backdrop").hide();

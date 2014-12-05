@@ -114,15 +114,16 @@ $(document).ready(function() {
     $('#btn_return').click(function() {
         var comment = $('#comment').val();
         var copy_id = new Array;
-        if (index == 1) {
+		alert(index);
+		if (index == 1) {
 
             $('.chk_bookreturn:checked').each(function() {
                 copy_id.push($(this).val());
             });
         } else {
-            copy_id.push($('#txt_copy_id').val());
+            copy_id.push($('#txt_id').val());
         }
-
+		console.log(copy_id);
         if (copy_id.length > 0) {
 
             $.ajax({
