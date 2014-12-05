@@ -21,7 +21,7 @@ $(document).ready(function() {
 		}, {
 			column_number: 2
 		}, {
-			column_number: 5
+			column_number: 6
 		}]);
 
 	}

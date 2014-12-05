@@ -963,7 +963,8 @@ sub history : Path('/history')
                 BookName    => $_->get_column('BookName'),
                 RequestDate => $_->RequestDate,
                 IssueDate   => $_->IssuedDate,
-                ReturnDate  => $_->ExpectedReturnDate,
+                ExpectedReturnDate  => $_->ExpectedReturnDate,
+				ReturnedDate => $_->ReturnedDate,
                 Status      => $_->Status,
             }
         ) foreach @emphistory;
