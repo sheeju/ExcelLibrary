@@ -268,4 +268,12 @@ $(document).ready(function() {
 	            }
 	        });
 	    });
+
+
+		$('#commentmodal').on('hide.bs.modal', function() {
+			$(".modal-backdrop").hide();
+			$('#txt_comment').text('');
+			var validator = $("#commentform").validate();
+			validator.resetForm();
+		});
 	});
