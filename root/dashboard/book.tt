@@ -1,7 +1,7 @@
 <br>
 <div class="alert alert-danger maxbook hidden">
     <a href="#" class="close">&times;</a>
-    <strong>Warning!</strong> Each Employee has maximum 2 Books.
+	<strong>Warning!</strong> Maximum Book Request is exceeded.
 </div>
 [% IF role == 'Admin' %]
 <button type="button" style="margin:5px 5px" class="btn btn-outline btn-primary pull-right" data-toggle="modal" data-target="#myModal">
