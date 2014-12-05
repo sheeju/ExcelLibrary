@@ -102,6 +102,9 @@ $(document).ready(function() {
 
 
 	$('#passwordModal').on('hide.bs.modal', function() {
+
+		 $('#passwordmessage').html('');
+
 		var validator = $("#passwordform").validate();
 		validator.resetForm();
 	});
@@ -141,14 +144,13 @@ $(document).ready(function() {
                         if (data.validmessage) {
                             $('#passwordmessage').html("Password Change Sucessfully");
                             $('#passwordform')[0].reset();
-                            var validator = $("#passwordform").validate();
-                            validator.resetForm();
-                        } else {
-                            $('#passwordmessage').html(data.invalidmessage);
-                            $('#oldpassword').val('');
-
-							var validator = $("#passwordform").validate();
-							validator.resetForm();
+                           // var validator = $("#passwordform").validate();
+                           // validator.resetForm();
+					} else {
+						$('#passwordmessage').html(data.invalidmessage);
+						$('#passwordform')[0].reset();
+					//	var validator = $("#passwordform").validate();
+					//	validator.resetForm();
 
                         }
 

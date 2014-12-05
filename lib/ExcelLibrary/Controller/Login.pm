@@ -73,7 +73,6 @@ sub index : Path('/login')
 sub createpassword : Local
 {
     my ($self, $c) = @_;
-
     my $password    = md5_hex($c->req->params->{password});
     my $token       = $c->req->params->{token};
     my $employee_rs = $c->model('Library::Employee')->search({Token => $token});
@@ -112,13 +111,14 @@ sub validate : Local
             $token = $newtoken->get;
             $token_rs = $c->model('Library::Employee')->search({"Token" => $token});
         } while ($token_rs->count > 0);
+
         $employee_rs->update({"Token" => $token, "Status" => 'InActive'});
 
         my $subject = 'Reset Your Password';
         my $message =
             'Hi '
           . $employeeinfo->get_column('Name')
-          . ',<br> <p> We got a request to change your Exceleron Library password.To change your password,click the button.<p><a href="http://10.10.10.47:3000/login?token='
+          . ',<br> <p> We got a request to change your Exceleron Library password.To change your password,click the button.<p><a href="http://10.10.10.46:3000/login?token='
           . $token
           . '"> <button> Click me </button></a>';
         my $contenttype = 'text/html';
