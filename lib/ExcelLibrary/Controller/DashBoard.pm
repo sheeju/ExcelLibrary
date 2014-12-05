@@ -102,26 +102,30 @@ sub request : Path('/request')
         }
     );
     my $bookcopy_rs = $c->model('Library::BookCopy')->search({});
-    while ($transaction = $transaction_rs->next) {
+    while ($transaction = $transaction_rs->next) {		
 
         if (defined $transaction->UpdatedBy) {
 
             $status = "issue";
         }
         else {
-            my $book = $bookcopy_rs->search({"BookId" => $transaction->BookId, "Status" => "Available"});
+            my $book = $bookcopy_rs->search(
+				{
+					"BookId" => $transaction->BookId, 
+					"Status" => "Available"
+				}
+			);
 
-            my $accepted = $c->model('Library::Transaction')->search(
-                {
-                    BookId    => $transaction->BookId,
-                    UpdatedBy => {'!=', undef},
-                    Status    => 'Requested'
+			my $accepted = $transaction_rs->search(
+				{
+					"BookId" => $transaction->BookId,
+					"me.UpdatedBy" => {'!=', undef}
+				}
+			);
 
-                }
-            );
-			
-			my $acceptedcount = $accepted->count - 1 ;
+			my $acceptedcount = $accepted->count - 1;
 			my $bookcount = $book->count;
+
 
             if ($bookcount > 0 and $acceptedcount < $bookcount) {
                 $status = "available";
@@ -143,7 +147,6 @@ sub request : Path('/request')
             }
         );
     }
-	$c->log->info(Dumper $c->stash->{messages});
     $c->stash->{template} = "dashboard/request.tt";
     $c->forward('View::TT');
 
