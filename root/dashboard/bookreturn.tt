@@ -2,7 +2,6 @@
 <br>
 <br>
 <form id="book_return" role="form">
-
     <div class="row ">
         <center>
             <select id="cmb_searchby" class="btn btn-toggle">
