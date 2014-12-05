@@ -1,10 +1,5 @@
 $(document).ready(function() {
 
-    jQuery.validator.setDefaults({
-        debug: true,
-        success: "valid"
-    });
-
     $("#passwordform").validate({
         rules: {
             password: {

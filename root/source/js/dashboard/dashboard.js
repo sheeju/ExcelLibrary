@@ -111,7 +111,6 @@ $(document).ready(function() {
                 },
                 confirmpassword: {
                     required: true,
-					minlength: 6,
                     equalTo: "#newpassword"
                 }
             },

@@ -1,61 +1,61 @@
-	$(document).ready(function() {
-	    var oTable = $('#table').dataTable({
-	        "columnDefs": [{
-	            "targets": [5, 6],
-	            "orderable": false
-	        }],
-	    });
+$(document).ready(function() {
+	var oTable = $('#table').dataTable({
+		"columnDefs": [{
+			"targets": [5, 6],
+			"orderable": false
+		}],
+	});
 
-	    var bookid;
-	    var count = 1;
-	    $('#table').delegate('.viewdetails', 'click', function() {
-	        bookid = $(this).attr('id');
-	        getbookcopy(bookid);
-	    });
+	var bookid;
+	var count = 1;
+	$('#table').delegate('.viewdetails', 'click', function() {
+		bookid = $(this).attr('id');
+		getbookcopy(bookid);
+	});
 
-	    $('#table').delegate('.btn_comment', 'click', function() {
-	        bookid = $(this).attr('id');
-	        displaycomment(bookid);
-	    });
+	$('#table').delegate('.btn_comment', 'click', function() {
+		bookid = $(this).attr('id');
+		displaycomment(bookid);
+	});
 
-	    function displaycomment(bookid) {
-	        $.ajax({
-	            url: 'dashboard/getcomments',
-	            data: {
-	                bookid: bookid,
-	            }
-	        }).done(function(data) {
+	function displaycomment(bookid) {
+		$.ajax({
+			url: 'dashboard/getcomments',
+			data: {
+				bookid: bookid,
+			}
+		}).done(function(data) {
 
-	            $('#div_comment').empty();
-	            if (data.flag) {
-	                $.each(data.comments, function(index, value) {
-	                    var header = '<div class="panel panel-primary"><div class="panel-heading">';
-	                    if (data.role == 'Admin') {
-	                        header = header + '<button type="button" id="' + value.commentid + '" class="close btndltcomment"> &times;</button> <br>';
-	                    }
-	                    var elements = header + '<span>Commented By : ' + value.employeename + '</span>' + '<span class="text-right pull-right"> Date : ' + value.commentdate + '</span>' + '</div>' + '<div class = "panel-body">' + '<div class = "col-md-12 "><p class="txt-left">' + value.comment + ' </p></div>' + '</div>' + '</div>';
-	                    $('#div_comment').prepend(elements);
-	                });
-	                $('.btndltcomment').click(function() {
-	                    var commentid = $(this).attr('id');
-	                    $.ajax({
-	                        url: 'dashboard/deletecomment',
-	                        data: {
-	                            commentid: commentid,
-	                        }
-	                    }).done(function(data) {
-	                        displaycomment(bookid);
-	                    });
-	                });
-	            } else {
-	                $('#div_comment').append('<div class = "alert alert-info" role="alert" ><p class="txt-center"> No Previous Comments </p></div>');
-	            }
+			$('#div_comment').empty();
+			if (data.flag) {
+				$.each(data.comments, function(index, value) {
+					var header = '<div class="panel panel-primary"><div class="panel-heading">';
+					if (data.role == 'Admin') {
+						header = header + '<button type="button" id="' + value.commentid + '" class="close btndltcomment"> &times;</button> <br>';
+					}
+					var elements = header + '<span>Commented By : ' + value.employeename + '</span>' + '<span class="text-right pull-right"> Date : ' + value.commentdate + '</span>' + '</div>' + '<div class = "panel-body">' + '<div class = "col-md-12 "><p class="txt-left">' + value.comment + ' </p></div>' + '</div>' + '</div>';
+					$('#div_comment').prepend(elements);
+				});
+				$('.btndltcomment').click(function() {
+					var commentid = $(this).attr('id');
+					$.ajax({
+						url: 'dashboard/deletecomment',
+						data: {
+							commentid: commentid,
+						}
+					}).done(function(data) {
+						displaycomment(bookid);
+					});
+				});
+			} else {
+				$('#div_comment').append('<div class = "alert alert-info" role="alert" ><p class="txt-center"> No Previous Comments </p></div>');
+			}
 
-	        }).fail(function(err) {
-	            alert("error" + err);
-	        });
+		}).fail(function(err) {
+			alert("error" + err);
+		});
 
-	    }
+	}
 	    $('#btn_post').click(function() {
 	        $("#commentform").validate({
 	            rules: {
@@ -201,11 +201,6 @@
 	                    required: true
 	                }
 	            },
-
-
-
-
-
 	            submitHandler: function(form) {
 	                var url = "/dashboard/addbook";
 	                var name = $('#bookname').val();
