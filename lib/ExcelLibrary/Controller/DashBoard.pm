@@ -700,7 +700,7 @@ sub adduser : Local
     my $message =
         'Hello '
       . $empname
-      . ',<br> <p> We are happy to inform that your account has been created in ExcelLibrary. Please <a href="http://10.10.10.30:3000/login?token='
+      . ',<br> <p> We are happy to inform that your account has been created in ExcelLibrary. Please <a href="http://10.10.10.47:3000/login?token='
       . $token
       . '"> <button> Click me </button></a> make it as activate. <p>Regards,<br>Admin,<br>ExcelLibrary.</p> ';
     my $contenttype = 'text/html';
