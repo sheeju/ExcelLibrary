@@ -5,15 +5,6 @@
     <title>ExcelLibrary</title>
     <link rel="shortcut icon" href="../source/images/titleimage.ico" />
 
-    <script type="text/javascript" src="../source/js/jquery.js"></script>
-    <script type="text/javascript" src="../source/bootstrap/dist/js/bootstrap.js"></script>
-    <script type="text/javascript" src="../source/js/jquery.validate.min.js"></script>
-    <script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.js"></script>
-    <script type="text/javascript" src="../source/js/login/index.js"></script>
-    <link rel="stylesheet" type="text/css" href="../source/bootstrap/dist/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="../source/css/library.css">
-    <link rel="stylesheet" type="text/css" href="../source/jquery-validation/demo/site-demos.css">
-
 </head>
 
 <body class="lib-loginbody">
@@ -25,7 +16,6 @@
                         <div>
                             <img src="../source/images/ExcelLibraryLogo.png" class="lib-loginimage">
                         </div>
-
                     </div>
                     <div class="panel-body">
                         <h3 class="panel-title">Login</h3>
@@ -55,8 +45,15 @@
             </div>
         </div>
     </div>
-
 </body>
 
+<script type="text/javascript" src="../source/js/jquery.js"></script>
+<script type="text/javascript" src="../source/bootstrap/dist/js/bootstrap.js"></script>
+<script type="text/javascript" src="../source/js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="../source/jquery-validation/dist/additional-methods.js"></script>
+<script type="text/javascript" src="../source/js/login/index.js"></script>
+<link rel="stylesheet" type="text/css" href="../source/bootstrap/dist/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="../source/css/library.css">
+<link rel="stylesheet" type="text/css" href="../source/jquery-validation/demo/site-demos.css">
 
 </html>
