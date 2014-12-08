@@ -84,71 +84,77 @@ sub dashboard : Path : Args(0)
 sub request : Path('/request')
 {
     my ($self, $c) = @_;
-    my $count;
-    my $transaction;
-    my $status;
-    $count = 1;
-    my $transaction_rs = $c->model('Library::Transaction')->search(
-        {
+    if ($c->user) {
 
-            "me.Status"       => 'Requested',
-            "employee.Status" => 'Active'
-        },
-        {
-            join      => ['employee',      'book'],
-            '+select' => ['employee.Name', 'book.Name'],
-            '+as'     => ['EmployeeName',  'BookName'],
-            order_by  => 'RequestDate'
-        }
-    );
-    my $bookcopy_rs = $c->model('Library::BookCopy')->search({});
-    while ($transaction = $transaction_rs->next) {		
-
-        if (defined $transaction->UpdatedBy) {
-
-            $status = "issue";
-        }
-        else {
-            my $book = $bookcopy_rs->search(
-				{
-					"BookId" => $transaction->BookId, 
-					"Status" => "Available"
-				}
-			);
-
-			my $accepted = $transaction_rs->search(
-				{
-					"BookId" => $transaction->BookId,
-					"me.UpdatedBy" => {'!=', undef}
-				}
-			);
-
-			my $acceptedcount = $accepted->count - 1;
-			my $bookcount = $book->count;
-
-
-            if ($bookcount > 0 and $acceptedcount < $bookcount) {
-                $status = "available";
-            }
-            else {
-                $status = "notavailable";
-            }
-
-        }
-        push(
-            @{$c->stash->{messages}},
+        my $count;
+        my $transaction;
+        my $status;
+        $count = 1;
+        my $transaction_rs = $c->model('Library::Transaction')->search(
             {
-                no            => $count++,
-                id            => $transaction->Id,
-                requesteddate => $transaction->RequestDate,
-                employeename  => $transaction->get_column('EmployeeName'),
-                bookname      => $transaction->get_column('BookName'),
-                status        => $status
+
+                "me.Status"       => 'Requested',
+                "employee.Status" => 'Active'
+            },
+            {
+                join      => ['employee',      'book'],
+                '+select' => ['employee.Name', 'book.Name'],
+                '+as'     => ['EmployeeName',  'BookName'],
+                order_by  => 'RequestDate'
             }
         );
+        my $bookcopy_rs = $c->model('Library::BookCopy')->search({});
+        while ($transaction = $transaction_rs->next) {
+
+            if (defined $transaction->UpdatedBy) {
+
+                $status = "issue";
+            }
+            else {
+                my $book = $bookcopy_rs->search(
+                    {
+                        "BookId" => $transaction->BookId,
+                        "Status" => "Available"
+                    }
+                );
+
+                my $accepted = $transaction_rs->search(
+                    {
+                        "BookId"       => $transaction->BookId,
+                        "me.UpdatedBy" => {'!=', undef}
+                    }
+                );
+
+                my $acceptedcount = $accepted->count - 1;
+                my $bookcount     = $book->count;
+
+                if ($bookcount > 0 and $acceptedcount < $bookcount) {
+                    $status = "available";
+                }
+                else {
+                    $status = "notavailable";
+                }
+
+            }
+            push(
+                @{$c->stash->{messages}},
+                {
+                    no            => $count++,
+                    id            => $transaction->Id,
+                    requesteddate => $transaction->RequestDate,
+                    employeename  => $transaction->get_column('EmployeeName'),
+                    bookname      => $transaction->get_column('BookName'),
+                    status        => $status
+                }
+            );
+        }
+        $c->stash->{template} = "dashboard/request.tt";
+        $c->forward('View::TT');
     }
-    $c->stash->{template} = "dashboard/request.tt";
-    $c->forward('View::TT');
+    else {
+        $c->response->body('Page not found');
+        $c->response->status(404);
+    }
 
 }
 
@@ -242,21 +248,25 @@ sub getbookcopies : Local
 {
     my ($self, $c) = @_;
     my $req_id         = $c->req->params->{req_id};
-    my $transaction_rs = $c->model('Library::Transaction')->search({"Id" => $req_id});
-    my $transaction    = $transaction_rs->next;
+    my $transaction_rs = $c->model('Library::Transaction')->search(
+		{	"Id" => $req_id, 
+			"IssuedDate" => {'=', undef} 
+		}
+	);
 
-    my $bookid   = $transaction->BookId;
-    my @books_rs = $c->model('Library::BookCopy')->search(
-        {
-            "Status" => 'Available',
-            "BookId" => $bookid
-        }
-    );
-    foreach my $b (@books_rs) {
-        push(@{$c->stash->{books}}, $b->Id);
-    }
+	my $transaction    = $transaction_rs->next;
+	my $bookid   = $transaction->BookId;
+	my @books_rs = $c->model('Library::BookCopy')->search(
+		{
+			"Status" => 'Available',
+			"BookId" => $bookid
+		}
+	);
+	foreach my $b (@books_rs) {
+		push(@{$c->stash->{books}}, $b->Id);
+	}
 
-    $c->forward('View::JSON');
+	$c->forward('View::JSON');
 }
 
 sub issuebook : Local
@@ -278,23 +288,21 @@ sub issuebook : Local
     my $expectedreturn_date = $current_date->add(days => $maxallowday);
     $expectedreturneddate = $expectedreturn_date->ymd('-') . " " . $expectedreturn_date->hms(':');
 
-    my $transaction_rs = $c->model('Library::Transaction')->search({"Id" => $req_id});
-    my $transaction = $transaction_rs->next;
-    if ($transaction->IssuedDate eq '') {
-        $transaction_rs->update(
-            {
-                "BookCopyId"         => $bookcopy_id,
-                "Status"             => 'Issued',
-                "IssuedBy"           => $loginid,
-                "IssuedDate"         => $issuedate,
-                "ExpectedReturnDate" => $expectedreturneddate
-            }
-        );
+	my $transaction_rs = $c->model('Library::Transaction')->search({"Id" => $req_id});
 
-        my $bookcopy_rs = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
-        $bookcopy_rs->update({"Status" => 'Reading'});
-    }
-    $c->detach('request');
+	$transaction_rs->update(
+		{
+			"BookCopyId"         => $bookcopy_id,
+			"Status"             => 'Issued',
+			"IssuedBy"           => $loginid,
+			"IssuedDate"         => $issuedate,
+			"ExpectedReturnDate" => $expectedreturneddate
+		}
+	);
+
+	my $bookcopy_rs = $c->model('Library::BookCopy')->search({"Id" => $bookcopy_id});
+	$bookcopy_rs->update({"Status" => 'Reading'});
+	$c->detach('request');
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block wriiten by pavan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -302,64 +310,70 @@ sub issuebook : Local
 sub book : Path('/book')
 {
     my ($self, $c) = @_;
-    my $count = 1;
+    if ($c->user) {
+        my $count = 1;
 
-    my @book_rs = $c->model('Library::Book')->search(
-        {
-            Status => {'!=', 'Removed'},
-        },
-        {
-            join      => 'book_copies',
-            '+select' => ['book_copies.Status'],
-            '+as'     => ['Status'],
-            order_by  => [qw/me.Id/],
-        }
-    );
+        my @book_rs = $c->model('Library::Book')->search(
+            {
+                Status => {'!=', 'Removed'},
+            },
+            {
+                join      => 'book_copies',
+                '+select' => ['book_copies.Status'],
+                '+as'     => ['Status'],
+                order_by  => [qw/me.Id/],
+            }
+        );
 
-    $c->stash->{user} = $c->user->Name;
-    my $userid = $c->user->Id;
-    my %books;
-    foreach my $var (@book_rs) {
+        $c->stash->{user} = $c->user->Name;
+        my $userid = $c->user->Id;
+        my %books;
+        foreach my $var (@book_rs) {
+            if (!exists($books{$var->Id})) {
+                $books{$var->Id} = {
+                    count  => $count++,
+                    id     => $var->Id,
+                    name   => $var->Name,
+                    type   => $var->Type,
+                    author => $var->Author,
+                    status => $var->get_column('Status')
+                };
+            }
+            elsif ($books{$var->Id}{status} eq "Reading" and $var->get_column('Status') eq "Available") {
+                $books{$var->Id}{status} = "Available";
+            }
+        }
+        my @transaction_rs = $c->model('Library::Transaction')->search(
+            {
+                "EmployeeId"   => $userid,
+                "Status"       => {'!=', 'Denied'},
+                "ReturnedDate" => {'=', undef}
 
-        if (!exists($books{$var->Id})) {
-            $books{$var->Id} = {
-                count  => $count++,
-                id     => $var->Id,
-                name   => $var->Name,
-                type   => $var->Type,
-                author => $var->Author,
-                status => $var->get_column('Status')
-            };
+            }
+        );
+
+        foreach my $transaction (@transaction_rs) {
+            if ($transaction->Status eq 'Requested') {
+                $books{$transaction->BookId}{element} = 'requested';
+            }
+            elsif ($transaction->Status eq 'Issued') {
+                $books{$transaction->BookId}{element} = 'issued';
+            }
+            else {
+                $books{$transaction->BookId}{element} = 'default';
+            }
+
         }
-        elsif ($books{$var->Id}{status} eq "Reading" and $var->get_column('Status') eq "Available") {
-            $books{$var->Id}{status} = "Available";
-        }
+
+        $c->stash->{messages} = \%books;
+        $c->stash->{role}     = $c->user->Role;
+        $c->forward("View::TT");
     }
-    my @transaction_rs = $c->model('Library::Transaction')->search(
-        {
-            "EmployeeId"   => $userid,
-            "Status"       => {'!=', 'Denied'},
-            "ReturnedDate" => {'=', undef}
-
-        }
-    );
-
-    foreach my $transaction (@transaction_rs) {
-        if ($transaction->Status eq 'Requested') {
-            $books{$transaction->BookId}{element} = 'requested';
-        }
-        elsif ($transaction->Status eq 'Issued') {
-            $books{$transaction->BookId}{element} = 'issued';
-        }
-        else {
-            $books{$transaction->BookId}{element} = 'default';
-        }
-
+    else {
+        $c->response->body('Page not found');
+        $c->response->status(404);
     }
 
-    $c->stash->{messages} = \%books;
-    $c->stash->{role}     = $c->user->Role;
-    $c->forward("View::TT");
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -450,9 +464,6 @@ sub addbook : Local
         }
     );
     $c->stash->{message} = "Book added sucessfully";
-    $c->log->info(Dumper $c->stash->{message});
-
-    #    $c->forward('book');
     $c->forward('View::JSON');
 }
 
@@ -604,67 +615,74 @@ sub bookrequest : Local
 sub user : Path('/user')
 {
     my ($self, $c) = @_;
-    my @user_rs = $c->model('Library::Employee')->search(
-        {
-            "Status" => {'!=', 'Disable'},
-        }
-    );
+    if ($c->user) {
+        my @user_rs = $c->model('Library::Employee')->search(
+            {
+                "Status" => {'!=', 'Disable'},
+            }
+        );
 
-    my $count = 1;
-    my %userdetail;
-    my $user;
-    foreach $user (@user_rs) {
-        $userdetail{$user->Id} = {
-            count      => $count++,
-            id         => $user->Id,
-            name       => $user->Name,
-            role       => $user->Role,
-            email      => $user->Email,
-            bookinhand => 0,
-            createdby  => $user->CreatedBy
-        };
+        my $count = 1;
+        my %userdetail;
+        my $user;
+        foreach $user (@user_rs) {
+            $userdetail{$user->Id} = {
+                count      => $count++,
+                id         => $user->Id,
+                name       => $user->Name,
+                role       => $user->Role,
+                email      => $user->Email,
+                bookinhand => 0,
+                createdby  => $user->CreatedBy
+            };
+        }
+
+        foreach my $userid (keys %userdetail) {
+
+            my $createdby = $userdetail{$userid}->{createdby};
+            if (defined $userdetail{$createdby}) {
+                $userdetail{$userid}->{createdby} = $userdetail{$createdby}->{name};
+            }
+            else {
+                my $user_rs = $c->model('Library::Employee')->search(
+                    {
+                        "Id" => $createdby,
+                    },
+                    {
+                        columns => "Name"
+                    }
+                );
+                $user = $user_rs->next;
+                $userdetail{$userid}->{createdby} = $user->Name;
+            }
+        }
+
+        my @transaction_rs = $c->model('Library::Transaction')->search(
+            {
+                "Status"       => 'Issued',
+                "ReturnedDate" => {'=', undef}
+            },
+            {
+                columns  => "EmployeeId",
+                group_by => "EmployeeId"
+            }
+        );
+
+        my $transaction;
+        foreach $transaction (@transaction_rs) {
+            $userdetail{$transaction->EmployeeId}{bookinhand} = 1;
+        }
+        my $id = $c->user->Id;
+        $userdetail{$id}{bookinhand} = 2;
+        $c->stash->{userinfo}        = \%userdetail;
+        $c->stash->{template}        = "dashboard/user.tt";
+        $c->forward('View::TT');
+    }
+    else {
+        $c->response->body('Page not found');
+        $c->response->status(404);
     }
 
-    foreach my $userid (keys %userdetail) {
-
-        my $createdby = $userdetail{$userid}->{createdby};
-        if (defined $userdetail{$createdby}) {
-            $userdetail{$userid}->{createdby} = $userdetail{$createdby}->{name};
-        }
-        else {
-            my $user_rs = $c->model('Library::Employee')->search(
-                {
-                    "Id" => $createdby,
-                },
-                {
-                    columns => "Name"
-                }
-            );
-            $user = $user_rs->next;
-            $userdetail{$userid}->{createdby} = $user->Name;
-        }
-    }
-
-    my @transaction_rs = $c->model('Library::Transaction')->search(
-        {
-            "Status"       => 'Issued',
-            "ReturnedDate" => {'=', undef}
-        },
-        {
-            columns  => "EmployeeId",
-            group_by => "EmployeeId"
-        }
-    );
-
-    my $transaction;
-    foreach $transaction (@transaction_rs) {
-        $userdetail{$transaction->EmployeeId}{bookinhand} = 1;
-    }
-    my $id = $c->user->Id;
-    $userdetail{$id}{bookinhand} = 2;
-    $c->stash->{userinfo}        = \%userdetail;
-    $c->stash->{template}        = "dashboard/user.tt";
-    $c->forward('View::TT');
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~code block written by venkatesan~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -813,7 +831,14 @@ sub changepassword : Local
 sub bookreturn : Path('/bookreturn')
 {
     my ($self, $c) = @_;
-    $c->forward('View::TT');
+    if ($c->user) {
+        $c->forward('View::TT');
+    }
+    else {
+        $c->response->body('Page not found');
+        $c->response->status(404);
+    }
+
 }
 
 sub gettransactionbycopyid : Local
@@ -914,62 +939,69 @@ sub returnbook : Local
 sub history : Path('/history')
 {
     my ($self, $c) = @_;
-    $c->stash->{role} = $c->user->Role;
-    my $userId = $c->user->Id;
-    if ($c->user->Role eq 'Admin') {
-        my $count   = 1;
-        my @alldata = $c->model('Library::Transaction')->search(
-            {
-                'me.Status' => {'!=', 'Requested'},
-            },
-            {
-                join      => ['employee',      'book'],
-                '+select' => ['employee.Name', 'book.Name'],
-                '+as'     => ['EmployeeName',  'BookName'],
-                order_by => {-desc => [qw/RequestDate/]},
-            }
-        );
-        push(
-            @{$c->stash->{history}},
-            {
-                Count       => $count++,
-                EmpName     => $_->get_column('EmployeeName'),
-                BookName    => $_->get_column('BookName'),
-                Status      => $_->Status,
-                RequestDate => $_->RequestDate,
-                IssuedDate  => $_->IssuedDate,
-                ReturnDate  => $_->ReturnedDate,
-                CopyId      => $_->BookCopyId,
-            }
-        ) foreach @alldata;
+    if ($c->user) {
+        $c->stash->{role} = $c->user->Role;
+        my $userId = $c->user->Id;
+        if ($c->user->Role eq 'Admin') {
+            my $count   = 1;
+            my @alldata = $c->model('Library::Transaction')->search(
+                {
+                    'me.Status' => {'!=', 'Requested'},
+                },
+                {
+                    join      => ['employee',      'book'],
+                    '+select' => ['employee.Name', 'book.Name'],
+                    '+as'     => ['EmployeeName',  'BookName'],
+                    order_by => {-desc => [qw/RequestDate/]},
+                }
+            );
+            push(
+                @{$c->stash->{history}},
+                {
+                    Count       => $count++,
+                    EmpName     => $_->get_column('EmployeeName'),
+                    BookName    => $_->get_column('BookName'),
+                    Status      => $_->Status,
+                    RequestDate => $_->RequestDate,
+                    IssuedDate  => $_->IssuedDate,
+                    ReturnDate  => $_->ReturnedDate,
+                    CopyId      => $_->BookCopyId,
+                }
+            ) foreach @alldata;
+        }
+        elsif ($c->user->Role eq 'Employee') {
+            my $count      = 1;
+            my @emphistory = $c->model('Library::Transaction')->search(
+                {
+                    'me.EmployeeId' => $userId,
+                },
+                {
+                    join      => ['book'],
+                    '+select' => ['book.Name'],
+                    '+as'     => ['BookName'],
+                    order_by  => {-desc => [qw/RequestDate/]},
+                }
+            );
+            push(
+                @{$c->stash->{emphistory}},
+                {
+                    Count              => $count++,
+                    BookName           => $_->get_column('BookName'),
+                    RequestDate        => $_->RequestDate,
+                    IssueDate          => $_->IssuedDate,
+                    ExpectedReturnDate => $_->ExpectedReturnDate,
+                    ReturnedDate       => $_->ReturnedDate,
+                    Status             => $_->Status,
+                }
+            ) foreach @emphistory;
+        }
+        $c->forward('View::TT');
     }
-    elsif ($c->user->Role eq 'Employee') {
-        my $count      = 1;
-        my @emphistory = $c->model('Library::Transaction')->search(
-            {
-                'me.EmployeeId' => $userId,
-            },
-            {
-                join      => ['book'],
-                '+select' => ['book.Name'],
-                '+as'     => ['BookName'],
-                order_by  => {-desc => [qw/RequestDate/]},
-            }
-        );
-        push(
-            @{$c->stash->{emphistory}},
-            {
-                Count       => $count++,
-                BookName    => $_->get_column('BookName'),
-                RequestDate => $_->RequestDate,
-                IssueDate   => $_->IssuedDate,
-                ExpectedReturnDate  => $_->ExpectedReturnDate,
-				ReturnedDate => $_->ReturnedDate,
-                Status      => $_->Status,
-            }
-        ) foreach @emphistory;
+    else {
+        $c->response->body('Page not found');
+        $c->response->status(404);
     }
-    $c->forward('View::TT');
+
 }
 
 sub addcopies : Local

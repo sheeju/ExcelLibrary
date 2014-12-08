@@ -60,14 +60,14 @@
                 </button>
                 <h4 class="modal-title" id="myModalLabel">Issue Book</h4>
             </div>
-            <div id="div_model_msg" class="model-body">
-                <center> <span class="label label-info">Book Not Available For Issue</span>
+            <div id="div_modal_msg" class="model-body">
+                <center> <span id="spn_model_msg" class="label label-info">This transaction is already responsed </span>
                 </center>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
                 </div>
             </div>
-            <div id="div_model_cmb" class="modal-body">
+            <div id="div_modal_cmb" class="modal-body">
                 Select Issued copy :
                 <select id="cmb_booklist" class="btn btn-warnings dropdown-toggle"></select>
                 <div class="modal-footer">

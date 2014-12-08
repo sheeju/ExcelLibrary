@@ -1,7 +1,6 @@
 package ExcelLibrary::Controller::Login;
 use Moose;
 use namespace::autoclean;
-use Data::Dumper;
 use JSON;
 use Digest::MD5 qw(md5_hex);
 BEGIN { extends 'Catalyst::Controller'; }
@@ -83,13 +82,11 @@ sub createpassword : Local
             "Status"   => 'Active'
         }
     );
-
     $c->forward('View::JSON');
 }
 
 sub forgotpassword : Path( /forgotpassword )
 {
-
     my ($self, $c) = @_;
     $c->forward('View::TT');
 
@@ -106,24 +103,23 @@ sub validate : Local
     my $employeeinfo;
 
     if ($employeeinfo = $employee_rs->next) {
-        my $newtoken = Session::Token->new(length => 20);
+    my $newtoken = Session::Token->new(length => 20);
         do {
             $token = $newtoken->get;
             $token_rs = $c->model('Library::Employee')->search({"Token" => $token});
         } while ($token_rs->count > 0);
 
-        $employee_rs->update({"Token" => $token, "Status" => 'InActive'});
+    $employee_rs->update({"Token" => $token, "Status" => 'InActive'});
 
-        my $subject = 'Reset Your Password';
-        my $message =
+    my $subject = 'Reset Your Password';
+    my $message =
             'Hi '
           . $employeeinfo->get_column('Name')
           . ',<br> <p> We got a request to change your Exceleron Library password.To change your password,click the button.<p><a href="http://10.10.10.46:3000/login?token='
           . $token
           . '"> <button> Click me </button></a>';
-        my $contenttype = 'text/html';
-
-        my @args = ($contenttype, $subject, $message, $usermail);
+    my $contenttype = 'text/html';
+    my @args = ($contenttype, $subject, $message, $usermail);
         $c->forward('/dashboard/excellibrarysendmail', \@args);
         $c->stash->{responsemessage} = 0;
         $c->forward('View::JSON');
