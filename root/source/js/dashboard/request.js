@@ -66,8 +66,8 @@ $(document).ready(function() {
     $('#request_table').delegate('.book_issue', 'click', function() {
         req_id = $(this).attr('id');
         $('#cmb_booklist').empty();
-        $('#div_model_msg').addClass('hidden');
-        $('#div_model_cmb').removeClass('hidden');
+        $('#div_modal_msg').addClass('hidden');
+        $('#div_modal_cmb').removeClass('hidden');
         $.ajax({
             url: 'dashboard/getbookcopies',
             contentType: 'text/html',
@@ -82,8 +82,8 @@ $(document).ready(function() {
                     	$('#cmb_booklist').append('<option>' + value + '</option>');
                 	});
             	} else {
-                	$('#div_model_msg').removeClass('hidden');
-                	$('#div_model_cmb').addClass('hidden');
+                	$('#div_modal_msg').removeClass('hidden');
+                	$('#div_modal_cmb').addClass('hidden');
             	}
 
         }).fail(function(err) {

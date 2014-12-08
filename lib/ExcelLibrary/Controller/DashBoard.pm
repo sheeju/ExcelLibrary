@@ -125,9 +125,8 @@ sub request : Path('/request')
                     }
                 );
 
-                my $acceptedcount = $accepted->count - 1;
+                my $acceptedcount = $accepted->count ;
                 my $bookcount     = $book->count;
-
                 if ($bookcount > 0 and $acceptedcount < $bookcount) {
                     $status = "available";
                 }
@@ -254,16 +253,18 @@ sub getbookcopies : Local
 		}
 	);
 
-	my $transaction    = $transaction_rs->next;
-	my $bookid   = $transaction->BookId;
-	my @books_rs = $c->model('Library::BookCopy')->search(
-		{
-			"Status" => 'Available',
-			"BookId" => $bookid
+	if(my $transaction    = $transaction_rs->next)
+	{
+		my $bookid   = $transaction->BookId;
+		my @books_rs = $c->model('Library::BookCopy')->search(
+			{
+				"Status" => 'Available',
+				"BookId" => $bookid
+			}
+		);
+		foreach my $b (@books_rs) {
+			push(@{$c->stash->{books}}, $b->Id);
 		}
-	);
-	foreach my $b (@books_rs) {
-		push(@{$c->stash->{books}}, $b->Id);
 	}
 
 	$c->forward('View::JSON');
