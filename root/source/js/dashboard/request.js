@@ -76,15 +76,16 @@ $(document).ready(function() {
                 req_id: req_id
             }
         }).done(function(data) {
-            if (typeof data.books != 'undefined') {
+				if (typeof data.books != 'undefined') {
 
-                $.each(data.books, function(index, value) {
-                    $('#cmb_booklist').append('<option>' + value + '</option>');
-                });
-            } else {
-                $('#div_model_msg').removeClass('hidden');
-                $('#div_model_cmb').addClass('hidden');
-            }
+                	$.each(data.books, function(index, value) {
+                    	$('#cmb_booklist').append('<option>' + value + '</option>');
+                	});
+            	} else {
+                	$('#div_model_msg').removeClass('hidden');
+                	$('#div_model_cmb').addClass('hidden');
+            	}
+
         }).fail(function(err) {
             alert("error in getbook" + err);
         });
