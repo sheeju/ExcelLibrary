@@ -125,9 +125,8 @@ sub request : Path('/request')
                     }
                 );
 
-                my $acceptedcount = $accepted->count - 1;
+                my $acceptedcount = $accepted->count ;
                 my $bookcount     = $book->count;
-
                 if ($bookcount > 0 and $acceptedcount < $bookcount) {
                     $status = "available";
                 }
@@ -254,16 +253,18 @@ sub getbookcopies : Local
 		}
 	);
 
-	my $transaction    = $transaction_rs->next;
-	my $bookid   = $transaction->BookId;
-	my @books_rs = $c->model('Library::BookCopy')->search(
-		{
-			"Status" => 'Available',
-			"BookId" => $bookid
+	if(my $transaction    = $transaction_rs->next)
+	{
+		my $bookid   = $transaction->BookId;
+		my @books_rs = $c->model('Library::BookCopy')->search(
+			{
+				"Status" => 'Available',
+				"BookId" => $bookid
+			}
+		);
+		foreach my $b (@books_rs) {
+			push(@{$c->stash->{books}}, $b->Id);
 		}
-	);
-	foreach my $b (@books_rs) {
-		push(@{$c->stash->{books}}, $b->Id);
 	}
 
 	$c->forward('View::JSON');
@@ -718,7 +719,7 @@ sub adduser : Local
     my $message =
         'Hello '
       . $empname
-      . ',<br> <p> We are happy to inform that your account has been created in ExcelLibrary. Please <a href="http://10.10.10.30:3000/login?token='
+      . ',<br> <p> We are happy to inform that your account has been created in ExcelLibrary. Please <a href="http://10.10.10.47:3000/login?token='
       . $token
       . '"> <button> Click me </button></a> make it as activate. <p>Regards,<br>Admin,<br>ExcelLibrary.</p> ';
     my $contenttype = 'text/html';
